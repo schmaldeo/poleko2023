@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Windows;
 
 namespace PolEko;
@@ -8,6 +9,7 @@ namespace PolEko;
 /// </summary>
 public partial class MainWindow
 {
+  private List<Device> Devices { get; } = new();
   public MainWindow()
   {
     InitializeComponent();
@@ -19,9 +21,10 @@ public partial class MainWindow
     prompt.Show();
   }
 
-  private static void ProcessNewDevice(IPAddress ipAddress)
+  private void ProcessNewDevice(IPAddress ipAddress)
   {
     Device device = new(ipAddress);
-    MessageBox.Show($"{device.IpAddress}");
+    Devices.Add(device);
+    DevicesBox.Items.Add(device.IpAddress.ToString());
   }
 }
