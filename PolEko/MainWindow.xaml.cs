@@ -24,5 +24,11 @@ namespace PolEko
         {
             InitializeComponent();
         }
+
+        private void AddDevice_Click(object sender, RoutedEventArgs e)
+        {
+          IpPrompt prompt = new();
+          prompt.Show();
+        }
     }
 }
