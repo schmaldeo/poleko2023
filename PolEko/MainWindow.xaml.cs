@@ -19,7 +19,7 @@ namespace PolEko
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public MainWindow()
         {
@@ -34,7 +34,8 @@ namespace PolEko
         
         private static void ProcessNewDevice(IPAddress ipAddress)
         {
-          MessageBox.Show($"{ipAddress} is the address");
+          Device device = new(ipAddress);
+          MessageBox.Show($"{device.IpAddress}");
         }
     }
 }
