@@ -53,6 +53,7 @@ public partial class IpPrompt
   public IpPrompt(Action<IPAddress> callback)
   {
     InitializeComponent();
+    IpTextBox.Focus();
     _callback = callback;
   }
 }
