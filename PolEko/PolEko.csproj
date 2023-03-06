@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <TargetFramework>net7.0-windows</TargetFramework>
-        <Nullable>enable</Nullable>
-        <UseWPF>true</UseWPF>
-        <Authors>Michał Skrzyszowski</Authors>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <Authors>Michał Skrzyszowski</Authors>
+  </PropertyGroup>
 
 </Project>

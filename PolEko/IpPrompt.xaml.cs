@@ -8,18 +8,25 @@ namespace PolEko;
 public partial class IpPrompt
 {
   /// <summary>
-  /// IP address entered via the textbox in the <c>IpPrompt</c> prompt
-  /// </summary>
-  private IPAddress? _ip;
-  
-  /// <summary>
-  /// Callback used to return the IP address to the caller
+  ///   Callback used to return the IP address to the caller
   /// </summary>
   private readonly Action<IPAddress> _callback;
 
   /// <summary>
-  /// Method that tries to parse the IP address entered in the prompt and either return it to the caller through the 
-  /// callback or show a message box saying the IP is invalid
+  ///   IP address entered via the textbox in the <c>IpPrompt</c> prompt
+  /// </summary>
+  private IPAddress? _ip;
+
+  public IpPrompt(Action<IPAddress> callback)
+  {
+    InitializeComponent();
+    IpTextBox.Focus();
+    _callback = callback;
+  }
+
+  /// <summary>
+  ///   Method that tries to parse the IP address entered in the prompt and either return it to the caller through the
+  ///   callback or show a message box saying the IP is invalid
   /// </summary>
   /// <param name="sender"></param>
   /// <param name="e"></param>
@@ -36,24 +43,17 @@ public partial class IpPrompt
       MessageBox.Show("Nieprawidłowy adres IP.");
     }
   }
-  
+
   private void CancelButton_Click(object sender, RoutedEventArgs e)
   {
     Close();
   }
-  
-  
+
+
   /// <summary>
-  /// Regular expression used to parse IPv4 addresses
+  ///   Regular expression used to parse IPv4 addresses
   /// </summary>
   /// <returns></returns>
   [GeneratedRegex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")]
   private static partial Regex IpRegex();
-
-  public IpPrompt(Action<IPAddress> callback)
-  {
-    InitializeComponent();
-    IpTextBox.Focus();
-    _callback = callback;
-  }
 }
