@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,8 +28,13 @@ namespace PolEko
 
         private void AddDevice_Click(object sender, RoutedEventArgs e)
         {
-          IpPrompt prompt = new();
+          IpPrompt prompt = new(ProcessNewDevice);
           prompt.Show();
+        }
+        
+        private static void ProcessNewDevice(IPAddress ipAddress)
+        {
+          MessageBox.Show($"{ipAddress} is the address");
         }
     }
 }

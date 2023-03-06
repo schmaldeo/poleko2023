@@ -14,38 +14,36 @@
         Title="IPPrompt" Height="100" Width="800">
   <Grid Margin="10">
     <Grid.Resources>
-            <Style TargetType="{x:Type Label}">
-                <Setter Property="Margin" Value="0,3,5,5" />
-                <Setter Property="Padding" Value="0,0,0,5" />
-            </Style>
-            <Style TargetType="{x:Type TextBox}">
-                <Setter Property="Margin" Value="0,0,0,5" />
-            </Style>
-            <Style TargetType="{x:Type Button}">
-                <Setter Property="Width" Value="70" />
-                <Setter Property="Height" Value="25" />
-                <Setter Property="Margin" Value="5,0,0,0" />
-            </Style>
-        </Grid.Resources>
+      <Style TargetType="{x:Type Label}">
+        <Setter Property="Margin" Value="0,3,5,5" />
+        <Setter Property="Padding" Value="0,0,0,5" />
+      </Style>
+      <Style TargetType="{x:Type TextBox}">
+        <Setter Property="Margin" Value="0,0,0,5" />
+      </Style>
+      <Style TargetType="{x:Type Button}">
+        <Setter Property="Width" Value="70" />
+        <Setter Property="Height" Value="25" />
+        <Setter Property="Margin" Value="5,0,0,0" />
+      </Style>
+    </Grid.Resources>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition />
+    </Grid.ColumnDefinitions>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
 
-        <!-- Left,Top,Right,Bottom margins-->
-        <Label Grid.Column="0" Grid.Row="0">IP urządzenia:</Label>
-        <TextBox Name="IpTextBox" Grid.Column="1" Grid.Row="0" />
+    <Label>IP urządzenia:</Label>
+    <TextBox Name="IpTextBox" Grid.Row="0" Grid.Column="1" />
 
-        <!-- Accept or Cancel -->
-        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Name="OkButton" Click="OkButton_Click" IsDefault="True">OK</Button>
-            <Button Name="CancelButton" Click="CancelButton_Click" IsCancel="True">Cancel</Button>
-        </StackPanel>
+    <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button Click="OkButton_Click" IsDefault="True">OK</Button>
+      <Button Click="CancelButton_Click" IsCancel="True">Cancel</Button>
+    </StackPanel>
   </Grid>
 </Window>

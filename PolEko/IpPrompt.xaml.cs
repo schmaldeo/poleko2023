@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows;
 
@@ -7,13 +8,14 @@ namespace PolEko;
 public partial class IpPrompt
 {
   private IPAddress? _ip;
+  private readonly Action<IPAddress> _callback;
 
   private void OkButton_Click(object sender, RoutedEventArgs e)
   {
-    if (MyRegex().IsMatch(IpTextBox.Text))
+    if (IpRegex().IsMatch(IpTextBox.Text))
     {
       _ip = IPAddress.Parse(IpTextBox.Text);
-      MessageBox.Show(_ip.ToString());
+      _callback(_ip);
       Close();
     }
     else
@@ -27,11 +29,12 @@ public partial class IpPrompt
     Close();
   }
   
-  public IpPrompt()
+  [GeneratedRegex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")]
+  private static partial Regex IpRegex();
+
+  public IpPrompt(Action<IPAddress> callback)
   {
     InitializeComponent();
+    _callback = callback;
   }
-
-  [GeneratedRegex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")]
-  private static partial Regex MyRegex();
 }
