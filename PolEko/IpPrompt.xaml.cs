@@ -12,9 +12,9 @@ public partial class IpPrompt
   /// <summary>
   ///   Callback used to return the IP address to the caller
   /// </summary>
-  private readonly Action<IPAddress, int> _callback;
+  private readonly Action<IPAddress, int, string?> _callback;
 
-  public IpPrompt(Action<IPAddress, int> callback)
+  public IpPrompt(Action<IPAddress, int, string?> callback)
   {
     InitializeComponent();
     IpTextBox.Focus();
@@ -46,9 +46,15 @@ public partial class IpPrompt
       MessageBox.Show("Port musi być z zakresu 1-65535");
       return;
     }
+
+    string? id = null;
+    if (IDTextBox.Text != string.Empty)
+    {
+      id = IDTextBox.Text;
+    }
     
     var ip = IPAddress.Parse(IpTextBox.Text);
-    _callback(ip, port);
+    _callback(ip, port, id);
     Close();
   }
 

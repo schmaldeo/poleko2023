@@ -27,16 +27,15 @@ public partial class MainWindow
     prompt.Show();
   }
 
-  private void AddNewDevice(IPAddress ipAddress, int port)
+  private void AddNewDevice(IPAddress ipAddress, int port, string id)
   {
-    WeatherDevice weatherDevice = new(ipAddress, port);
+    WeatherDevice weatherDevice = new(ipAddress, port, id);
     Devices.Add(weatherDevice);
     DevicesBox.Items.Add(weatherDevice);
   }
 
   private void FetchMeasurements_Click(object sender, RoutedEventArgs e)
   {
-    DevicesBox.SelectedValue.ToString();
-    MessageBox.Show("lol");
+    throw new NotImplementedException();
   }
 }
