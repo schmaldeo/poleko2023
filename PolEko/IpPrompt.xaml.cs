@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PolEko;
@@ -14,11 +13,6 @@ public partial class IpPrompt
   ///   Callback used to return the IP address to the caller
   /// </summary>
   private readonly Action<IPAddress, int> _callback;
-
-  /// <summary>
-  ///   IP address entered via the textbox in the <c>IpPrompt</c> prompt
-  /// </summary>
-  private IPAddress? _ip;
 
   public IpPrompt(Action<IPAddress, int> callback)
   {
@@ -52,10 +46,9 @@ public partial class IpPrompt
       MessageBox.Show("Port musi być z zakresu 1-65535");
       return;
     }
-
     
-    _ip = IPAddress.Parse(IpTextBox.Text);
-    _callback(_ip, port);
+    var ip = IPAddress.Parse(IpTextBox.Text);
+    _callback(ip, port);
     Close();
   }
 
@@ -77,6 +70,7 @@ public partial class IpPrompt
   /// <returns></returns>
   [GeneratedRegex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")]
   private static partial Regex Ipv4Regex();
+  
   /// <summary>
   /// Number-only regex
   /// </summary>
