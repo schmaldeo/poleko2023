@@ -44,7 +44,7 @@
     <Label Grid.Column="0" Grid.Row="1">Port:</Label>
     <TextBox Name="PortTextBox" Grid.Row="1" Grid.Column="1" PreviewTextInput="NumberValidationTextBox" />
     <Label Grid.Column="0" Grid.Row="2">ID (opcjonalne):</Label>
-    <TextBox Name="IDTextBox" Grid.Row="2" Grid.Column="1" />
+    <TextBox Name="IdTextBox" Grid.Row="2" Grid.Column="1" />
 
     <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
       <Button Click="OkButton_Click" IsDefault="True">OK</Button>

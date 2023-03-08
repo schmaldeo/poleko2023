@@ -48,7 +48,7 @@ public partial class IpPrompt
     }
 
     string? id = null;
-    if (IDTextBox.Text != string.Empty) id = IDTextBox.Text;
+    if (IdTextBox.Text != string.Empty) id = IdTextBox.Text;
 
     var ip = IPAddress.Parse(IpTextBox.Text);
     _callback(ip, port, id);
