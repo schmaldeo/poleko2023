@@ -31,11 +31,12 @@ public partial class MainWindow
   {
     WeatherDevice weatherDevice = new(ipAddress, port);
     Devices.Add(weatherDevice);
-    DevicesBox.Items.Add(weatherDevice.IpAddress.ToString());
+    DevicesBox.Items.Add(weatherDevice);
   }
 
   private void FetchMeasurements_Click(object sender, RoutedEventArgs e)
   {
+    DevicesBox.SelectedValue.ToString();
     MessageBox.Show("lol");
   }
 }
