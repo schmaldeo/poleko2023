@@ -57,19 +57,14 @@ public class WeatherDevice : Device
     else throw new Exception("lolo");
   }
 
-  public override string ToString() => $"{Type}@{IpAddress}:{Port}";
-  
-  // Constructors
-  public WeatherDevice(IPAddress ipAddress, int port)
-  {
-    IpAddress = ipAddress;
-    Port = port;
-  }
+  public override string ToString() => $"{Id ?? Type}@{IpAddress}:{Port}";
 
-  public WeatherDevice(IPAddress ipAddress, int port, int refreshRate)
+  // Constructors
+  public WeatherDevice(IPAddress ipAddress, int port, string? id = null, int refreshRate = 5)
   {
     IpAddress = ipAddress;
     Port = port;
+    Id = id;
     RefreshRate = refreshRate;
   }
 
