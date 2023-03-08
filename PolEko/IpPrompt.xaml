@@ -10,7 +10,7 @@
         WindowStartupLocation="CenterOwner"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
-        Title="IPPrompt" Height="100" Width="800">
+        Title="Dodaj urządzenie" Height="140" Width="800">
   <Grid Margin="10">
     <Grid.Resources>
       <Style TargetType="{x:Type Label}">
@@ -36,14 +36,17 @@
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
     <Label>IP urządzenia:</Label>
     <TextBox Name="IpTextBox" Grid.Row="0" Grid.Column="1" />
     <Label Grid.Column="0" Grid.Row="1">Port:</Label>
     <TextBox Name="PortTextBox" Grid.Row="1" Grid.Column="1" PreviewTextInput="NumberValidationTextBox" />
+    <Label Grid.Column="0" Grid.Row="2">ID (opcjonalne):</Label>
+    <TextBox Name="IDTextBox" Grid.Row="2" Grid.Column="1" />
 
-    <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+    <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
       <Button Click="OkButton_Click" IsDefault="True">OK</Button>
       <Button Click="CancelButton_Click" IsCancel="True">Cancel</Button>
     </StackPanel>
