@@ -9,8 +9,7 @@ namespace PolEko;
 
 public abstract class Device
 {
-  // rethink about the ToString() method, perhaps either set the fields to protected get or remove the abstract
-  // modifier from the base class' ToString()
+  public string? Id { get; protected set; }
   public IPAddress? IpAddress { get; protected init; }
   public int Port { get; protected init; }
   private HttpClient? Client;
@@ -19,6 +18,10 @@ public abstract class Device
   public abstract string Type { get; }
   public abstract string Description { get; }
   
+  /// <summary>
+  /// Must override <c>ToString()</c> as that's what's going to be shown in the devices list in the UI
+  /// </summary>
+  /// <returns>String with device's ID/type (if no ID), IP address and port</returns>
   public abstract override string ToString();
 }
 
@@ -33,7 +36,7 @@ public abstract class Measurement
 public class WeatherDevice : Device
 {
   // Methods
-  public async Task<Measurement> GetMeasurement()
+  public async Task<WeatherMeasurement> GetMeasurement()
   {
     HttpClient client = new();
     var url = new Uri($"http://{IpAddress}:4040/");
@@ -46,7 +49,7 @@ public class WeatherDevice : Device
       // TODO: might not wanna throw an exception here
       throw new Exception("API call did not return HTTP 200");
     }
-    var data = await res.Content.ReadFromJsonAsync<Measurement>();
+    var data = await res.Content.ReadFromJsonAsync<WeatherMeasurement>();
     
     client.Dispose();
 
@@ -54,12 +57,7 @@ public class WeatherDevice : Device
     else throw new Exception("lolo");
   }
 
-  public override string ToString()
-  {
-    return $"IP address: {IpAddress}, " +
-           $"current refresh rate: {RefreshRate}, " +
-           $"last measurement: {LastMeasurement}";
-  }
+  public override string ToString() => $"{Type}@{IpAddress}:{Port}";
   
   // Constructors
   public WeatherDevice(IPAddress ipAddress, int port)
@@ -71,6 +69,7 @@ public class WeatherDevice : Device
   public WeatherDevice(IPAddress ipAddress, int port, int refreshRate)
   {
     IpAddress = ipAddress;
+    Port = port;
     RefreshRate = refreshRate;
   }
 
