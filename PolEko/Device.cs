@@ -9,8 +9,8 @@ namespace PolEko;
 
 public abstract class Device
 {
-  public string? Id { get; protected set; }
-  public IPAddress? IpAddress { get; protected init; }
+  public string? Id { get; protected init; }
+  public IPAddress IpAddress { get; protected init; }
   public int Port { get; protected init; }
   private HttpClient? Client;
   public DateTime LastMeasurement { get; protected init; } = DateTime.Now;
@@ -23,6 +23,29 @@ public abstract class Device
   /// </summary>
   /// <returns>String with device's ID/type (if no ID), IP address and port</returns>
   public abstract override string ToString();
+  
+  public static bool operator== (Device a, Device b)
+  {
+    return a.IpAddress.Equals(b.IpAddress) && a.Port == b.Port;
+  }
+
+  public static bool operator !=(Device a, Device b)
+  {
+    return !(a.IpAddress.Equals(b.IpAddress) && a.Port == b.Port);
+  }
+
+  public override bool Equals(object? obj)
+  {
+    if (obj == null || GetType() != obj.GetType()) return false;
+
+    var device = (Device)obj;
+    return IpAddress.Equals(device.IpAddress) && Port == device.Port;
+  }
+
+  public override int GetHashCode()
+  {
+    return HashCode.Combine(IpAddress, Port, Id);
+  }
 }
 
 public abstract class Measurement
