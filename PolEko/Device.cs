@@ -9,12 +9,19 @@ namespace PolEko;
 
 public abstract class Device
 {
+  public Device(IPAddress ipAddress, int port, string? id = null, int refreshRate = 5)
+  {
+    IpAddress = ipAddress;
+    Port = port;
+    Id = id;
+    RefreshRate = refreshRate;
+  }
   public string? Id { get; protected init; }
   public IPAddress IpAddress { get; protected init; }
   public int Port { get; protected init; }
   private HttpClient? Client;
   public DateTime LastMeasurement { get; protected init; } = DateTime.Now;
-  public int RefreshRate { get; set; } = 5;
+  public int RefreshRate { get; set; }
   public abstract string Type { get; }
   public abstract string Description { get; }
   
@@ -83,13 +90,8 @@ public class WeatherDevice : Device
   public override string ToString() => $"{Id ?? Type}@{IpAddress}:{Port}";
 
   // Constructors
-  public WeatherDevice(IPAddress ipAddress, int port, string? id = null, int refreshRate = 5)
-  {
-    IpAddress = ipAddress;
-    Port = port;
-    Id = id;
-    RefreshRate = refreshRate;
-  }
+  public WeatherDevice(IPAddress ipAddress, int port, string? id = null, int refreshRate = 5) 
+    : base(ipAddress, port, id, refreshRate) {}
 
   public class WeatherMeasurement : Measurement
     {
