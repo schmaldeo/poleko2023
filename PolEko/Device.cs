@@ -28,10 +28,13 @@ public abstract class Device
   public abstract string Description { get; }
 
   /// <summary>
-  ///   Must override <c>ToString()</c> as that's what's going to be shown in the devices list in the UI
+  ///   Custom <c>ToString()</c> implementation
   /// </summary>
   /// <returns>String with device's ID/type (if no ID), IP address and port</returns>
-  public abstract override string ToString();
+  public override string ToString()
+  {
+    return $"{Id ?? Type}@{IpAddress}:{Port}";
+  }
 
   public static bool operator ==(Device a, Device b)
   {
@@ -96,11 +99,6 @@ public class WeatherDevice : Device
 
     if (data != null) return data;
     throw new Exception("lolo");
-  }
-
-  public override string ToString()
-  {
-    return $"{Id ?? Type}@{IpAddress}:{Port}";
   }
 
   public class WeatherMeasurement : Measurement
