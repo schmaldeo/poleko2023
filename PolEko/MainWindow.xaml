@@ -20,7 +20,7 @@
     <Button Background="Bisque" Click="AddDevice_Click" Margin="15, 15">
       Dodaj urządzenie
     </Button>
-    <ComboBox Grid.Row="0" Grid.Column="1" Width="150" Height="20" Name="DevicesBox" />
+    <ComboBox Name="DevicesBox" Grid.Row="0" Grid.Column="1" Width="150" Height="20" />
     <Button Grid.Row="0" Grid.Column="2" Height="20" Click="FetchMeasurements_Click">
       Start fetching
     </Button>
