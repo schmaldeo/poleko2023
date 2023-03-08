@@ -35,12 +35,15 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
     <Label>IP urządzenia:</Label>
     <TextBox Name="IpTextBox" Grid.Row="0" Grid.Column="1" />
+    <Label Grid.Column="0" Grid.Row="1">Port:</Label>
+    <TextBox Name="PortTextBox" Grid.Row="1" Grid.Column="1" PreviewTextInput="NumberValidationTextBox" />
 
-    <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+    <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
       <Button Click="OkButton_Click" IsDefault="True">OK</Button>
       <Button Click="CancelButton_Click" IsCancel="True">Cancel</Button>
     </StackPanel>

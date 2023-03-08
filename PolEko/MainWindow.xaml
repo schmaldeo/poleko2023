@@ -9,6 +9,7 @@
   <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="Auto" />
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
@@ -17,10 +18,12 @@
     </Grid.RowDefinitions>
 
     <Button Background="Bisque" Click="AddDevice_Click" Margin="15, 15">
-      <Button.Content>
-        Dodaj urządzenie
-      </Button.Content>
+      Dodaj urządzenie
     </Button>
     <ComboBox Grid.Row="0" Grid.Column="1" Width="150" Height="20" Name="DevicesBox" />
+    <Button Grid.Row="0" Grid.Column="2" Height="20" Click="FetchMeasurements_Click">
+      Start fetching
+    </Button>
+    <!-- question for background monitoring perhaps with a hint about performance -->
   </Grid>
 </Window>

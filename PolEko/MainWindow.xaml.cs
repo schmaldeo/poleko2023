@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace PolEko;
@@ -14,17 +17,25 @@ public partial class MainWindow
   {
     InitializeComponent();
   }
-
+  
+  // On main windows closing, dont close instantly, rather send potential leftover buffer to database
+  // Database calls should be happening every whatever items in the buffer (Queue<> ?)
+  
   private void AddDevice_Click(object sender, RoutedEventArgs e)
   {
-    IpPrompt prompt = new(ProcessNewDevice);
+    IpPrompt prompt = new(AddNewDevice);
     prompt.Show();
   }
 
-  private void ProcessNewDevice(IPAddress ipAddress)
+  private void AddNewDevice(IPAddress ipAddress, int port)
   {
-    Device device = new(ipAddress);
-    Devices.Add(device);
-    DevicesBox.Items.Add(device.IpAddress.ToString());
+    WeatherDevice weatherDevice = new(ipAddress, port);
+    Devices.Add(weatherDevice);
+    DevicesBox.Items.Add(weatherDevice.IpAddress.ToString());
+  }
+
+  private void FetchMeasurements_Click(object sender, RoutedEventArgs e)
+  {
+    MessageBox.Show("lol");
   }
 }
