@@ -9,6 +9,8 @@ namespace PolEko;
 
 public abstract class Device
 {
+  private HttpClient? Client;
+
   public Device(IPAddress ipAddress, int port, string? id = null, int refreshRate = 5)
   {
     IpAddress = ipAddress;
@@ -16,22 +18,22 @@ public abstract class Device
     Id = id;
     RefreshRate = refreshRate;
   }
+
   public string? Id { get; protected init; }
   public IPAddress IpAddress { get; protected init; }
   public int Port { get; protected init; }
-  private HttpClient? Client;
   public DateTime LastMeasurement { get; protected init; } = DateTime.Now;
   public int RefreshRate { get; set; }
   public abstract string Type { get; }
   public abstract string Description { get; }
-  
+
   /// <summary>
-  /// Must override <c>ToString()</c> as that's what's going to be shown in the devices list in the UI
+  ///   Must override <c>ToString()</c> as that's what's going to be shown in the devices list in the UI
   /// </summary>
   /// <returns>String with device's ID/type (if no ID), IP address and port</returns>
   public abstract override string ToString();
-  
-  public static bool operator== (Device a, Device b)
+
+  public static bool operator ==(Device a, Device b)
   {
     return a.IpAddress.Equals(b.IpAddress) && a.Port == b.Port;
   }
@@ -61,10 +63,21 @@ public abstract class Measurement
 }
 
 /// <summary>
-/// Device that logs temperature and humidity
+///   Device that logs temperature and humidity
 /// </summary>
 public class WeatherDevice : Device
 {
+  // Constructors
+  public WeatherDevice(IPAddress ipAddress, int port, string? id = null, int refreshRate = 5)
+    : base(ipAddress, port, id, refreshRate)
+  {
+  }
+
+  // Properties
+  public override string Type => "Weather Device";
+
+  public override string Description => "Device used to measure temperature and humidity";
+
   // Methods
   public async Task<WeatherMeasurement> GetMeasurement()
   {
@@ -72,44 +85,36 @@ public class WeatherDevice : Device
     var url = new Uri($"http://{IpAddress}:4040/");
     client.BaseAddress = url;
     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-    
+
     var res = await client.GetAsync("");
     if (res.StatusCode != HttpStatusCode.OK)
-    {
       // TODO: might not wanna throw an exception here
       throw new Exception("API call did not return HTTP 200");
-    }
     var data = await res.Content.ReadFromJsonAsync<WeatherMeasurement>();
-    
+
     client.Dispose();
 
     if (data != null) return data;
-    else throw new Exception("lolo");
+    throw new Exception("lolo");
   }
 
-  public override string ToString() => $"{Id ?? Type}@{IpAddress}:{Port}";
-
-  // Constructors
-  public WeatherDevice(IPAddress ipAddress, int port, string? id = null, int refreshRate = 5) 
-    : base(ipAddress, port, id, refreshRate) {}
+  public override string ToString()
+  {
+    return $"{Id ?? Type}@{IpAddress}:{Port}";
+  }
 
   public class WeatherMeasurement : Measurement
+  {
+    // Constructor
+    private WeatherMeasurement(float temperature, int humidity)
     {
-      // Constructor
-      private WeatherMeasurement(float temperature, int humidity)
-      {
-        Temperature = temperature;
-        Humidity = humidity;
-        TimeStamp = DateTime.Now;
-      }
-  
-      // Properties
-      private float Temperature { get; }
-      private int Humidity { get; }
+      Temperature = temperature;
+      Humidity = humidity;
+      TimeStamp = DateTime.Now;
     }
-  
-  // Properties
-  public override string Type => "Weather Device";
 
-  public override string Description => "Device used to measure temperature and humidity";
+    // Properties
+    private float Temperature { get; }
+    private int Humidity { get; }
+  }
 }

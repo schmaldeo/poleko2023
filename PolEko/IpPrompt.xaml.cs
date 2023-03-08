@@ -34,7 +34,7 @@ public partial class IpPrompt
       MessageBox.Show("Nieprawidłowy adres IP");
       return;
     }
-    
+
     if (!int.TryParse(PortTextBox.Text, out var port))
     {
       MessageBox.Show("Port nie może zawierać liter");
@@ -48,11 +48,8 @@ public partial class IpPrompt
     }
 
     string? id = null;
-    if (IDTextBox.Text != string.Empty)
-    {
-      id = IDTextBox.Text;
-    }
-    
+    if (IDTextBox.Text != string.Empty) id = IDTextBox.Text;
+
     var ip = IPAddress.Parse(IpTextBox.Text);
     _callback(ip, port, id);
     Close();
@@ -62,23 +59,23 @@ public partial class IpPrompt
   {
     Close();
   }
-  
+
   private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
   {
     var regex = NumericRegex();
     e.Handled = regex.IsMatch(e.Text);
   }
   // TODO: disable ability to paste non-numeric values
-  
+
   /// <summary>
   ///   IPv4 regex
   /// </summary>
   /// <returns></returns>
   [GeneratedRegex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")]
   private static partial Regex Ipv4Regex();
-  
+
   /// <summary>
-  /// Number-only regex
+  ///   Number-only regex
   /// </summary>
   /// <returns></returns>
   [GeneratedRegex("[^0-9]+")]

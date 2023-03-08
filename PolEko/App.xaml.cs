@@ -1,6 +1,4 @@
-﻿using System.Windows;
-
-namespace PolEko;
+﻿namespace PolEko;
 
 /// <summary>
 ///   Interaction logic for App.xaml
