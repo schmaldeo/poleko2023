@@ -12,6 +12,7 @@ namespace PolEko;
 public partial class MainWindow
 {
   private Device? _currentDevice;
+  private DeviceInfoDisplay? _deviceInfo;
 
   public MainWindow()
   {
@@ -23,11 +24,14 @@ public partial class MainWindow
 
   private void HandleDeviceChange(object sender, SelectionChangedEventArgs e)
   {
-    if (sender is not ComboBox) return;
-    var devicesBox = (ComboBox)sender;
+    if (_deviceInfo != null) Grid.Children.Remove(_deviceInfo);
+    
+    if (sender is not ComboBox { SelectedValue: Device value }) return;
+    _currentDevice = value;
 
-    if (devicesBox.SelectedValue is not Device) return;
-    _currentDevice = (Device)devicesBox.SelectedValue;
+    _deviceInfo = new(_currentDevice);
+    Grid.SetRow(_deviceInfo, 1);
+    Grid.Children.Add(_deviceInfo);
   }
 
   // On main windows closing, dont close instantly, rather send potential leftover buffer to database
