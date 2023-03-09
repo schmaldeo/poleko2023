@@ -34,9 +34,6 @@ public partial class MainWindow
     Grid.Children.Add(_deviceInfo);
   }
 
-  // On main windows closing, dont close instantly, rather send potential leftover buffer to database
-  // Database calls should be happening every whatever items in the buffer (Queue<> ?)
-
   private void AddDevice_Click(object sender, RoutedEventArgs e)
   {
     IpPrompt prompt = new(AddNewDevice);
