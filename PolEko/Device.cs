@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace PolEko;
 
@@ -84,21 +85,30 @@ public class WeatherDevice : Device
   // Methods
   public async Task<WeatherMeasurement> GetMeasurement(HttpClient client)
   {
-    var res = await client.GetAsync(DeviceUri);
-    if (res.StatusCode != HttpStatusCode.OK)
-      // TODO: might not wanna throw an exception here
-      throw new Exception("placeholder");
-    var data = await res.Content.ReadFromJsonAsync<WeatherMeasurement>();
-
-
-    if (data != null) return data;
-    throw new Exception("placeholder");
+    try
+    {
+      var data = await client.GetFromJsonAsync<WeatherMeasurement>(DeviceUri);
+      if (data != null) return data;
+      throw new HttpRequestException("Data returned from request was null");
+    }
+    catch (HttpRequestException e)
+    {
+      // TODO: send a cancellation token here
+      // messagebox is a placeholder
+      MessageBox.Show(e.Message);
+      return new WeatherMeasurement(0, 0);
+    }
+    catch (Exception e)
+    {
+      MessageBox.Show(e.Message);
+      return new WeatherMeasurement(0, 0);
+    }
   }
 
   public class WeatherMeasurement : Measurement
   {
     // Constructor
-    private WeatherMeasurement(float temperature, int humidity)
+    public WeatherMeasurement(float temperature, int humidity)
     {
       Temperature = temperature;
       Humidity = humidity;
