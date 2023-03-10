@@ -6,17 +6,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Poleko">
-  <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Name="Grid">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="Auto" />
-      <ColumnDefinition Width="Auto" />
-      <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="*" />
-    </Grid.RowDefinitions>
-
+  <!-- <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Name="Grid"> -->
+  <!--   <Grid.ColumnDefinitions> -->
+  <!--     <ColumnDefinition Width="Auto" /> -->
+  <!--     <ColumnDefinition Width="Auto" /> -->
+  <!--     <ColumnDefinition Width="*" /> -->
+  <!--   </Grid.ColumnDefinitions> -->
+  <!--   <Grid.RowDefinitions> -->
+  <!--     <RowDefinition Height="Auto" /> -->
+  <!--     <RowDefinition Height="*" /> -->
+  <!--   </Grid.RowDefinitions> -->
+  <!-- -->
+  <!--   <Button Background="Bisque" Click="AddDevice_Click" Margin="15, 15"> -->
+  <!--     Dodaj urządzenie -->
+  <!--   </Button> -->
+  <!--   <ComboBox Name="DevicesBox" Grid.Row="0" Grid.Column="1" Width="150" Height="20" /> -->
+  <!--   <Button Grid.Row="0" Grid.Column="2" Height="20" Click="FetchMeasurements_Click"> -->
+  <!--     Start fetching -->
+  <!--   </Button> -->
+  <!--   ~1~ question for background monitoring perhaps with a hint about performance @1@ -->
+  <!-- </Grid> -->
+  <DockPanel Name="Dock">
     <Button Background="Bisque" Click="AddDevice_Click" Margin="15, 15">
       Dodaj urządzenie
     </Button>
@@ -24,6 +34,6 @@
     <Button Grid.Row="0" Grid.Column="2" Height="20" Click="FetchMeasurements_Click">
       Start fetching
     </Button>
-    <!-- question for background monitoring perhaps with a hint about performance -->
-  </Grid>
+    
+  </DockPanel>
 </Window>
