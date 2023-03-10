@@ -60,8 +60,8 @@ public abstract class Device
     }
   }
   
-  protected abstract string Type { get; }
-  protected abstract string Description { get; }
+  public abstract string Type { get; }
+  public abstract string Description { get; }
   protected Uri DeviceUri { get; }
 
   /// <summary>
@@ -114,9 +114,9 @@ public class WeatherDevice : Device
   }
 
   // Properties
-  protected override string Type => "Weather Device";
+  public override string Type => "Weather Device";
 
-  protected override string Description => "Device used to measure temperature and humidity";
+  public override string Description => "Device used to measure temperature and humidity";
 
   // Methods
   public async Task<WeatherMeasurement> GetMeasurement(HttpClient client)
