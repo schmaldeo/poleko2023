@@ -28,6 +28,7 @@ public partial class MainWindow
 
   private void HandleDeviceChange(object sender, RoutedEventArgs e)
   {
+    _deviceInfo?.Dispose();
     if (_deviceInfo != null) Grid.Children.Remove(_deviceInfo);
     
     if (sender is not Button value) throw new ArgumentException("You can only use this method to handle Button Click event");
