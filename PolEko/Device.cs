@@ -103,6 +103,10 @@ public abstract class Device
 
 public abstract class Measurement
 {
+  /// <summary>
+  /// Indicates that the measurement is invalid
+  /// </summary>
+  public bool Error { get; protected init; }
   [JsonIgnore]
   public DateTime TimeStamp { get; protected init; }
 
@@ -140,12 +144,12 @@ public class WeatherDevice : Device
       // messagebox is a placeholder
       // TODO: in the fetch interval loop do a few retries before aborting
       MessageBox.Show(e.Message);
-      return new WeatherMeasurement(0, 0);
+      return new WeatherMeasurement(0, 0, true);
     }
     catch (Exception e)
     {
       MessageBox.Show(e.Message);
-      return new WeatherMeasurement(0, 0);
+      return new WeatherMeasurement(0, 0, true);
     }
   }
 
@@ -153,11 +157,12 @@ public class WeatherDevice : Device
   public class WeatherMeasurement : Measurement
   {
     // Constructor
-    public WeatherMeasurement(float temperature, int humidity)
+    public WeatherMeasurement(float temperature, int humidity, bool error = false)
     {
       Temperature = temperature;
       Humidity = humidity;
       TimeStamp = DateTime.Now;
+      Error = error;
     }
 
     // Properties
@@ -172,4 +177,3 @@ public class WeatherDevice : Device
     }
   }
 }
-
