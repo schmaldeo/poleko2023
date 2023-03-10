@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace PolEko;
 
@@ -18,6 +18,7 @@ public abstract class Device : IDevice
   private IPAddress _ipAddress;
   private ushort _port;
   private string? _id;
+  private byte _bufferSize;
   
   protected Device(IPAddress ipAddress, ushort port, string? id = null, int refreshRate = 5)
   {
@@ -28,8 +29,12 @@ public abstract class Device : IDevice
 
     DeviceUri = new Uri($"http://{ipAddress}:{port}/");
   }
+  
+  public Measurement? LastValidMeasurement { get; protected set; }
+  public Measurement? LastMeasurement { get; protected set; }
+  public Queue<Measurement> MeasurementBuffer { get; protected set; } = new();
 
-  public DateTime LastMeasurement { get; protected init; } = DateTime.Now;
+  public DateTime TimeOfLastMeasurement { get; protected init; } = DateTime.Now;
   public int RefreshRate { get; set; }
 
   public IPAddress IpAddress
@@ -135,21 +140,17 @@ public class WeatherDevice : Device
     try
     {
       var data = await client.GetFromJsonAsync<WeatherMeasurement>(DeviceUri);
-      if (data != null) return data;
-      throw new HttpRequestException("Data returned from request was null");
+      if (data is null) throw new HttpRequestException("Data returned from request was null");
+      MeasurementBuffer.Enqueue(data);
+      LastValidMeasurement = data;
+      LastMeasurement = data;
+      return data;
     }
-    catch (HttpRequestException e)
+    catch (Exception)
     {
-      // TODO: send a cancellation token here
-      // messagebox is a placeholder
-      // TODO: in the fetch interval loop do a few retries before aborting
-      MessageBox.Show(e.Message);
-      return new WeatherMeasurement(0, 0, true);
-    }
-    catch (Exception e)
-    {
-      MessageBox.Show(e.Message);
-      return new WeatherMeasurement(0, 0, true);
+      var errorMeasurement = new WeatherMeasurement(0, 0, true);
+      LastMeasurement = errorMeasurement;
+      return errorMeasurement;
     }
   }
 
@@ -180,7 +181,7 @@ public class WeatherDevice : Device
 
 internal interface IDevice
 {
-  DateTime LastMeasurement { get; }
+  DateTime TimeOfLastMeasurement { get; }
   int RefreshRate { get; }
   IPAddress IpAddress { get; }
   ushort Port { get; }

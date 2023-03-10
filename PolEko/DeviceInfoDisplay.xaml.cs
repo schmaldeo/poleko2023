@@ -11,6 +11,7 @@ public partial class DeviceInfoDisplay : IDisposable
   private readonly HttpClient _httpclient;
   private readonly Device _device;
   private Timer? _timer;
+  private byte _retryCounter;
   
   public DeviceInfoDisplay(Device device, HttpClient httpclient)
   {
@@ -32,6 +33,31 @@ public partial class DeviceInfoDisplay : IDisposable
     var dev = (WeatherDevice)_device;
     var _client = (HttpClient)client!;
     var measurement = (WeatherDevice.WeatherMeasurement)await dev.GetMeasurement(_client);
+    if (measurement.Error)
+    {
+      if (dev.LastMeasurement is null)
+      {
+        _retryCounter = 1;
+        return;
+      }
+      
+      // If there were any errors before, but not enough to dispose the timer, reset the counter
+      if (dev.LastMeasurement is not null && !dev.LastMeasurement.Error) _retryCounter = 0;
+      
+      if (_retryCounter < 5)
+      {
+        _retryCounter++;
+      }
+      else
+      {
+        await _timer!.DisposeAsync();
+        _retryCounter = 0;
+      }
+      
+      // TODO: show this on the status bar instead
+      MessageBox.Show($"Request timed out {_retryCounter} time(s)");
+    }
+
     await Dispatcher.BeginInvoke(() =>
     {
       TemperatureBlock.Text = measurement.Temperature.ToString(CultureInfo.InvariantCulture);
