@@ -8,4 +8,8 @@
     <Authors>Michał Skrzyszowski</Authors>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Resource Include="images/plus_sign.png" />
+  </ItemGroup>
+
 </Project>

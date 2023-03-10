@@ -8,12 +8,15 @@
              d:DesignHeight="300" d:DesignWidth="300">
   <StackPanel Name="Stack">
     <DockPanel>
-      <TextBlock>
+      <TextBlock FontSize="24">
         Urządzenia
       </TextBlock>
-      <Button Click="AddNewDevice_Click" Width="20" HorizontalAlignment="Right">
-        +
-      </Button>
+      <Image
+        Source="/images/plus_sign.png"
+        Height="24"
+        HorizontalAlignment="Right" 
+        Cursor="Hand"
+        MouseLeftButtonDown="AddNewDevice_Click"/>
     </DockPanel>
   </StackPanel>
 </UserControl>
