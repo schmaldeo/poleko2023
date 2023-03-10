@@ -19,8 +19,10 @@ public partial class MainWindow
   public MainWindow()
   {
     InitializeComponent();
-    SideMenu sideMenu = new(Devices, AddNewDevice, HandleDeviceChange);
-    sideMenu.Margin = new Thickness(5);
+    SideMenu sideMenu = new(Devices, AddNewDevice, HandleDeviceChange)
+    {
+      Margin = new Thickness(5)
+    };
     Grid.Children.Add(sideMenu);
   }
 
