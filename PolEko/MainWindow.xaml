@@ -26,6 +26,15 @@
   <!--   </Button> -->
   <!--   ~1~ question for background monitoring perhaps with a hint about performance @1@ -->
   <!-- </Grid> -->
-  <DockPanel Name="Dock">
-  </DockPanel>
+  <Grid Name="Grid">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="1*" />
+      <ColumnDefinition Width="5*" />
+    </Grid.ColumnDefinitions>
+    
+    <GridSplitter Width="3" />
+  </Grid>
 </Window>

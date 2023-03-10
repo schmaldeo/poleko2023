@@ -18,21 +18,23 @@ public partial class MainWindow
   {
     InitializeComponent();
     SideMenu sideMenu = new(Devices, AddNewDevice, HandleDeviceChange);
-    Dock.Children.Add(sideMenu);
+    sideMenu.Margin = new Thickness(5);
+    Grid.Children.Add(sideMenu);
   }
 
   private ObservableCollection<Device> Devices { get; } = new();
 
   private void HandleDeviceChange(object sender, RoutedEventArgs e)
   {
-    if (_deviceInfo != null) Dock.Children.Remove(_deviceInfo);
+    if (_deviceInfo != null) Grid.Children.Remove(_deviceInfo);
     
     if (sender is not Button value) throw new ArgumentException("You can only use this method to handle Button Click event");
     if (value.Content is not Device curr) throw new ArgumentException("Button's content can only be of type Device");
     
     _currentDevice = curr;
     _deviceInfo = new(_currentDevice);
-    Dock.Children.Add(_deviceInfo);
+    Grid.Children.Add(_deviceInfo);
+    Grid.SetColumn(_deviceInfo, 1);
   }
 
   private void AddNewDevice(IPAddress ipAddress, ushort port, string? id)
