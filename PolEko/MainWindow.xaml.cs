@@ -30,13 +30,17 @@ public partial class MainWindow
 
   private void HandleDeviceChange(object sender, RoutedEventArgs e)
   {
-    _deviceInfo?.Dispose();
-    if (_deviceInfo != null) Grid.Children.Remove(_deviceInfo);
-    
+    // Check for potential invalid args
     if (sender is not Button value) throw new ArgumentException("You can only use this method to handle Button Click event");
-    if (value.Content is not Device curr) throw new ArgumentException("Button's content can only be of type Device");
+    if (value.Content is not Device incomingDevice) throw new ArgumentException("Button's content can only be of type Device");
+
+    // Disallow reopening a device that's currently open
+    if (_currentDevice is not null && _currentDevice.Equals(incomingDevice)) return;
     
-    _currentDevice = curr;
+    _deviceInfo?.Dispose();
+    if (_deviceInfo is not null) Grid.Children.Remove(_deviceInfo);
+    
+    _currentDevice = incomingDevice;
     var httpClient = _httpClient ??= new HttpClient();
     _deviceInfo = new(_currentDevice, httpClient);
     Grid.Children.Add(_deviceInfo);
