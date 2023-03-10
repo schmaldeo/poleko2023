@@ -27,13 +27,5 @@
   <!--   ~1~ question for background monitoring perhaps with a hint about performance @1@ -->
   <!-- </Grid> -->
   <DockPanel Name="Dock">
-    <Button Background="Bisque" Click="AddDevice_Click" Margin="15, 15">
-      Dodaj urządzenie
-    </Button>
-    <ComboBox Name="DevicesBox" Grid.Row="0" Grid.Column="1" Width="150" Height="20" />
-    <Button Grid.Row="0" Grid.Column="2" Height="20" Click="FetchMeasurements_Click">
-      Start fetching
-    </Button>
-    
   </DockPanel>
 </Window>

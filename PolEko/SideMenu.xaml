@@ -11,7 +11,7 @@
       <TextBlock>
         Urządzenia
       </TextBlock>
-      <Button>
+      <Button Click="AddNewDevice_Click">
         +
       </Button>
     </WrapPanel>

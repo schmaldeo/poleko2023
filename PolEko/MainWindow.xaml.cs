@@ -17,8 +17,7 @@ public partial class MainWindow
   public MainWindow()
   {
     InitializeComponent();
-    DevicesBox.SelectionChanged += HandleDeviceChange;
-    SideMenu sideMenu = new(Devices);
+    SideMenu sideMenu = new(Devices, AddNewDevice);
     Dock.Children.Add(sideMenu);
   }
 
@@ -51,8 +50,6 @@ public partial class MainWindow
     }
 
     Devices.Add(weatherDevice);
-    DevicesBox.Items.Add(weatherDevice);
-    
   }
 
   private void FetchMeasurements_Click(object sender, RoutedEventArgs e)
