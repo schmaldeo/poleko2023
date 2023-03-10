@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace PolEko;
 
-public abstract class Device
+public abstract class Device<T> where T : Measurement
 {
   /// <summary>
   /// Lazily initiated cache of the result of ToString() method
@@ -66,6 +66,8 @@ public abstract class Device
   public abstract string Description { get; }
   protected Uri DeviceUri { get; }
 
+  public abstract Task<T> GetMeasurement(HttpClient client);
+
   /// <summary>
   ///   Custom <c>ToString()</c> implementation
   /// </summary>
@@ -75,12 +77,12 @@ public abstract class Device
     return _toString ??= $"{Id ?? Type}@{IpAddress}:{Port}";
   }
 
-  public static bool operator ==(Device a, Device b)
+  public static bool operator ==(Device<T> a, Device<T> b)
   {
     return a.IpAddress.Equals(b.IpAddress) && a.Port == b.Port;
   }
 
-  public static bool operator !=(Device a, Device b)
+  public static bool operator !=(Device<T> a, Device<T> b)
   {
     return !(a.IpAddress.Equals(b.IpAddress) && a.Port == b.Port);
   }
@@ -89,7 +91,7 @@ public abstract class Device
   {
     if (obj == null || GetType() != obj.GetType()) return false;
 
-    var device = (Device)obj;
+    var device = (Device<T>)obj;
     return IpAddress.Equals(device.IpAddress) && Port == device.Port;
   }
 
@@ -108,7 +110,7 @@ public abstract class Measurement
 /// <summary>
 ///   Device that logs temperature and humidity
 /// </summary>
-public class WeatherDevice : Device
+public class WeatherDevice : Device<WeatherDevice.WeatherMeasurement>
 {
   // Constructors
   public WeatherDevice(IPAddress ipAddress, ushort port, string? id = null, int refreshRate = 5)
@@ -122,7 +124,7 @@ public class WeatherDevice : Device
   public override string Description => "Device used to measure temperature and humidity";
 
   // Methods
-  public async Task<WeatherMeasurement> GetMeasurement(HttpClient client)
+  public override async Task<WeatherMeasurement> GetMeasurement(HttpClient client)
   {
     try
     {
@@ -168,3 +170,4 @@ public class WeatherDevice : Device
     }
   }
 }
+
