@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,18 +20,17 @@ public partial class MainWindow
     DevicesBox.SelectionChanged += HandleDeviceChange;
   }
 
-  private List<Device> Devices { get; } = new();
+  private ObservableCollection<Device> Devices { get; } = new();
 
   private void HandleDeviceChange(object sender, SelectionChangedEventArgs e)
   {
-    if (_deviceInfo != null) Grid.Children.Remove(_deviceInfo);
+    if (_deviceInfo != null) Dock.Children.Remove(_deviceInfo);
     
     if (sender is not ComboBox { SelectedValue: Device value }) return;
     _currentDevice = value;
 
     _deviceInfo = new(_currentDevice);
-    Grid.SetRow(_deviceInfo, 1);
-    Grid.Children.Add(_deviceInfo);
+    Dock.Children.Add(_deviceInfo);
   }
 
   private void AddDevice_Click(object sender, RoutedEventArgs e)
