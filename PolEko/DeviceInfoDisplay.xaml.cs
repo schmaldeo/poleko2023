@@ -1,13 +1,11 @@
 ﻿using System.Net.Http;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace PolEko;
 
 public partial class DeviceInfoDisplay
 {
-  private Device _device;
+  private readonly Device _device;
   public DeviceInfoDisplay(Device device)
   {
     _device = device;

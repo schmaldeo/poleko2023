@@ -71,7 +71,6 @@ public partial class IpPrompt
     var regex = NumericRegex();
     e.Handled = regex.IsMatch(e.Text);
   }
-  // TODO: disable ability to paste non-numeric values
 
   /// <summary>
   ///   IPv4 regex

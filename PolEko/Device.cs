@@ -105,6 +105,8 @@ public abstract class Measurement
 {
   [JsonIgnore]
   public DateTime TimeStamp { get; protected init; }
+
+  public abstract override string ToString();
 }
 
 /// <summary>
