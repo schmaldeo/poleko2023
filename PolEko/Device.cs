@@ -13,26 +13,56 @@ public abstract class Device
   /// Lazily initiated cache of the result of ToString() method
   /// </summary>
   private string? _toString;
+  private IPAddress _ipAddress;
+  private ushort _port;
+  private string? _id;
   
-  protected Device(IPAddress ipAddress, int port, string? id = null, int refreshRate = 5)
+  protected Device(IPAddress ipAddress, ushort port, string? id = null, int refreshRate = 5)
   {
-    IpAddress = ipAddress;
-    Port = port;
-    Id = id;
+    _ipAddress = ipAddress;
+    _port = port;
+    _id = id;
     RefreshRate = refreshRate;
 
     DeviceUri = new Uri($"http://{ipAddress}:{port}/");
   }
 
-  // perhaps try that lazy implementation of ToString() as this object isnt really ever disposed
   public DateTime LastMeasurement { get; protected init; } = DateTime.Now;
   public int RefreshRate { get; set; }
-  protected IPAddress IpAddress { get; }
+
+  public IPAddress IpAddress
+  {
+    get => _ipAddress;
+    set
+    {
+      _toString = null;
+      _ipAddress = value;
+    }
+  }
+
+  public ushort Port
+  {
+    get => _port;
+    set
+    {
+      _toString = null;
+      _port = value;
+    }
+  }
+
+  public string? Id
+  {
+    get => _id;
+    set
+    {
+      _toString = null;
+      _id = value;
+    }
+  }
+  
   protected abstract string Type { get; }
   protected abstract string Description { get; }
   protected Uri DeviceUri { get; }
-  private string? Id { get; }
-  private int Port { get; }
 
   /// <summary>
   ///   Custom <c>ToString()</c> implementation
@@ -78,7 +108,7 @@ public abstract class Measurement
 public class WeatherDevice : Device
 {
   // Constructors
-  public WeatherDevice(IPAddress ipAddress, int port, string? id = null, int refreshRate = 5)
+  public WeatherDevice(IPAddress ipAddress, ushort port, string? id = null, int refreshRate = 5)
     : base(ipAddress, port, id, refreshRate)
   {
   }

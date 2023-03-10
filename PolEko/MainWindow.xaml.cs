@@ -40,7 +40,7 @@ public partial class MainWindow
     prompt.Show();
   }
 
-  private void AddNewDevice(IPAddress ipAddress, int port, string? id)
+  private void AddNewDevice(IPAddress ipAddress, ushort port, string? id)
   {
     WeatherDevice weatherDevice = new(ipAddress, port, id);
     if (Devices.Contains(weatherDevice))

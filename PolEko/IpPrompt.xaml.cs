@@ -12,9 +12,9 @@ public partial class IpPrompt
   /// <summary>
   ///   Callback used to return the IP address to the caller
   /// </summary>
-  private readonly Action<IPAddress, int, string?> _callback;
+  private readonly Action<IPAddress, ushort, string?> _callback;
 
-  public IpPrompt(Action<IPAddress, int, string?> callback)
+  public IpPrompt(Action<IPAddress, ushort, string?> callback)
   {
     InitializeComponent();
     IpTextBox.Focus();
@@ -51,7 +51,7 @@ public partial class IpPrompt
     if (IdTextBox.Text != string.Empty) id = IdTextBox.Text;
 
     var ip = IPAddress.Parse(IpTextBox.Text);
-    _callback(ip, port, id);
+    _callback(ip, (ushort)port, id);
     Close();
   }
 
