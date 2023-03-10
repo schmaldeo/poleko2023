@@ -9,6 +9,11 @@ namespace PolEko;
 
 public abstract class Device
 {
+  /// <summary>
+  /// Lazily initiated cache of the result of ToString() method
+  /// </summary>
+  private string? _toString;
+  
   protected Device(IPAddress ipAddress, int port, string? id = null, int refreshRate = 5)
   {
     IpAddress = ipAddress;
@@ -19,6 +24,7 @@ public abstract class Device
     DeviceUri = new Uri($"http://{ipAddress}:{port}/");
   }
 
+  // perhaps try that lazy implementation of ToString() as this object isnt really ever disposed
   public DateTime LastMeasurement { get; protected init; } = DateTime.Now;
   public int RefreshRate { get; set; }
   protected IPAddress IpAddress { get; }
@@ -34,7 +40,7 @@ public abstract class Device
   /// <returns>String with device's ID/type (if no ID), IP address and port</returns>
   public override string ToString()
   {
-    return $"{Id ?? Type}@{IpAddress}:{Port}";
+    return _toString ??= $"{Id ?? Type}@{IpAddress}:{Port}";
   }
 
   public static bool operator ==(Device a, Device b)
