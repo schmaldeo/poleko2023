@@ -40,9 +40,19 @@
     </Grid.RowDefinitions>
 
     <Label>IP urządzenia:</Label>
-    <TextBox Name="IpTextBox" Grid.Row="0" Grid.Column="1" />
+    <TextBox Name="IpTextBox" Grid.Row="0" Grid.Column="1">
+      <TextBox.CommandBindings>
+      <CommandBinding Command="ApplicationCommands.Paste"
+                      CanExecute="CommandBinding_CanExecutePaste" />
+      </TextBox.CommandBindings>
+    </TextBox>
     <Label Grid.Column="0" Grid.Row="1">Port:</Label>
-    <TextBox Name="PortTextBox" Grid.Row="1" Grid.Column="1" PreviewTextInput="NumberValidationTextBox" />
+    <TextBox Name="PortTextBox" Grid.Row="1" Grid.Column="1" PreviewTextInput="NumberValidationTextBox">
+      <TextBox.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Paste"
+                        CanExecute="CommandBinding_CanExecutePaste" />
+      </TextBox.CommandBindings>
+    </TextBox>
     <Label Grid.Column="0" Grid.Row="2">ID (opcjonalne):</Label>
     <TextBox Name="IdTextBox" Grid.Row="2" Grid.Column="1" />
 

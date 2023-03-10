@@ -60,6 +60,12 @@ public partial class IpPrompt
     Close();
   }
 
+  private void CommandBinding_CanExecutePaste(object sender, CanExecuteRoutedEventArgs e)
+  {
+    e.CanExecute = false;
+    e.Handled = true;
+  }
+  
   private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
   {
     var regex = NumericRegex();
