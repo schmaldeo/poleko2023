@@ -1,11 +1,12 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Net.Http;
 using System.Threading;
 using System.Windows;
 
 namespace PolEko;
 
-public partial class DeviceInfoDisplay
+public partial class DeviceInfoDisplay : IDisposable
 {
   private readonly HttpClient _httpclient;
   private readonly Device _device;
@@ -15,7 +16,9 @@ public partial class DeviceInfoDisplay
   {
     _device = device;
     _httpclient = httpclient;
+    
     InitializeComponent();
+    
     NameBlock.Text = device.ToString();
     IpBlock.Text = device.IpAddress.ToString();
     TypeBlock.Text = device.Type;
@@ -25,7 +28,7 @@ public partial class DeviceInfoDisplay
 
   private async void FetchTimerDelegate(object? client)
   {
-    // TODO: throw an exception if arg is not of HttpClient type
+    // TODO: throw an exception if arg is not of HttpClient type and clean up this cast mess
     var dev = (WeatherDevice)_device;
     var _client = (HttpClient)client!;
     var measurement = (WeatherDevice.WeatherMeasurement)await dev.GetMeasurement(_client);
@@ -38,13 +41,11 @@ public partial class DeviceInfoDisplay
 
   private void FetchData_OnClick(object sender, RoutedEventArgs e)
   {
-    // TODO: need to handle timer disposal when you switch to a different device
-    // TODO: need to change this cast and in FetchTimerDelegate()
     _timer = new Timer(FetchTimerDelegate, _httpclient, 0, _device.RefreshRate * 1000);
   }
 
-  public void Dispose()
+  public async void Dispose()
   {
-    _timer?.Dispose();
+    if (_timer != null) await _timer.DisposeAsync();
   }
 }
