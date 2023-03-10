@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -99,6 +101,7 @@ public abstract class Device
 
 public abstract class Measurement
 {
+  [JsonIgnore]
   public DateTime TimeStamp { get; protected init; }
 }
 
@@ -131,6 +134,7 @@ public class WeatherDevice : Device
     {
       // TODO: send a cancellation token here
       // messagebox is a placeholder
+      // TODO: in the fetch interval loop do a few retries before aborting
       MessageBox.Show(e.Message);
       return new WeatherMeasurement(0, 0);
     }
@@ -141,6 +145,7 @@ public class WeatherDevice : Device
     }
   }
 
+  [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
   public class WeatherMeasurement : Measurement
   {
     // Constructor
@@ -152,7 +157,14 @@ public class WeatherDevice : Device
     }
 
     // Properties
-    private float Temperature { get; }
-    private int Humidity { get; }
+    [JsonPropertyName("temperature")]
+    public float Temperature { get; }
+    [JsonPropertyName("humidity")]
+    public int Humidity { get; }
+
+    public override string ToString()
+    {
+      return $"Temperature: {Temperature}, humidity: {Humidity}, time of request: {TimeStamp}";
+    }
   }
 }

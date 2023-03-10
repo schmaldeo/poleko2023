@@ -48,5 +48,6 @@
       </Label>
       <TextBlock Name="RefreshRateBlock" />
     </StackPanel>
+    <Button Grid.Row="2" Grid.Column="2" Click="FetchData_OnClick" />
   </Grid>
 </UserControl>
