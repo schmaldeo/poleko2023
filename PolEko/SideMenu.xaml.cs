@@ -11,15 +11,13 @@ namespace PolEko;
 public partial class SideMenu
 {
   private readonly Action<IPAddress, ushort, string?> _newDeviceAction;
-  private readonly RoutedEventHandler _changeDisplayedDeviceAction;
-  
+
   public SideMenu(ObservableCollection<Device> devices, Action<IPAddress, ushort, string?> addNewDevice, RoutedEventHandler changeDisplayedDevice)
   {
     _newDeviceAction = addNewDevice;
-    _changeDisplayedDeviceAction = changeDisplayedDevice;
 
     InitializeComponent();
-    devices.CollectionChanged += delegate(object? sender, NotifyCollectionChangedEventArgs args)
+    devices.CollectionChanged += delegate(object? _, NotifyCollectionChangedEventArgs args)
     {
       if (args.NewItems == null) return;
       foreach (var item in args.NewItems)
@@ -29,7 +27,7 @@ public partial class SideMenu
         {
           Content = dev
         };
-        btn.Click += _changeDisplayedDeviceAction; 
+        btn.Click += changeDisplayedDevice; 
         Stack.Children.Add(btn);
       }
     };
