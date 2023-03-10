@@ -49,5 +49,17 @@
       <TextBlock Name="RefreshRateBlock" />
     </StackPanel>
     <Button Grid.Row="2" Grid.Column="2" Click="FetchData_OnClick" />
+    <StackPanel Grid.Row="0" Grid.Column="2">
+      <Label>
+        Temperature
+      </Label>
+      <TextBlock Name="TemperatureBlock" />
+    </StackPanel>
+    <StackPanel Grid.Row="1" Grid.Column="2">
+      <Label>
+        Humidity
+      </Label>
+      <TextBlock Name="HumidityBlock" />
+    </StackPanel>
   </Grid>
 </UserControl>

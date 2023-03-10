@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Net;
+using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -13,6 +14,7 @@ public partial class MainWindow
 {
   private Device? _currentDevice;
   private DeviceInfoDisplay? _deviceInfo;
+  private HttpClient? _httpClient;
 
   public MainWindow()
   {
@@ -32,7 +34,8 @@ public partial class MainWindow
     if (value.Content is not Device curr) throw new ArgumentException("Button's content can only be of type Device");
     
     _currentDevice = curr;
-    _deviceInfo = new(_currentDevice);
+    var httpClient = _httpClient ??= new HttpClient();
+    _deviceInfo = new(_currentDevice, httpClient);
     Grid.Children.Add(_deviceInfo);
     Grid.SetColumn(_deviceInfo, 1);
   }
