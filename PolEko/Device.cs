@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace PolEko;
 
-public abstract class Device
+public abstract class Device : IDevice
 {
   /// <summary>
   /// Lazily initiated cache of the result of ToString() method
@@ -176,4 +176,17 @@ public class WeatherDevice : Device
       return $"Temperature: {Temperature}, humidity: {Humidity}, time of request: {TimeStamp}";
     }
   }
+}
+
+internal interface IDevice
+{
+  DateTime LastMeasurement { get; }
+  int RefreshRate { get; }
+  IPAddress IpAddress { get; }
+  ushort Port { get; }
+  string? Id { get; }
+  string Type { get; }
+  string Description { get; }
+  
+  Task<object> GetMeasurement(HttpClient client);
 }
