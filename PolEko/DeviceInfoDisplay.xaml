@@ -4,11 +4,49 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
+             DataContext="{Binding RelativeSource={RelativeSource Self}}"
              d:DesignHeight="300" d:DesignWidth="300">
   <Grid Name="Grid">
-    <Label>
-      Device's name
-    </Label>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="3*"/>
+      <RowDefinition Height="3*"/>
+      <RowDefinition Height="3*"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="3*" />
+      <ColumnDefinition Width="3*" />
+      <ColumnDefinition Width="3*" />
+    </Grid.ColumnDefinitions>
     
+    <StackPanel>
+      <Label>
+        Name
+      </Label>
+      <TextBlock Name="NameBlock" />
+    </StackPanel>
+    <StackPanel Grid.Row="1" Grid.Column="0">
+      <Label>
+        IP address
+      </Label>
+      <TextBlock Name="IpBlock" />
+    </StackPanel>
+    <StackPanel Grid.Row="0" Grid.Column="1">
+      <Label>
+        Device type
+      </Label>
+      <TextBlock Name="TypeBlock" />
+    </StackPanel>
+    <StackPanel Grid.Row="1" Grid.Column="1">
+      <Label>
+        Device description
+      </Label>
+      <TextBlock Name="DescriptionBlock" />
+    </StackPanel>
+    <StackPanel Grid.Row="2" Grid.Column="1">
+      <Label>
+        Refresh rate
+      </Label>
+      <TextBlock Name="RefreshRateBlock" />
+    </StackPanel>
   </Grid>
 </UserControl>

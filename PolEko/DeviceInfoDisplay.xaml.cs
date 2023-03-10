@@ -7,10 +7,10 @@ public partial class DeviceInfoDisplay
   public DeviceInfoDisplay(Device device)
   {
     InitializeComponent();
-    Label devInfo = new()
-    {
-      Content = device.ToString()
-    };
-    Grid.Children.Add(devInfo);
+    NameBlock.Text = device.ToString();
+    IpBlock.Text = device.IpAddress.ToString();
+    TypeBlock.Text = device.Type;
+    DescriptionBlock.Text = device.Description;
+    RefreshRateBlock.Text = device.RefreshRate.ToString();
   }
 }
