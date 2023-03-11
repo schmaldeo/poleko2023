@@ -11,10 +11,17 @@ public partial class DeviceInfoControl : IDisposable
   private readonly HttpClient _httpclient;
   private readonly Device _device;
   private Timer? _timer;
-  private bool _error;
   private byte _retryCounter;
   private bool _disposed;
-  
+  private Status _status;
+
+  private enum Status
+  {
+    Ready,
+    Fetching,
+    Error,
+  }
+
   public DeviceInfoControl(Device device, HttpClient httpclient)
   {
     _device = device;
@@ -22,6 +29,7 @@ public partial class DeviceInfoControl : IDisposable
     
     InitializeComponent();
     
+    // TODO: replace this with actual params
     NameBlock.Text = device.ToString();
     IpBlock.Text = device.IpAddress.ToString();
     TypeBlock.Text = device.Type;
@@ -29,6 +37,7 @@ public partial class DeviceInfoControl : IDisposable
     RefreshRateBlock.Text = _device.RefreshRate.ToString();
   }
 
+  // TODO: maybe this could be called different
   private async void FetchTimerDelegate(object? _)
   {
     // TODO: clean up this cast mess
@@ -39,13 +48,13 @@ public partial class DeviceInfoControl : IDisposable
     if (measurement.Error)
     {
       // Increase the timer interval to 5 seconds when there's an error
-      _error = true;
+      _status = Status.Error;
       _timer!.Change(5000, 5000);
       
       // If it's the first measurement, increment
       if (dev.LastMeasurement is null)
       {
-        _retryCounter = 1;
+        _retryCounter = 0;
         return;
       }
       
@@ -60,6 +69,7 @@ public partial class DeviceInfoControl : IDisposable
       {
         await _timer!.DisposeAsync();
         _retryCounter = 0;
+        _status = Status.Ready;
       }
 
       // TODO: show this on the status bar instead
@@ -68,8 +78,8 @@ public partial class DeviceInfoControl : IDisposable
     }
 
     // If connection was restored, put the previous timer params back
-    if (_error) _timer!.Change(_device.RefreshRate * 1000, _device.RefreshRate * 1000);
-    _error = false;
+    if (_status == Status.Error) _timer!.Change(_device.RefreshRate * 1000, _device.RefreshRate * 1000);
+    _status = Status.Fetching;
 
     await Dispatcher.BeginInvoke(() =>
     {
