@@ -18,14 +18,14 @@ public abstract class Device : IDevice
   private IPAddress _ipAddress;
   private ushort _port;
   private string? _id;
-  private byte _bufferSize;
+  public const int RefreshRate = 2;
+  protected BufferSize BufferSize = new(); 
   
-  protected Device(IPAddress ipAddress, ushort port, string? id = null, int refreshRate = 5)
+  protected Device(IPAddress ipAddress, ushort port, string? id = null)
   {
     _ipAddress = ipAddress;
     _port = port;
     _id = id;
-    RefreshRate = refreshRate;
 
     DeviceUri = new Uri($"http://{ipAddress}:{port}/");
   }
@@ -34,8 +34,7 @@ public abstract class Device : IDevice
   public Measurement? LastMeasurement { get; protected set; }
   public Queue<Measurement> MeasurementBuffer { get; protected set; } = new();
 
-  public DateTime TimeOfLastMeasurement { get; protected init; } = DateTime.Now;
-  public int RefreshRate { get; set; }
+  public DateTime TimeOfLastMeasurement { get; protected set; } = DateTime.Now;
 
   public IPAddress IpAddress
   {
@@ -124,8 +123,8 @@ public abstract class Measurement
 public class WeatherDevice : Device
 {
   // Constructors
-  public WeatherDevice(IPAddress ipAddress, ushort port, string? id = null, int refreshRate = 5)
-    : base(ipAddress, port, id, refreshRate)
+  public WeatherDevice(IPAddress ipAddress, ushort port, string? id = null)
+    : base(ipAddress, port, id)
   {
   }
 
@@ -140,8 +139,9 @@ public class WeatherDevice : Device
     try
     {
       var data = await client.GetFromJsonAsync<WeatherMeasurement>(DeviceUri);
-      if (data is null) throw new HttpRequestException("Data returned from request was null");
+      if (data is null) throw new HttpRequestException("No data was returned from query");
       MeasurementBuffer.Enqueue(data);
+      BufferSize++;
       LastValidMeasurement = data;
       LastMeasurement = data;
       return data;
@@ -149,6 +149,8 @@ public class WeatherDevice : Device
     catch (Exception)
     {
       var errorMeasurement = new WeatherMeasurement(0, 0, true);
+      MeasurementBuffer.Enqueue(errorMeasurement);
+      BufferSize++;
       LastMeasurement = errorMeasurement;
       return errorMeasurement;
     }
@@ -182,7 +184,6 @@ public class WeatherDevice : Device
 internal interface IDevice
 {
   DateTime TimeOfLastMeasurement { get; }
-  int RefreshRate { get; }
   IPAddress IpAddress { get; }
   ushort Port { get; }
   string? Id { get; }
@@ -190,4 +191,24 @@ internal interface IDevice
   string Description { get; }
   
   Task<object> GetMeasurement(HttpClient client);
+}
+
+// TODO: add handling of this
+public class BufferSize
+{
+  private const ushort Limit = 300;
+  private ushort _count;
+  public event EventHandler? MaxBufferSizeReached;
+  
+  public void Increment()
+  {
+    _count++;
+    if (_count < Limit) return;
+    MaxBufferSizeReached?.Invoke(this, EventArgs.Empty);
+  }
+  public static BufferSize operator ++(BufferSize a)
+  {
+    a.Increment();
+    return a;
+  }
 }

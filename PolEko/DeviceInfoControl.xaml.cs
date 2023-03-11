@@ -25,7 +25,7 @@ public partial class DeviceInfoControl : IDisposable
     IpBlock.Text = device.IpAddress.ToString();
     TypeBlock.Text = device.Type;
     DescriptionBlock.Text = device.Description;
-    RefreshRateBlock.Text = device.RefreshRate.ToString();
+    RefreshRateBlock.Text = Device.RefreshRate.ToString();
   }
 
   private async void FetchTimerDelegate(object? client)
@@ -69,7 +69,7 @@ public partial class DeviceInfoControl : IDisposable
 
   private void FetchData_OnClick(object sender, RoutedEventArgs e)
   {
-    _timer = new Timer(FetchTimerDelegate, _httpclient, 0, _device.RefreshRate * 1000);
+    _timer = new Timer(FetchTimerDelegate, _httpclient, 0, Device.RefreshRate * 1000);
   }
 
   public async void Dispose()
