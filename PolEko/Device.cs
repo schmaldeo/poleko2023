@@ -20,15 +20,12 @@ public abstract class Device : IDevice
   private ushort _port;
   private string? _id;
   public readonly int RefreshRate = 2;
-  protected BufferSize BufferSize = new(); 
   
   protected Device(IPAddress ipAddress, ushort port, string? id = null)
   {
     _ipAddress = ipAddress;
     _port = port;
     _id = id;
-    
-    BufferSize.BufferOverflow += HandleBufferOverflow;
 
     DeviceUri = new Uri($"http://{ipAddress}:{port}/");
   }
@@ -66,8 +63,6 @@ public abstract class Device : IDevice
   public abstract string Type { get; }
   public abstract string Description { get; }
   protected Uri DeviceUri { get; }
-
-  protected abstract void HandleBufferOverflow(object? sender, EventArgs e);
 
   /// <summary>
   ///   Custom <c>ToString()</c> implementation
@@ -123,6 +118,7 @@ public class WeatherDevice : Device, IMeasurable<WeatherDevice.WeatherMeasuremen
   public WeatherDevice(IPAddress ipAddress, ushort port, string? id = null)
     : base(ipAddress, port, id)
   {
+    BufferSize.BufferOverflow += HandleBufferOverflow;
   }
 
   // Properties
@@ -133,7 +129,7 @@ public class WeatherDevice : Device, IMeasurable<WeatherDevice.WeatherMeasuremen
   public WeatherMeasurement? LastValidMeasurement { get; private set; }
   public WeatherMeasurement? LastMeasurement { get; private set; }
   public Queue<WeatherMeasurement> MeasurementBuffer { get; } = new();
-  
+  public BufferSize BufferSize { get; private set; } = new(); 
   public DateTime TimeOfLastMeasurement { get; private set; }
 
   // Methods
@@ -147,6 +143,7 @@ public class WeatherDevice : Device, IMeasurable<WeatherDevice.WeatherMeasuremen
       BufferSize++;
       LastValidMeasurement = data;
       LastMeasurement = data;
+      TimeOfLastMeasurement = DateTime.Now;
       return data;
     }
     catch (Exception)
@@ -159,7 +156,7 @@ public class WeatherDevice : Device, IMeasurable<WeatherDevice.WeatherMeasuremen
     }
   }
 
-  protected override void HandleBufferOverflow(object? sender, EventArgs e)
+  public void HandleBufferOverflow(object? sender, EventArgs e)
   {
     MessageBox.Show("buffer overflown");
   }
@@ -202,7 +199,22 @@ internal interface IMeasurable<T>
 {
   T? LastValidMeasurement { get; }
   T? LastMeasurement { get; }
+  
+  /// <summary>
+  /// <c>Queue</c> consisting of
+  /// </summary>
   Queue<T> MeasurementBuffer { get; }
+  
+  /// <summary>
+  /// 
+  /// </summary>
+  BufferSize BufferSize { get; }
+  
+  void HandleBufferOverflow(object? sender, EventArgs e);
+  
+  /// <summary>
+  /// DateTime of last valid measurement
+  /// </summary>
   DateTime TimeOfLastMeasurement { get; }
   Task<T> GetMeasurement(HttpClient client);
 }
