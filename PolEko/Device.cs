@@ -19,7 +19,7 @@ public abstract class Device : IDevice
   private IPAddress _ipAddress;
   private ushort _port;
   private string? _id;
-  public const int RefreshRate = 2;
+  public readonly int RefreshRate = 2;
   protected BufferSize BufferSize = new(); 
   
   protected Device(IPAddress ipAddress, ushort port, string? id = null)
@@ -223,3 +223,5 @@ public class BufferSize
     return a;
   }
 }
+
+// TODO: create an IMeasurableDevice interface to avoid all the cast hell in DeviceInfoControl.xaml.cs 
