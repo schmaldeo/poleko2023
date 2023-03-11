@@ -13,20 +13,20 @@ namespace PolEko;
 public partial class MainWindow
 {
   private Device? _currentDevice;
-  private DeviceInfoDisplay? _deviceInfo;
+  private DeviceInfoControl? _deviceInfo;
   private HttpClient? _httpClient;
+  private readonly ObservableCollection<Device> _devices = new();
 
   public MainWindow()
   {
     InitializeComponent();
-    SideMenu sideMenu = new(Devices, AddNewDevice, HandleDeviceChange)
+    SideMenu sideMenu = new(_devices, AddNewDevice, HandleDeviceChange)
     {
       Margin = new Thickness(5)
     };
     Grid.Children.Add(sideMenu);
   }
 
-  private ObservableCollection<Device> Devices { get; } = new();
 
   private void HandleDeviceChange(object sender, RoutedEventArgs e)
   {
@@ -37,6 +37,7 @@ public partial class MainWindow
     // Disallow reopening a device that's currently open
     if (_currentDevice is not null && _currentDevice.Equals(incomingDevice)) return;
     
+    // If some device is currently displayed, dispose its timer and remove it from view
     _deviceInfo?.Dispose();
     if (_deviceInfo is not null) Grid.Children.Remove(_deviceInfo);
     
@@ -50,12 +51,12 @@ public partial class MainWindow
   private void AddNewDevice(IPAddress ipAddress, ushort port, string? id)
   {
     WeatherDevice weatherDevice = new(ipAddress, port, id);
-    if (Devices.Contains(weatherDevice))
+    if (_devices.Contains(weatherDevice))
     {
       MessageBox.Show("Urządzenie już istnieje");
       return;
     }
 
-    Devices.Add(weatherDevice);
+    _devices.Add(weatherDevice);
   }
 }

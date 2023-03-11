@@ -12,7 +12,7 @@ public partial class App
     MainWindow mainWindow = new();
     mainWindow.Closing += delegate
     {
-      // On main windows closing, dont close instantly, rather send potential leftover buffer to database
+      // TODO: On main windows closing, dont close instantly, rather send potential leftover buffer to database
       // Database calls should be happening every whatever items in the buffer (Queue<> ?)
       MessageBox.Show("Quittin");
     };

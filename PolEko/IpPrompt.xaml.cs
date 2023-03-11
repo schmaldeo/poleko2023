@@ -10,13 +10,14 @@ namespace PolEko;
 public partial class IpPrompt
 {
   /// <summary>
-  ///   Callback used to return the IP address to the caller
+  ///   Callback used to return the IP address, port and friendly name to the caller
   /// </summary>
   private readonly Action<IPAddress, ushort, string?> _callback;
 
   public IpPrompt(Action<IPAddress, ushort, string?> callback)
   {
     InitializeComponent();
+    // Focus on the topmost TextBox when the window is opened
     IpTextBox.Focus();
     _callback = callback;
   }
@@ -29,29 +30,34 @@ public partial class IpPrompt
   /// <param name="e"></param>
   private void OkButton_Click(object sender, RoutedEventArgs e)
   {
+    // Check if IP input is a valid IPv4
     if (!Ipv4Regex().IsMatch(IpTextBox.Text))
     {
       MessageBox.Show("Nieprawidłowy adres IP");
       return;
     }
 
+    // Check if port input can be parsed to an integer 
     if (!int.TryParse(PortTextBox.Text, out var port))
     {
-      MessageBox.Show("Port nie może zawierać liter");
+      MessageBox.Show("Port może się składać tylko z liczb z zakresu 1-65535");
       return;
     }
 
+    // Check if port input is from a valid range (unsigned 16 bit)
     if (!Enumerable.Range(1, 65535).Contains(port))
     {
       MessageBox.Show("Port musi być z zakresu 1-65535");
       return;
     }
 
+    // As friendly name (referred to as ID) is optional, set it to null and only set a value to it if the input isnt empty
     string? id = null;
     if (IdTextBox.Text != string.Empty) id = IdTextBox.Text;
 
     var ip = IPAddress.Parse(IpTextBox.Text);
     _callback(ip, (ushort)port, id);
+    
     Close();
   }
 
@@ -60,18 +66,28 @@ public partial class IpPrompt
     Close();
   }
 
+  /// <summary>
+  /// Command binding that disallows copying and pasting
+  /// </summary>
+  /// <param name="sender"></param>
+  /// <param name="e"></param>
   private void CommandBinding_CanExecutePaste(object sender, CanExecuteRoutedEventArgs e)
   {
     e.CanExecute = false;
     e.Handled = true;
   }
   
+  /// <summary>
+  /// Event handler disallowing entering anything but numbers into an input
+  /// </summary>
+  /// <param name="sender"></param>
+  /// <param name="e"></param>
   private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
   {
     var regex = NumericRegex();
     e.Handled = regex.IsMatch(e.Text);
   }
-
+  
   /// <summary>
   ///   IPv4 regex
   /// </summary>
