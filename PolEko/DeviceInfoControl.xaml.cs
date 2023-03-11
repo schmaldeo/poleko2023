@@ -31,10 +31,10 @@ public partial class DeviceInfoControl : IDisposable
 
   private async void FetchTimerDelegate(object? _)
   {
-    // TODO: throw an exception if arg is not of HttpClient type and clean up this cast mess
+    // TODO: clean up this cast mess
     // use pattern matching perhaps
     var dev = (WeatherDevice)_device;
-    var measurement = (WeatherDevice.WeatherMeasurement)await dev.GetMeasurement(_httpclient);
+    var measurement = await dev.GetMeasurement(_httpclient);
     
     if (measurement.Error)
     {

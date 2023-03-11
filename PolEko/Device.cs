@@ -32,12 +32,6 @@ public abstract class Device : IDevice
 
     DeviceUri = new Uri($"http://{ipAddress}:{port}/");
   }
-  
-  public Measurement? LastValidMeasurement { get; protected set; }
-  public Measurement? LastMeasurement { get; protected set; }
-  public Queue<Measurement> MeasurementBuffer { get; protected set; } = new();
-
-  public DateTime TimeOfLastMeasurement { get; protected set; } = DateTime.Now;
 
   public IPAddress IpAddress
   {
@@ -72,8 +66,6 @@ public abstract class Device : IDevice
   public abstract string Type { get; }
   public abstract string Description { get; }
   protected Uri DeviceUri { get; }
-
-  public abstract Task<object> GetMeasurement(HttpClient client);
 
   protected abstract void HandleBufferOverflow(object? sender, EventArgs e);
 
@@ -125,7 +117,7 @@ public abstract class Measurement
 /// <summary>
 ///   Device that logs temperature and humidity
 /// </summary>
-public class WeatherDevice : Device
+public class WeatherDevice : Device, IMeasurable<WeatherDevice.WeatherMeasurement>
 {
   // Constructors
   public WeatherDevice(IPAddress ipAddress, ushort port, string? id = null)
@@ -137,9 +129,15 @@ public class WeatherDevice : Device
   public override string Type => "Weather Device";
 
   public override string Description => "Device used to measure temperature and humidity";
+  
+  public WeatherMeasurement? LastValidMeasurement { get; private set; }
+  public WeatherMeasurement? LastMeasurement { get; private set; }
+  public Queue<WeatherMeasurement> MeasurementBuffer { get; } = new();
+  
+  public DateTime TimeOfLastMeasurement { get; private set; }
 
   // Methods
-  public override async Task<object> GetMeasurement(HttpClient client)
+  public async Task<WeatherMeasurement> GetMeasurement(HttpClient client)
   {
     try
     {
@@ -193,14 +191,20 @@ public class WeatherDevice : Device
 
 internal interface IDevice
 {
-  DateTime TimeOfLastMeasurement { get; }
   IPAddress IpAddress { get; }
   ushort Port { get; }
   string? Id { get; }
   string Type { get; }
   string Description { get; }
+}
 
-  Task<object> GetMeasurement(HttpClient client);
+internal interface IMeasurable<T>
+{
+  T? LastValidMeasurement { get; }
+  T? LastMeasurement { get; }
+  Queue<T> MeasurementBuffer { get; }
+  DateTime TimeOfLastMeasurement { get; }
+  Task<T> GetMeasurement(HttpClient client);
 }
 
 public class BufferSize
@@ -223,5 +227,3 @@ public class BufferSize
     return a;
   }
 }
-
-// TODO: create an IMeasurableDevice interface to avoid all the cast hell in DeviceInfoControl.xaml.cs 
