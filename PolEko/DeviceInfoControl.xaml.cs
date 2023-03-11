@@ -12,6 +12,7 @@ public partial class DeviceInfoControl : IDisposable
   private readonly Device _device;
   private Timer? _timer;
   private byte _retryCounter;
+  private bool _disposed;
   
   public DeviceInfoControl(Device device, HttpClient httpclient)
   {
@@ -73,6 +74,9 @@ public partial class DeviceInfoControl : IDisposable
 
   public async void Dispose()
   {
-    if (_timer != null) await _timer.DisposeAsync();
+    if (_timer == null || _disposed) return;
+    _disposed = true;
+    GC.SuppressFinalize(this);
+    await _timer.DisposeAsync();
   }
 }
