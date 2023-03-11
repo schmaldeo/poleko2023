@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace PolEko;
 
@@ -26,6 +27,8 @@ public abstract class Device : IDevice
     _ipAddress = ipAddress;
     _port = port;
     _id = id;
+    
+    BufferSize.BufferOverflow += HandleBufferOverflow;
 
     DeviceUri = new Uri($"http://{ipAddress}:{port}/");
   }
@@ -71,6 +74,8 @@ public abstract class Device : IDevice
   protected Uri DeviceUri { get; }
 
   public abstract Task<object> GetMeasurement(HttpClient client);
+
+  protected abstract void HandleBufferOverflow(object? sender, EventArgs e);
 
   /// <summary>
   ///   Custom <c>ToString()</c> implementation
@@ -156,6 +161,11 @@ public class WeatherDevice : Device
     }
   }
 
+  protected override void HandleBufferOverflow(object? sender, EventArgs e)
+  {
+    MessageBox.Show("buffer overflown");
+  }
+
   [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
   public class WeatherMeasurement : Measurement
   {
@@ -189,22 +199,23 @@ internal interface IDevice
   string? Id { get; }
   string Type { get; }
   string Description { get; }
-  
+
   Task<object> GetMeasurement(HttpClient client);
 }
 
-// TODO: add handling of this
 public class BufferSize
 {
-  private const ushort Limit = 300;
+  // TODO: perhaps add ability to change the limit
+  private const ushort Limit = 150;
   private ushort _count;
-  public event EventHandler? MaxBufferSizeReached;
+  public event EventHandler? BufferOverflow;
   
   public void Increment()
   {
     _count++;
     if (_count < Limit) return;
-    MaxBufferSizeReached?.Invoke(this, EventArgs.Empty);
+    BufferOverflow?.Invoke(this,EventArgs.Empty);
+    _count = 0;
   }
   public static BufferSize operator ++(BufferSize a)
   {
