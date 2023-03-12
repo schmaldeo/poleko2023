@@ -195,18 +195,18 @@ internal interface IDevice
   string Description { get; }
 }
 
-internal interface IMeasurable<T>
+internal interface IMeasurable<T> where T : Measurement
 {
   T? LastValidMeasurement { get; }
   T? LastMeasurement { get; }
   
   /// <summary>
-  /// <c>Queue</c> consisting of
+  /// <c>Queue</c> consisting of measurements
   /// </summary>
   Queue<T> MeasurementBuffer { get; }
   
   /// <summary>
-  /// 
+  /// Size of current buffer
   /// </summary>
   BufferSize BufferSize { get; }
   
