@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -16,11 +14,17 @@ public abstract class Device : IDevice
   /// Lazily initiated cache of the result of ToString() method
   /// </summary>
   private string? _toString;
+  
   private IPAddress _ipAddress;
   private ushort _port;
-  private string? _id;
-  public readonly int RefreshRate = 2;
   
+  /// <summary>
+  /// Optional friendly name for a device
+  /// </summary>
+  private string? _id;
+  
+  public readonly int RefreshRate = 2;
+
   protected Device(IPAddress ipAddress, ushort port, string? id = null)
   {
     _ipAddress = ipAddress;
@@ -97,22 +101,10 @@ public abstract class Device : IDevice
   }
 }
 
-public abstract class Measurement
-{
-  /// <summary>
-  /// Indicates that the measurement is invalid
-  /// </summary>
-  public bool Error { get; protected init; }
-  [JsonIgnore]
-  public DateTime TimeStamp { get; protected init; }
-
-  public abstract override string ToString();
-}
-
 /// <summary>
 ///   Device that logs temperature and humidity
 /// </summary>
-public class WeatherDevice : Device, IMeasurable<WeatherDevice.WeatherMeasurement>
+public class WeatherDevice : Device, IMeasurable<WeatherMeasurement>
 {
   // Constructors
   public WeatherDevice(IPAddress ipAddress, ushort port, string? id = null)
@@ -159,30 +151,8 @@ public class WeatherDevice : Device, IMeasurable<WeatherDevice.WeatherMeasuremen
   public void HandleBufferOverflow(object? sender, EventArgs e)
   {
     MessageBox.Show("buffer overflown");
-  }
-
-  [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-  public class WeatherMeasurement : Measurement
-  {
-    // Constructor
-    public WeatherMeasurement(float temperature, int humidity, bool error = false)
-    {
-      Temperature = temperature;
-      Humidity = humidity;
-      TimeStamp = DateTime.Now;
-      Error = error;
-    }
-
-    // Properties
-    [JsonPropertyName("temperature")]
-    public float Temperature { get; }
-    [JsonPropertyName("humidity")]
-    public int Humidity { get; }
-
-    public override string ToString()
-    {
-      return $"Temperature: {Temperature}, humidity: {Humidity}, time of request: {TimeStamp}";
-    }
+    // TODO: insert into db on overflow
+    throw new NotImplementedException();
   }
 }
 
