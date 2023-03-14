@@ -13,13 +13,17 @@ public partial class IpPrompt
   ///   Callback used to return the IP address, port and friendly name to the caller
   /// </summary>
   private readonly Action<IPAddress, ushort, string?> _callback;
-
-  public IpPrompt(Action<IPAddress, ushort, string?> callback)
+  
+  public IpPrompt(Action<IPAddress, ushort, string?> callback, IPAddress? ipAddress = null, ushort? port = null, string? id = null)
   {
     InitializeComponent();
     // Focus on the topmost TextBox when the window is opened
     IpTextBox.Focus();
     _callback = callback;
+
+    IpTextBox.Text = ipAddress?.ToString() ?? "";
+    PortTextBox.Text = port.ToString() ?? "";
+    IdTextBox.Text = id ?? "";
   }
 
   /// <summary>

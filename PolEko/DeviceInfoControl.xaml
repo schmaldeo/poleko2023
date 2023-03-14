@@ -61,5 +61,6 @@
       </Label>
       <TextBlock Name="HumidityBlock" />
     </StackPanel>
+    <Button Grid.Row="2" Grid.Column="0" Click="EditDevice_OnClick" Content="edit" />
   </Grid>
 </UserControl>

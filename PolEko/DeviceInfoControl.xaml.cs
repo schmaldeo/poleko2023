@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Windows;
@@ -15,6 +16,8 @@ public partial class DeviceInfoControl : IDisposable
   private bool _disposed;
   private Status _status;
 
+  private readonly Action<IPAddress, ushort, string?> _editCallback;
+
   private enum Status
   {
     Ready,
@@ -22,10 +25,11 @@ public partial class DeviceInfoControl : IDisposable
     Error,
   }
 
-  public DeviceInfoControl(Device device, HttpClient httpclient)
+  public DeviceInfoControl(ref Device device, HttpClient httpclient, Action<IPAddress, ushort, string?> editCallback)
   {
     _device = device;
     _httpclient = httpclient;
+    _editCallback = editCallback;
     
     InitializeComponent();
     
@@ -91,6 +95,12 @@ public partial class DeviceInfoControl : IDisposable
   private void FetchData_OnClick(object sender, RoutedEventArgs e)
   {
     _timer = new Timer(FetchTimerDelegate, "", 0, _device.RefreshRate * 1000);
+  }
+
+  private void EditDevice_OnClick(object sender, RoutedEventArgs e)
+  {
+    var prompt = new IpPrompt(_editCallback, _device.IpAddress, _device.Port, _device.Id);
+    prompt.Show();
   }
 
   public async void Dispose()

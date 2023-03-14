@@ -43,7 +43,7 @@ public partial class MainWindow
     
     _currentDevice = incomingDevice;
     var httpClient = _httpClient ??= new HttpClient();
-    _deviceInfo = new(_currentDevice, httpClient);
+    _deviceInfo = new(ref _currentDevice, httpClient, EditDevice);
     Grid.Children.Add(_deviceInfo);
     Grid.SetColumn(_deviceInfo, 1);
   }
@@ -58,5 +58,16 @@ public partial class MainWindow
     }
 
     _devices.Add(weatherDevice);
+  }
+  
+  private void EditDevice(IPAddress ipAddress, ushort port, string? id)
+  {
+    // TODO: figure out if checking for changes is quicker than just potentially overwriting with the same value
+    // causing _toString cache to reset
+    if (_currentDevice is null) return;
+    
+    _currentDevice.IpAddress = ipAddress;
+    _currentDevice.Port = port;
+    _currentDevice.Id = id;
   }
 }
