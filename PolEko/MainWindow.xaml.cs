@@ -43,7 +43,7 @@ public partial class MainWindow
     
     _currentDevice = incomingDevice;
     var httpClient = _httpClient ??= new HttpClient();
-    _deviceInfo = new(ref _currentDevice, httpClient, EditDevice);
+    _deviceInfo = new(_currentDevice, httpClient, EditDevice);
     Grid.Children.Add(_deviceInfo);
     Grid.SetColumn(_deviceInfo, 1);
   }

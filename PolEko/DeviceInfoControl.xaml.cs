@@ -10,6 +10,7 @@ namespace PolEko;
 public partial class DeviceInfoControl : IDisposable
 {
   private readonly HttpClient _httpclient;
+  // TODO: modify _device when EditDevice is called
   private readonly Device _device;
   private Timer? _timer;
   private byte _retryCounter;
@@ -24,8 +25,17 @@ public partial class DeviceInfoControl : IDisposable
     Fetching,
     Error,
   }
-
-  public DeviceInfoControl(ref Device device, HttpClient httpclient, Action<IPAddress, ushort, string?> editCallback)
+  
+  
+  // TODO: maybe allow data only if it implements IMeasurable, perhaps one constructor for Device type without http client
+  // and one for IMeasurable with httpclient
+  /// <summary>
+  /// Control displaying <c>Device</c>'s parameters and allowing to edit its parameters, as well as fetch measurements
+  /// </summary>
+  /// <param name="device"><c>Device</c> whose parameters will be displayed</param>
+  /// <param name="httpclient"><c>HttpClient</c> that will be used to fetch measurements, passed in by reference</param>
+  /// <param name="editCallback">Delegate to be called when a device is edited</param>
+  public DeviceInfoControl(Device device, in HttpClient httpclient, Action<IPAddress, ushort, string?> editCallback)
   {
     _device = device;
     _httpclient = httpclient;
@@ -97,6 +107,7 @@ public partial class DeviceInfoControl : IDisposable
     _timer = new Timer(FetchTimerDelegate, "", 0, _device.RefreshRate * 1000);
   }
 
+  // TODO: need to update UI after device is edited
   private void EditDevice_OnClick(object sender, RoutedEventArgs e)
   {
     var prompt = new IpPrompt(_editCallback, _device.IpAddress, _device.Port, _device.Id);
