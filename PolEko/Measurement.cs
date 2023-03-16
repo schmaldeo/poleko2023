@@ -11,9 +11,9 @@ public abstract class Measurement
   /// Indicates that the measurement is invalid
   /// </summary>
 
-  public bool Error { get; set; }
+  public bool Error { get; init; }
 
-  public DateTime TimeStamp { get; init; } = DateTime.Now;
+  public DateTime TimeStamp { get; } = DateTime.Now;
 
   public abstract override string ToString();
 }
@@ -29,7 +29,6 @@ public class WeatherMeasurement : Measurement
   {
     Temperature = temperature;
     Humidity = humidity;
-    TimeStamp = DateTime.Now;
   }
 
   // Properties
