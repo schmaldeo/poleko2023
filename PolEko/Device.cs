@@ -161,7 +161,7 @@ public class WeatherDevice : Device<WeatherMeasurement>
   public override string Description => "Device used to measure temperature and humidity";
 
   // Methods
-  protected override async void HandleBufferOverflow(object? sender, EventArgs e)
+  protected override void HandleBufferOverflow(object? sender, EventArgs e)
   {
     MessageBox.Show("buffer overflown");
     // TODO: insert into db on overflow
@@ -181,7 +181,7 @@ public class ExampleDevice : Device<ExampleMeasurement>
   public override string Description => "Device used for presentation";
 
   // Methods
-  protected override async void HandleBufferOverflow(object? sender, EventArgs e)
+  protected override void HandleBufferOverflow(object? sender, EventArgs e)
   {
     throw new NotImplementedException();
   }

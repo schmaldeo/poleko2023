@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
@@ -30,6 +31,32 @@ public static class Database
       command.CommandText = query;
       await command.ExecuteNonQueryAsync();
     }
+  }
+
+  // TODO: check if maybe using 2 separate connections is faster
+  public static async Task<List<Device>> ExtractDevices(SqliteConnection connection, Dictionary<string, Type> types)
+  {
+    var command = connection.CreateCommand();
+    command.CommandText =
+      @"
+        SELECT * FROM devices;
+      ";
+
+    await using var reader = command.ExecuteReader();
+    
+    List<Device> deviceList = new();
+    
+    while (await reader.ReadAsync())
+    {
+      // This looks like a bunch of unsafe code, but it shouldn't cause any problems if used as intended
+      var type = types[(string)reader["type"]];
+      var ipAddress = IPAddress.Parse((string)reader["ip_address"]);
+      var port = (ushort)(long)reader["port"];
+      var device = (Device)Activator.CreateInstance(type, ipAddress, port, reader["familiar_name"]);
+      deviceList.Add(device);
+    }
+
+    return deviceList;
   }
 
   /// <summary>

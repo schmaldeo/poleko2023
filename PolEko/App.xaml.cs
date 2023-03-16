@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using Microsoft.Data.Sqlite;
 
@@ -15,10 +16,17 @@ public partial class App
     typeof(ExampleMeasurement)
   };
 
+  private readonly Dictionary<string, Type> _registeredDeviceTypes = new()
+  {
+    { nameof(WeatherDevice), typeof(WeatherDevice) },
+    { nameof(ExampleDevice), typeof(ExampleDevice) }
+  };
+
   private async void App_Startup(object sender, StartupEventArgs e)
   {
     await using var connection = new SqliteConnection("Data Source=Measurements.db");
-    await Database.CreateTables(connection, _registeredMeasurementTypes); 
+    await Database.CreateTables(connection, _registeredMeasurementTypes);
+    var devices = await Database.ExtractDevices(connection, _registeredDeviceTypes);
     
     MainWindow mainWindow = new();
     mainWindow.Closing += delegate
