@@ -52,10 +52,11 @@ public static class Database
       stringBuilder.Append($"{name} {GetSQLiteType(property.PropertyType)},{Environment.NewLine}");
     }
 
-    stringBuilder.Append(@"timestamp TEXT NOT NULL PRIMARY KEY,
+    stringBuilder.Append(@"timestamp TEXT NOT NULL,
       error INTEGER NOT NULL,
       ip_address TEXT NOT NULL,
       port INTEGER NOT NULL,
+      PRIMARY KEY (timestamp, ip_address, port),
       FOREIGN KEY (ip_address, port) REFERENCES devices(ip_address, port));");
     
     return stringBuilder.ToString();
