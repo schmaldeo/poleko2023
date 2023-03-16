@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Microsoft.Data.Sqlite;
 
 namespace PolEko;
@@ -27,7 +28,7 @@ public static class Database
     
     foreach (var type in types)
     {
-      var query = ProcessMeasurementType(type);
+      var query = GetMeasurementTablesDefinitions(type);
       command.CommandText = query;
       await command.ExecuteNonQueryAsync();
     }
@@ -36,6 +37,7 @@ public static class Database
   // TODO: check if maybe using 2 separate connections is faster
   public static async Task<List<Device>> ExtractDevicesAsync(SqliteConnection connection, Dictionary<string, Type> types)
   {
+    await connection.OpenAsync();
     var command = connection.CreateCommand();
     command.CommandText =
       @"
@@ -72,18 +74,63 @@ public static class Database
     await command.ExecuteNonQueryAsync();
   }
 
+  public static async Task InsertMeasurementsAsync(SqliteConnection connection, IEnumerable<Measurement> measurements, Device sender, Type type)
+  {
+    StringBuilder stringBuilder = new($"INSERT INTO {type.Name}s (");
+    foreach (var t in type.GetProperties())
+    {
+      var name = t.Name.ToLower();
+      stringBuilder.Append($"{name}");
+      stringBuilder.Append(',');
+    }
+
+    stringBuilder.Append("ip_address,port) VALUES");
+    
+    var index = 0;
+    foreach (var measurement in measurements)
+    {
+      if (index > 0) stringBuilder.Append(',');
+      stringBuilder.Append('(');
+      
+      foreach (var property in type.GetProperties())
+      {
+        var prop = property.GetValue(measurement);
+        if (prop is bool b)
+        {
+          stringBuilder.Append(b ? 1 : 0);
+          stringBuilder.Append(',');
+          continue;
+        }
+        
+        stringBuilder.Append($"'{prop}'");
+        stringBuilder.Append(',');
+      }
+      
+      stringBuilder.Append($"'{sender.IpAddress}',{sender.Port})");
+      index++;
+    }
+
+    stringBuilder.Append(';');
+
+    await connection.OpenAsync();
+    var command = connection.CreateCommand();
+    command.CommandText = stringBuilder.ToString();
+
+    await command.ExecuteNonQueryAsync();
+  }
+
   /// <summary>
   /// Method that takes in a <c>Type</c> derived from <c>Measurement</c> and returns a SQLite query
   /// </summary>
   /// <param name="type">Type that derives from <c>Measurement</c></param>
   /// <returns>SQLite database creation query according to <c>Measurement</c> type</returns>
   /// <exception cref="InvalidCastException">Thrown if <c>Type</c> passed in does not derive from <c>Measurement</c></exception>
-  private static string ProcessMeasurementType(Type type)
+  private static string GetMeasurementTablesDefinitions(Type type)
   {
     if (!type.IsSubclassOf(typeof(Measurement)))
       throw new InvalidCastException("Registered measurement types must derive from Measurement");
 
-    StringBuilder stringBuilder = new(@$"CREATE TABLE IF NOT EXISTS {type.Name}s(");
+    StringBuilder stringBuilder = new($"CREATE TABLE IF NOT EXISTS {type.Name}s(");
     
     foreach (var property in type.GetProperties())
     {

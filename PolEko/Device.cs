@@ -112,7 +112,7 @@ public abstract class Device<T> : Device where T : Measurement, new()
   public T? LastValidMeasurement { get; protected set; }
   public T? LastMeasurement { get; protected set; }
   public Queue<T> MeasurementBuffer { get; } = new();
-  private BufferSize BufferSize { get; set; } = new(150);
+  private BufferSize BufferSize { get; set; } = new(5);
   public DateTime TimeOfLastMeasurement { get; protected set; }
   
   public async Task<T> GetMeasurement(HttpClient client)
@@ -161,10 +161,10 @@ public class WeatherDevice : Device<WeatherMeasurement>
   public override string Description => "Device used to measure temperature and humidity";
 
   // Methods
-  protected override void HandleBufferOverflow(object? sender, EventArgs e)
+  protected override async void HandleBufferOverflow(object? sender, EventArgs e)
   {
-    MessageBox.Show("buffer overflown");
-    // TODO: insert into db on overflow
+    await using var connection = new SqliteConnection("Data Source=Measurements.db");
+    await Database.InsertMeasurementsAsync(connection, MeasurementBuffer, this, typeof(WeatherMeasurement));
   }
 }
 
@@ -181,9 +181,10 @@ public class ExampleDevice : Device<ExampleMeasurement>
   public override string Description => "Device used for presentation";
 
   // Methods
-  protected override void HandleBufferOverflow(object? sender, EventArgs e)
+  protected override async void HandleBufferOverflow(object? sender, EventArgs e)
   {
-    throw new NotImplementedException();
+    await using var connection = new SqliteConnection("Data Source=Measurements.db");
+    await Database.InsertMeasurementsAsync(connection, MeasurementBuffer, this, typeof(WeatherMeasurement));
   }
 }
 
