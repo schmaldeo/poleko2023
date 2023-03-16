@@ -13,12 +13,13 @@ public abstract class Measurement
 
   public bool Error { get; set; }
 
-  [JsonIgnore] public DateTime TimeStamp { get; init; } = DateTime.Now;
+  public DateTime TimeStamp { get; init; } = DateTime.Now;
 
   public abstract override string ToString();
 }
 
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
 public class WeatherMeasurement : Measurement
 {
   // Constructor

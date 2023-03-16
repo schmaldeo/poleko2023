@@ -125,13 +125,15 @@ public abstract class Device<T> : Device where T : Measurement, new()
       BufferSize++;
       LastValidMeasurement = data;
       LastMeasurement = data;
-      TimeOfLastMeasurement = DateTime.Now;
+      TimeOfLastMeasurement = data.TimeStamp;
       return data;
     }
     catch (Exception)
     {
-      var errorMeasurement = new T();
-      errorMeasurement.Error = true;
+      var errorMeasurement = new T
+      {
+        Error = true
+      };
       MeasurementBuffer.Enqueue(errorMeasurement);
       BufferSize++;
       LastMeasurement = errorMeasurement;
