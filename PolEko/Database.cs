@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using Microsoft.Data.Sqlite;
 
 namespace PolEko;
@@ -61,14 +60,17 @@ public static class Database
     return deviceList;
   }
 
-  // public static async Task AddDevice(SqliteConnection connection, Device device)
-  // {
-  //   var command = connection.CreateCommand();
-  //   command.CommandText =
-  //     
-  //       INSERT INTO devices (ip_address, port, familiar_name, type) VALUES ('{device.IpAddress}', {device.Port}, '{device.Id}')
-  //     ";
-  // }
+  public static async Task AddDevice(SqliteConnection connection, Device device, Type type)
+  {
+    var command = connection.CreateCommand();
+    var id = device.Id is null ? "NULL" : @$"'{device.Id}'";
+    var typeName = type.Name;
+    command.CommandText =
+      $@"
+        INSERT INTO devices (ip_address, port, familiar_name, type) VALUES ('{device.IpAddress}', {device.Port}, {id}, '{typeName}');
+      ";
+    await command.ExecuteNonQueryAsync();
+  }
 
   /// <summary>
   /// Method that takes in a <c>Type</c> derived from <c>Measurement</c> and returns a SQLite query

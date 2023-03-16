@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Data.Sqlite;
 
 namespace PolEko;
 
@@ -56,7 +57,7 @@ public partial class MainWindow
     Grid.SetColumn(_deviceInfo, 1);
   }
 
-  private void AddNewDevice(IPAddress ipAddress, ushort port, string? id)
+  private async void AddNewDevice(IPAddress ipAddress, ushort port, string? id)
   {
     WeatherDevice weatherDevice = new(ipAddress, port, id);
     if (_devices.Contains(weatherDevice))
@@ -64,7 +65,11 @@ public partial class MainWindow
       MessageBox.Show("Urządzenie już istnieje");
       return;
     }
-
+    
+    await using var connection = new SqliteConnection("Data Source=Measurements.db");
+    await connection.OpenAsync();
+    
+    await Database.AddDevice(connection, weatherDevice, typeof(WeatherDevice));
     _devices.Add(weatherDevice);
   }
   
