@@ -28,7 +28,7 @@ public partial class App
     await Database.CreateTables(connection, _registeredMeasurementTypes);
     var devices = await Database.ExtractDevices(connection, _registeredDeviceTypes);
     
-    MainWindow mainWindow = new();
+    MainWindow mainWindow = new(devices);
     mainWindow.Closing += delegate
     {
       // TODO: On main windows closing, dont close instantly, rather send potential leftover buffer to database

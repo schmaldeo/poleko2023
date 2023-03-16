@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Http;
@@ -17,13 +18,20 @@ public partial class MainWindow
   private HttpClient? _httpClient;
   private readonly ObservableCollection<Device> _devices = new();
 
-  public MainWindow()
+  public MainWindow(IEnumerable<Device>? devices = null)
   {
     InitializeComponent();
     SideMenu sideMenu = new(_devices, AddNewDevice, HandleDeviceChange)
     {
       Margin = new Thickness(5)
     };
+    if (devices is not null)
+    {
+      foreach (var device in devices)
+      {
+        _devices.Add(device);
+      }
+    }
     Grid.Children.Add(sideMenu);
   }
 
