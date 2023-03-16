@@ -42,3 +42,20 @@ public class WeatherMeasurement : Measurement
     return $"Temperature: {Temperature}, humidity: {Humidity}, time of request: {TimeStamp}";
   }
 }
+public class ExampleMeasurement : Measurement
+{
+  public ExampleMeasurement() {}
+  
+  [JsonPropertyName("altitude")]
+  public int Altitude { get; set; }
+  [JsonPropertyName("speed")]
+  public int Speed { get; set; }
+  [JsonPropertyName("distanceTravelled")]
+  public int DistanceTravelled { get; set; }
+
+  
+  public override string ToString()
+  {
+    return $"Temperature: {Altitude}, humidity: {Speed}, distance travelled: {DistanceTravelled} time of request: {TimeStamp}";
+  }
+}

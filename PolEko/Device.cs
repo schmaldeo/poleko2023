@@ -168,6 +168,25 @@ public class WeatherDevice : Device<WeatherMeasurement>
   }
 }
 
+public class ExampleDevice : Device<ExampleMeasurement>
+{
+  public ExampleDevice(IPAddress ipAddress, ushort port, string? id = null)
+    : base(ipAddress, port, id)
+  {
+  }
+
+  // Properties
+  public override string Type => "Example Device";
+
+  public override string Description => "Device used for presentation";
+
+  // Methods
+  protected override async void HandleBufferOverflow(object? sender, EventArgs e)
+  {
+    throw new NotImplementedException();
+  }
+}
+
 public class BufferSize
 {
   // TODO: perhaps add ability to change the limit

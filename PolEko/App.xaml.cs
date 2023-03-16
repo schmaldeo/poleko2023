@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using Microsoft.Data.Sqlite;
 
 namespace PolEko;
 
@@ -7,8 +9,17 @@ namespace PolEko;
 /// </summary>
 public partial class App
 {
-  private void App_Startup(object sender, StartupEventArgs e)
+  private readonly Type[] _registeredMeasurementTypes =
   {
+    typeof(WeatherMeasurement),
+    typeof(ExampleMeasurement)
+  };
+
+  private async void App_Startup(object sender, StartupEventArgs e)
+  {
+    await using var connection = new SqliteConnection("Data Source=Measurements.db");
+    await Database.CreateTables(connection, _registeredMeasurementTypes); 
+    
     MainWindow mainWindow = new();
     mainWindow.Closing += delegate
     {
