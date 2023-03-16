@@ -112,7 +112,7 @@ public abstract class Device<T> : Device where T : Measurement, new()
   public T? LastValidMeasurement { get; protected set; }
   public T? LastMeasurement { get; protected set; }
   public Queue<T> MeasurementBuffer { get; } = new();
-  public BufferSize BufferSize { get; protected set; } = new(); 
+  private BufferSize BufferSize { get; set; } = new(150);
   public DateTime TimeOfLastMeasurement { get; protected set; }
   
   public async Task<T> GetMeasurement(HttpClient client)
@@ -171,14 +171,19 @@ public class WeatherDevice : Device<WeatherMeasurement>
 public class BufferSize
 {
   // TODO: perhaps add ability to change the limit
-  private const ushort Limit = 5;
-  private ushort _count;
+  private readonly uint _limit;
+  private uint _count;
   public event EventHandler? BufferOverflow;
+  
+  public BufferSize(uint limit)
+  {
+    _limit = limit;
+  }
   
   public void Increment()
   {
     _count++;
-    if (_count < Limit) return;
+    if (_count < _limit) return;
     BufferOverflow?.Invoke(this,EventArgs.Empty);
     _count = 0;
   }
