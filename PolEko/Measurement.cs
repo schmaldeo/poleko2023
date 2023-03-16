@@ -10,6 +10,12 @@ public abstract class Measurement
   /// <summary>
   /// Indicates that the measurement is invalid
   /// </summary>
+
+  protected Measurement()
+  {
+    Error = true;
+  }
+
   public bool Error { get; protected init; }
   [JsonIgnore]
   public DateTime TimeStamp { get; protected init; }
@@ -21,12 +27,16 @@ public abstract class Measurement
 public class WeatherMeasurement : Measurement
 {
   // Constructor
-  public WeatherMeasurement(float temperature, int humidity, bool error = false)
+  public WeatherMeasurement()
+  {
+    Error = true;
+  }
+  
+  public WeatherMeasurement(float temperature, int humidity) 
   {
     Temperature = temperature;
     Humidity = humidity;
     TimeStamp = DateTime.Now;
-    Error = error;
   }
 
   // Properties

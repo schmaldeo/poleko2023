@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace PolEko;
 
-public abstract class Device : IDevice
+public abstract class Device
 {
   /// <summary>
   /// Lazily initiated cache of the result of ToString() method
@@ -23,7 +23,7 @@ public abstract class Device : IDevice
   /// </summary>
   private string? _id;
   
-  public readonly int RefreshRate = 2;
+  public int RefreshRate => 2;
 
   protected Device(IPAddress ipAddress, ushort port, string? id = null)
   {
@@ -101,35 +101,24 @@ public abstract class Device : IDevice
   }
 }
 
-/// <summary>
-///   Device that logs temperature and humidity
-/// </summary>
-public class WeatherDevice : Device, IMeasurable<WeatherMeasurement>
+public abstract class Device<T> : Device where T : Measurement, new()
 {
-  // Constructors
-  public WeatherDevice(IPAddress ipAddress, ushort port, string? id = null)
-    : base(ipAddress, port, id)
+  protected Device(IPAddress ipAddress, ushort port, string? id = null) : base(ipAddress, port, id)
   {
     BufferSize.BufferOverflow += HandleBufferOverflow;
   }
-
-  // Properties
-  public override string Type => "Weather Device";
-
-  public override string Description => "Device used to measure temperature and humidity";
   
-  public WeatherMeasurement? LastValidMeasurement { get; private set; }
-  public WeatherMeasurement? LastMeasurement { get; private set; }
-  public Queue<WeatherMeasurement> MeasurementBuffer { get; } = new();
-  public BufferSize BufferSize { get; private set; } = new(); 
-  public DateTime TimeOfLastMeasurement { get; private set; }
-
-  // Methods
-  public async Task<WeatherMeasurement> GetMeasurement(HttpClient client)
+  public T? LastValidMeasurement { get; protected set; }
+  public T? LastMeasurement { get; protected set; }
+  public Queue<T> MeasurementBuffer { get; } = new();
+  public BufferSize BufferSize { get; protected set; } = new(); 
+  public DateTime TimeOfLastMeasurement { get; protected set; }
+  
+  public async Task<T> GetMeasurement(HttpClient client)
   {
     try
     {
-      var data = await client.GetFromJsonAsync<WeatherMeasurement>(DeviceUri);
+      var data = await client.GetFromJsonAsync<T>(DeviceUri);
       if (data is null) throw new HttpRequestException("No data was returned from query");
       MeasurementBuffer.Enqueue(data);
       BufferSize++;
@@ -140,7 +129,7 @@ public class WeatherDevice : Device, IMeasurable<WeatherMeasurement>
     }
     catch (Exception)
     {
-      var errorMeasurement = new WeatherMeasurement(0, 0, true);
+      var errorMeasurement = new T();
       MeasurementBuffer.Enqueue(errorMeasurement);
       BufferSize++;
       LastMeasurement = errorMeasurement;
@@ -148,45 +137,32 @@ public class WeatherDevice : Device, IMeasurable<WeatherMeasurement>
     }
   }
 
-  public void HandleBufferOverflow(object? sender, EventArgs e)
+  protected abstract void HandleBufferOverflow(object? sender, EventArgs e);
+}
+
+/// <summary>
+///   Device that logs temperature and humidity
+/// </summary>
+public class WeatherDevice : Device<WeatherMeasurement>
+{
+  // Constructors
+  public WeatherDevice(IPAddress ipAddress, ushort port, string? id = null)
+    : base(ipAddress, port, id)
+  {
+  }
+
+  // Properties
+  public override string Type => "Weather Device";
+
+  public override string Description => "Device used to measure temperature and humidity";
+
+  // Methods
+  protected override void HandleBufferOverflow(object? sender, EventArgs e)
   {
     MessageBox.Show("buffer overflown");
     // TODO: insert into db on overflow
     throw new NotImplementedException();
   }
-}
-
-internal interface IDevice
-{
-  IPAddress IpAddress { get; }
-  ushort Port { get; }
-  string? Id { get; }
-  string Type { get; }
-  string Description { get; }
-}
-
-internal interface IMeasurable<T> where T : Measurement
-{
-  T? LastValidMeasurement { get; }
-  T? LastMeasurement { get; }
-  
-  /// <summary>
-  /// <c>Queue</c> consisting of measurements
-  /// </summary>
-  Queue<T> MeasurementBuffer { get; }
-  
-  /// <summary>
-  /// Size of current buffer
-  /// </summary>
-  BufferSize BufferSize { get; }
-  
-  void HandleBufferOverflow(object? sender, EventArgs e);
-  
-  /// <summary>
-  /// DateTime of last valid measurement
-  /// </summary>
-  DateTime TimeOfLastMeasurement { get; }
-  Task<T> GetMeasurement(HttpClient client);
 }
 
 public class BufferSize
