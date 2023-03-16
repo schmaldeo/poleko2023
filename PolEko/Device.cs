@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.Data.Sqlite;
 
 namespace PolEko;
 
@@ -130,6 +131,7 @@ public abstract class Device<T> : Device where T : Measurement, new()
     catch (Exception)
     {
       var errorMeasurement = new T();
+      errorMeasurement.Error = true;
       MeasurementBuffer.Enqueue(errorMeasurement);
       BufferSize++;
       LastMeasurement = errorMeasurement;
@@ -157,18 +159,17 @@ public class WeatherDevice : Device<WeatherMeasurement>
   public override string Description => "Device used to measure temperature and humidity";
 
   // Methods
-  protected override void HandleBufferOverflow(object? sender, EventArgs e)
+  protected override async void HandleBufferOverflow(object? sender, EventArgs e)
   {
     MessageBox.Show("buffer overflown");
     // TODO: insert into db on overflow
-    throw new NotImplementedException();
   }
 }
 
 public class BufferSize
 {
   // TODO: perhaps add ability to change the limit
-  private const ushort Limit = 150;
+  private const ushort Limit = 5;
   private ushort _count;
   public event EventHandler? BufferOverflow;
   

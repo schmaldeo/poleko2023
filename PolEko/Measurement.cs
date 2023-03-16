@@ -11,14 +11,9 @@ public abstract class Measurement
   /// Indicates that the measurement is invalid
   /// </summary>
 
-  protected Measurement()
-  {
-    Error = true;
-  }
+  public bool Error { get; set; }
 
-  public bool Error { get; protected init; }
-  [JsonIgnore]
-  public DateTime TimeStamp { get; protected init; }
+  [JsonIgnore] public DateTime TimeStamp { get; init; } = DateTime.Now;
 
   public abstract override string ToString();
 }
@@ -27,10 +22,7 @@ public abstract class Measurement
 public class WeatherMeasurement : Measurement
 {
   // Constructor
-  public WeatherMeasurement()
-  {
-    Error = true;
-  }
+  public WeatherMeasurement() {}
   
   public WeatherMeasurement(float temperature, int humidity) 
   {
@@ -41,9 +33,9 @@ public class WeatherMeasurement : Measurement
 
   // Properties
   [JsonPropertyName("temperature")]
-  public float Temperature { get; }
+  public float Temperature { get; set; }
   [JsonPropertyName("humidity")]
-  public int Humidity { get; }
+  public int Humidity { get; set; }
 
   public override string ToString()
   {
