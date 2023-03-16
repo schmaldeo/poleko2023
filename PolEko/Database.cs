@@ -9,7 +9,7 @@ namespace PolEko;
 
 public static class Database
 {
-  public static async Task CreateTables(SqliteConnection connection, IEnumerable<Type> types)
+  public static async Task CreateTablesAsync(SqliteConnection connection, IEnumerable<Type> types)
   {
     await connection.OpenAsync();
     var command = connection.CreateCommand();
@@ -34,7 +34,7 @@ public static class Database
   }
 
   // TODO: check if maybe using 2 separate connections is faster
-  public static async Task<List<Device>> ExtractDevices(SqliteConnection connection, Dictionary<string, Type> types)
+  public static async Task<List<Device>> ExtractDevicesAsync(SqliteConnection connection, Dictionary<string, Type> types)
   {
     var command = connection.CreateCommand();
     command.CommandText =
@@ -60,7 +60,7 @@ public static class Database
     return deviceList;
   }
 
-  public static async Task AddDevice(SqliteConnection connection, Device device, Type type)
+  public static async Task AddDeviceAsync(SqliteConnection connection, Device device, Type type)
   {
     var command = connection.CreateCommand();
     var id = device.Id is null ? "NULL" : @$"'{device.Id}'";

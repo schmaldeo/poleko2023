@@ -25,8 +25,8 @@ public partial class App
   private async void App_Startup(object sender, StartupEventArgs e)
   {
     await using var connection = new SqliteConnection("Data Source=Measurements.db");
-    await Database.CreateTables(connection, _registeredMeasurementTypes);
-    var devices = await Database.ExtractDevices(connection, _registeredDeviceTypes);
+    await Database.CreateTablesAsync(connection, _registeredMeasurementTypes);
+    var devices = await Database.ExtractDevicesAsync(connection, _registeredDeviceTypes);
     
     MainWindow mainWindow = new(devices);
     mainWindow.Closing += delegate

@@ -69,7 +69,7 @@ public partial class MainWindow
     await using var connection = new SqliteConnection("Data Source=Measurements.db");
     await connection.OpenAsync();
     
-    await Database.AddDevice(connection, weatherDevice, typeof(WeatherDevice));
+    await Database.AddDeviceAsync(connection, weatherDevice, typeof(WeatherDevice));
     _devices.Add(weatherDevice);
   }
   
