@@ -5,62 +5,31 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="450" d:DesignWidth="800" Foreground="Black">
+
   <Grid>
     <Grid.RowDefinitions>
-      <RowDefinition Height="3*"/>
-      <RowDefinition Height="3*"/>
-      <RowDefinition Height="3*"/>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="10*" />
+      <RowDefinition Height="*" />
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="3*" />
-      <ColumnDefinition Width="3*" />
-      <ColumnDefinition Width="3*" />
+      <ColumnDefinition Width="2*" />
+      <ColumnDefinition Width="4*" />
+      <ColumnDefinition Width="4*" />
+      <ColumnDefinition Width="2*" />
     </Grid.ColumnDefinitions>
     
-    <StackPanel>
-      <Label>
-        Name
-      </Label>
-      <TextBlock Name="NameBlock" />
-    </StackPanel>
-    <StackPanel Grid.Row="1" Grid.Column="0">
-      <Label>
-        IP address
-      </Label>
-      <TextBlock Name="IpBlock" />
-    </StackPanel>
-    <StackPanel Grid.Row="0" Grid.Column="1">
-      <Label>
-        Device type
-      </Label>
-      <TextBlock Name="TypeBlock" />
-    </StackPanel>
-    <StackPanel Grid.Row="1" Grid.Column="1">
-      <Label>
-        Device description
-      </Label>
-      <TextBlock Name="DescriptionBlock" />
-    </StackPanel>
-    <StackPanel Grid.Row="2" Grid.Column="1">
-      <Label>
-        Refresh rate
-      </Label>
-      <TextBlock Name="RefreshRateBlock" />
-    </StackPanel>
-    <Button Grid.Row="2" Grid.Column="2" Click="FetchData_OnClick" />
-    <StackPanel Grid.Row="0" Grid.Column="2">
-      <Label>
-        Temperature
-      </Label>
-      <TextBlock Name="TemperatureBlock" />
-    </StackPanel>
-    <StackPanel Grid.Row="1" Grid.Column="2">
-      <Label>
-        Humidity
-      </Label>
-      <TextBlock Name="HumidityBlock" />
-    </StackPanel>
-    <Button Grid.Row="2" Grid.Column="0" Click="EditDevice_OnClick" Content="edit" />
+    
+    <TextBlock x:Name="DeviceString" TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontFamily="Bahnschrift Light" FontSize="32" Grid.ColumnSpan="2" Grid.Column="1"/>
+    <Label x:Name="TemperatureLabel" Content="Temperature" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Bahnschrift Light" FontSize="23" Grid.Row="1" Grid.Column="1"/>
+    <TextBlock x:Name="TemperatureBlock" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="25" FontFamily="Bahnschrift Light" Text="" Grid.Row="2" Grid.Column="1"/>
+    <Label x:Name="HumidityLabel" Content="Humidity" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Bahnschrift Light" FontSize="23" Grid.Row="1" Grid.Column="2"/>
+    <TextBlock x:Name="HumidityBlock" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="25" FontFamily="Bahnschrift Light" Text="" Grid.Row="2" Grid.Column="2"/>
+    <Button x:Name="Fetch" Content="Fetch" HorizontalAlignment="Center" Height="30" VerticalAlignment="Center" Width="70" Click="FetchData_OnClick" Grid.Column="3"/>
+    <Button x:Name="EditButton" Content="Edit" HorizontalAlignment="Left" VerticalAlignment="Center" Width="70" Height="30" Click="EditDevice_OnClick"/>
+    <Button x:Name="DeleteButton" Content="Delete" HorizontalAlignment="Right" VerticalAlignment="Center" Width="70" Height="30" Click="DeleteDevice_OnClick"/>
   </Grid>
 </UserControl>

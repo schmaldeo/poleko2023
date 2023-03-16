@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Windows;
+using Microsoft.Data.Sqlite;
 
 namespace PolEko;
 
@@ -42,13 +43,9 @@ public partial class DeviceInfoControl : IDisposable
     _editCallback = editCallback;
     
     InitializeComponent();
-    
+
     // TODO: replace this with actual params
-    NameBlock.Text = device.ToString();
-    IpBlock.Text = device.IpAddress.ToString();
-    TypeBlock.Text = device.Type;
-    DescriptionBlock.Text = device.Description;
-    RefreshRateBlock.Text = _device.RefreshRate.ToString();
+    DeviceString.Text = device.ToString();
   }
 
   // TODO: maybe this could be called different
@@ -112,6 +109,13 @@ public partial class DeviceInfoControl : IDisposable
   {
     var prompt = new IpPrompt(_editCallback, _device.IpAddress, _device.Port, _device.Id);
     prompt.Show();
+  }
+  
+  private async void DeleteDevice_OnClick(object sender, RoutedEventArgs e)
+  {
+    // TODO: remove it from the Devices collection as well
+    await using var connection = new SqliteConnection("Data Source=Measurements.db");
+    await Database.RemoveDeviceAsync(connection, _device);
   }
 
   public async void Dispose()

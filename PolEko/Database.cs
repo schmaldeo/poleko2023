@@ -74,6 +74,15 @@ public static class Database
     await command.ExecuteNonQueryAsync();
   }
 
+  public static async Task RemoveDeviceAsync(SqliteConnection connection, Device device)
+  {
+    await connection.OpenAsync();
+    var command = connection.CreateCommand();
+    command.CommandText = $"DELETE FROM devices WHERE ip_address = '{device.IpAddress}' AND port = {device.Port}";
+
+    await command.ExecuteNonQueryAsync();
+  } 
+
   public static async Task InsertMeasurementsAsync(SqliteConnection connection, IEnumerable<Measurement> measurements, Device sender, Type type)
   {
     StringBuilder stringBuilder = new($"INSERT INTO {type.Name}s (");

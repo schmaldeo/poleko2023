@@ -163,6 +163,7 @@ public class WeatherDevice : Device<WeatherMeasurement>
   // Methods
   protected override async void HandleBufferOverflow(object? sender, EventArgs e)
   {
+    // TODO: figure out why tf it keeps calling the function after the limit has been reached
     await using var connection = new SqliteConnection("Data Source=Measurements.db");
     await Database.InsertMeasurementsAsync(connection, MeasurementBuffer, this, typeof(WeatherMeasurement));
   }
@@ -190,7 +191,6 @@ public class ExampleDevice : Device<ExampleMeasurement>
 
 public class BufferSize
 {
-  // TODO: perhaps add ability to change the limit
   private readonly uint _limit;
   private uint _count;
   public event EventHandler? BufferOverflow;
