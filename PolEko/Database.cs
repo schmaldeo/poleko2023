@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Microsoft.Data.Sqlite;
 
 namespace PolEko;
@@ -52,12 +53,22 @@ public static class Database
       var type = types[(string)reader["type"]];
       var ipAddress = IPAddress.Parse((string)reader["ip_address"]);
       var port = (ushort)(long)reader["port"];
-      var device = (Device)Activator.CreateInstance(type, ipAddress, port, reader["familiar_name"]);
+      var device = (Device)Activator.CreateInstance(type, ipAddress, port, reader["familiar_name"] is DBNull ? null : reader["familiar_name"]);
+
       deviceList.Add(device);
     }
 
     return deviceList;
   }
+
+  // public static async Task AddDevice(SqliteConnection connection, Device device)
+  // {
+  //   var command = connection.CreateCommand();
+  //   command.CommandText =
+  //     
+  //       INSERT INTO devices (ip_address, port, familiar_name, type) VALUES ('{device.IpAddress}', {device.Port}, '{device.Id}')
+  //     ";
+  // }
 
   /// <summary>
   /// Method that takes in a <c>Type</c> derived from <c>Measurement</c> and returns a SQLite query
