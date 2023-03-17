@@ -166,6 +166,7 @@ public class WeatherDevice : Device<WeatherMeasurement>
     // TODO: figure out why tf it keeps calling the function after the limit has been reached
     await using var connection = new SqliteConnection("Data Source=Measurements.db");
     await Database.InsertMeasurementsAsync(connection, MeasurementBuffer, this, typeof(WeatherMeasurement));
+    MeasurementBuffer.Clear();
   }
 }
 
