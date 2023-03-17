@@ -27,9 +27,6 @@ public partial class DeviceInfoControl : IDisposable
     Error,
   }
   
-  
-  // TODO: maybe allow data only if it implements IMeasurable, perhaps one constructor for Device type without http client
-  // and one for IMeasurable with httpclient
   /// <summary>
   /// Control displaying <c>Device</c>'s parameters and allowing to edit its parameters, as well as fetch measurements
   /// </summary>
@@ -101,7 +98,9 @@ public partial class DeviceInfoControl : IDisposable
 
   private void FetchData_OnClick(object sender, RoutedEventArgs e)
   {
+    if (_status == Status.Fetching) return;
     _timer = new Timer(FetchTimerDelegate, "", 0, _device.RefreshRate * 1000);
+    _status = Status.Fetching;
   }
 
   // TODO: need to update UI after device is edited
