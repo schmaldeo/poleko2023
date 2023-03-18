@@ -37,7 +37,6 @@ public static class Database
     }
   }
 
-  // TODO: check if maybe using 2 separate connections is faster
   public static async Task<List<Device>> ExtractDevicesAsync(Dictionary<string, Type> types, SqliteConnection? connection = null)
   {
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
@@ -103,6 +102,7 @@ public static class Database
   public static async Task AddDeviceAsync(Device device, Type type, SqliteConnection? connection = null)
   {
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
+    await conn.OpenAsync();
     var command = conn.CreateCommand();
     var id = device.Id is null ? "NULL" : @$"'{device.Id}'";
     var typeName = type.Name;
@@ -125,7 +125,6 @@ public static class Database
 
   public static async Task InsertMeasurementsAsync(IEnumerable<Measurement> measurements, Device sender, Type type, SqliteConnection? connection = null)
   {
-    await using var conn = connection ?? new SqliteConnection(ConnectionString);
     StringBuilder stringBuilder = new($"INSERT INTO {type.Name}s (");
     foreach (var t in type.GetProperties())
     {
@@ -161,7 +160,8 @@ public static class Database
     }
 
     stringBuilder.Append(';');
-
+    
+    await using var conn = connection ?? new SqliteConnection(ConnectionString);
     await conn.OpenAsync();
     var command = conn.CreateCommand();
     command.CommandText = stringBuilder.ToString();
@@ -194,7 +194,7 @@ public static class Database
       ip_address TEXT NOT NULL,
       port INTEGER NOT NULL,
       PRIMARY KEY (timestamp, ip_address, port),
-      FOREIGN KEY (ip_address, port) REFERENCES devices(ip_address, port));");
+      FOREIGN KEY (ip_address, port) REFERENCES devices(ip_address, port) ON DELETE CASCADE ON UPDATE CASCADE);");
     
     return stringBuilder.ToString();
   }
