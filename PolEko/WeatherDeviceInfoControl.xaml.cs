@@ -4,11 +4,10 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Windows;
-using Microsoft.Data.Sqlite;
 
 namespace PolEko;
 
-public partial class DeviceInfoControl : IDisposable
+public partial class WeatherDeviceInfoControl : IDisposable
 {
   private readonly HttpClient _httpclient;
   // TODO: modify _device when EditDevice is called
@@ -34,7 +33,8 @@ public partial class DeviceInfoControl : IDisposable
   /// <param name="device"><c>Device</c> whose parameters will be displayed</param>
   /// <param name="httpclient"><c>HttpClient</c> that will be used to fetch measurements, passed in by reference</param>
   /// <param name="editCallback">Delegate to be called when a device is edited</param>
-  public DeviceInfoControl(Device device,
+  /// <param name="removeCallback">Delegate to be called when a device is removed</param>
+  public WeatherDeviceInfoControl(Device device,
     in HttpClient httpclient, 
     Action<IPAddress, ushort, string?> editCallback, 
     Action<Device> removeCallback)
@@ -100,7 +100,7 @@ public partial class DeviceInfoControl : IDisposable
   private void FetchData_OnClick(object sender, RoutedEventArgs e)
   {
     if (_status == Status.Fetching) return;
-    _timer = new Timer(FetchTimerDelegate, "", 0, _device.RefreshRate * 1000);
+    _timer = new Timer(FetchTimerDelegate, null, 0, _device.RefreshRate * 1000);
     _status = Status.Fetching;
   }
   
@@ -112,7 +112,7 @@ public partial class DeviceInfoControl : IDisposable
     // TODO: upload buffer
   }
 
-  // TODO: need to update UI after device is edited
+  // TODO: need to update UI after device is edited and edit the db entry
   private void EditDevice_OnClick(object sender, RoutedEventArgs e)
   {
     var prompt = new IpPrompt(_editCallback, _device.IpAddress, _device.Port, _device.Id);

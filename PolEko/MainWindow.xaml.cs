@@ -14,7 +14,7 @@ namespace PolEko;
 public partial class MainWindow
 {
   private Device? _currentDevice;
-  private DeviceInfoControl? _deviceInfo;
+  private WeatherDeviceInfoControl? _deviceInfo;
   private HttpClient? _httpClient;
   private readonly ObservableCollection<Device> _devices = new();
 
