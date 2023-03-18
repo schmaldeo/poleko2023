@@ -24,7 +24,7 @@ public partial class DeviceInfoControl : IDisposable
   {
     Ready,
     Fetching,
-    Error,
+    Error
   }
   
   /// <summary>
@@ -101,6 +101,14 @@ public partial class DeviceInfoControl : IDisposable
     if (_status == Status.Fetching) return;
     _timer = new Timer(FetchTimerDelegate, "", 0, _device.RefreshRate * 1000);
     _status = Status.Fetching;
+  }
+  
+  private async void StopFetching_OnClick(object sender, RoutedEventArgs e)
+  {
+    if (_timer is null) return;
+    await _timer.DisposeAsync();
+    _status = Status.Ready;
+    // TODO: upload buffer
   }
 
   // TODO: need to update UI after device is edited
