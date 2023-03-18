@@ -50,7 +50,7 @@ public static class Database
     
     while (await reader.ReadAsync())
     {
-      // This looks like a bunch of unsafe code, but it shouldn't cause any problems if used as intended
+      // This looks like a bunch of unsafe code, but the error handling should help in avoiding awkward errors
       try
       {
         Type type;
