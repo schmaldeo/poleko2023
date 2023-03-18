@@ -139,7 +139,7 @@ public abstract class Device<T> : Device where T : Measurement, new()
     }
   }
 
-  protected abstract void HandleBufferOverflow(object? sender, EventArgs e);
+  public abstract void HandleBufferOverflow(object? sender, EventArgs e);
 }
 
 /// <summary>
@@ -159,9 +159,8 @@ public class WeatherDevice : Device<WeatherMeasurement>
   public override string Description => "Device used to measure temperature and humidity";
 
   // Methods
-  protected override async void HandleBufferOverflow(object? sender, EventArgs e)
+  public override async void HandleBufferOverflow(object? sender, EventArgs e)
   {
-    // TODO: figure out why tf it keeps calling the function after the limit has been reached
     await Database.InsertMeasurementsAsync(MeasurementBuffer, this, typeof(WeatherMeasurement));
     MeasurementBuffer.Clear();
   }
@@ -180,7 +179,7 @@ public class ExampleDevice : Device<ExampleMeasurement>
   public override string Description => "Device used for presentation";
 
   // Methods
-  protected override async void HandleBufferOverflow(object? sender, EventArgs e)
+  public override async void HandleBufferOverflow(object? sender, EventArgs e)
   {
     await Database.InsertMeasurementsAsync(MeasurementBuffer, this, typeof(WeatherMeasurement));
   }

@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Data.Sqlite;
 
 namespace PolEko;
 
@@ -52,7 +51,7 @@ public partial class MainWindow
     
     _currentDevice = incomingDevice;
     var httpClient = _httpClient ??= new HttpClient();
-    _deviceInfo = new(_currentDevice, httpClient, EditDevice);
+    _deviceInfo = new(_currentDevice, httpClient, EditDevice, RemoveDevice);
     Grid.Children.Add(_deviceInfo);
     Grid.SetColumn(_deviceInfo, 1);
   }
@@ -79,5 +78,11 @@ public partial class MainWindow
     _currentDevice.IpAddress = ipAddress;
     _currentDevice.Port = port;
     _currentDevice.Id = id;
+  }
+
+  private async void RemoveDevice(Device device)
+  {
+    await Database.RemoveDeviceAsync(device);
+    _devices.Remove(device);
   }
 }

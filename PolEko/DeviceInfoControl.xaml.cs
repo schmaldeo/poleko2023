@@ -19,6 +19,7 @@ public partial class DeviceInfoControl : IDisposable
   private Status _status;
 
   private readonly Action<IPAddress, ushort, string?> _editCallback;
+  private readonly Action<Device> _removeCallback;
 
   private enum Status
   {
@@ -33,23 +34,23 @@ public partial class DeviceInfoControl : IDisposable
   /// <param name="device"><c>Device</c> whose parameters will be displayed</param>
   /// <param name="httpclient"><c>HttpClient</c> that will be used to fetch measurements, passed in by reference</param>
   /// <param name="editCallback">Delegate to be called when a device is edited</param>
-  public DeviceInfoControl(Device device, in HttpClient httpclient, Action<IPAddress, ushort, string?> editCallback)
+  public DeviceInfoControl(Device device,
+    in HttpClient httpclient, 
+    Action<IPAddress, ushort, string?> editCallback, 
+    Action<Device> removeCallback)
   {
     _device = device;
     _httpclient = httpclient;
     _editCallback = editCallback;
+    _removeCallback = removeCallback;
     
     InitializeComponent();
-
-    // TODO: replace this with actual params
     DeviceString.Text = device.ToString();
   }
 
-  // TODO: maybe this could be called different
   private async void FetchTimerDelegate(object? _)
   {
     // TODO: clean up this cast mess
-    // use pattern matching perhaps
     var dev = (WeatherDevice)_device;
     var measurement = await dev.GetMeasurement(_httpclient);
     
@@ -118,10 +119,9 @@ public partial class DeviceInfoControl : IDisposable
     prompt.Show();
   }
   
-  private async void DeleteDevice_OnClick(object sender, RoutedEventArgs e)
+  private void DeleteDevice_OnClick(object sender, RoutedEventArgs e)
   {
-    // TODO: remove it from the Devices collection as well
-    await Database.RemoveDeviceAsync(_device);
+    _removeCallback(_device);
   }
 
   public async void Dispose()
