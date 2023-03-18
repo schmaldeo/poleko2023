@@ -4,8 +4,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using System.Windows;
-using Microsoft.Data.Sqlite;
 
 namespace PolEko;
 
@@ -164,8 +162,7 @@ public class WeatherDevice : Device<WeatherMeasurement>
   protected override async void HandleBufferOverflow(object? sender, EventArgs e)
   {
     // TODO: figure out why tf it keeps calling the function after the limit has been reached
-    await using var connection = new SqliteConnection("Data Source=Measurements.db");
-    await Database.InsertMeasurementsAsync(connection, MeasurementBuffer, this, typeof(WeatherMeasurement));
+    await Database.InsertMeasurementsAsync(MeasurementBuffer, this, typeof(WeatherMeasurement));
     MeasurementBuffer.Clear();
   }
 }
@@ -185,8 +182,7 @@ public class ExampleDevice : Device<ExampleMeasurement>
   // Methods
   protected override async void HandleBufferOverflow(object? sender, EventArgs e)
   {
-    await using var connection = new SqliteConnection("Data Source=Measurements.db");
-    await Database.InsertMeasurementsAsync(connection, MeasurementBuffer, this, typeof(WeatherMeasurement));
+    await Database.InsertMeasurementsAsync(MeasurementBuffer, this, typeof(WeatherMeasurement));
   }
 }
 

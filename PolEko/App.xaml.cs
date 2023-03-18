@@ -32,9 +32,8 @@ public partial class App
     
     _registeredMeasurementTypes = FindDerivedTypes(typeof(Measurement));
     
-    await using var connection = new SqliteConnection("Data Source=Measurements.db");
-    await Database.CreateTablesAsync(connection, _registeredMeasurementTypes);
-    var devices = await Database.ExtractDevicesAsync(connection, _registeredDeviceTypes);
+    await Database.CreateTablesAsync(_registeredMeasurementTypes);
+    var devices = await Database.ExtractDevicesAsync(_registeredDeviceTypes);
     
     MainWindow mainWindow = new(devices);
     mainWindow.Closing += delegate

@@ -65,10 +65,8 @@ public partial class MainWindow
       MessageBox.Show("Urządzenie już istnieje");
       return;
     }
-    
-    await using var connection = new SqliteConnection("Data Source=Measurements.db");
 
-    await Database.AddDeviceAsync(connection, weatherDevice, typeof(WeatherDevice));
+    await Database.AddDeviceAsync(weatherDevice, typeof(WeatherDevice));
     _devices.Add(weatherDevice);
   }
   

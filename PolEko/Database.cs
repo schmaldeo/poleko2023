@@ -10,10 +10,13 @@ namespace PolEko;
 
 public static class Database
 {
-  public static async Task CreateTablesAsync(SqliteConnection connection, IEnumerable<Type> types)
+  private const string ConnectionString = "Data Source=Measurements.db";
+  
+  public static async Task CreateTablesAsync(IEnumerable<Type> types, SqliteConnection? connection = null)
   {
-    await connection.OpenAsync();
-    var command = connection.CreateCommand();
+    await using var conn = connection ?? new SqliteConnection(ConnectionString);
+    await conn.OpenAsync();
+    var command = conn.CreateCommand();
     command.CommandText =
       @"
         CREATE TABLE IF NOT EXISTS devices(
@@ -35,10 +38,11 @@ public static class Database
   }
 
   // TODO: check if maybe using 2 separate connections is faster
-  public static async Task<List<Device>> ExtractDevicesAsync(SqliteConnection connection, Dictionary<string, Type> types)
+  public static async Task<List<Device>> ExtractDevicesAsync(Dictionary<string, Type> types, SqliteConnection? connection = null)
   {
-    await connection.OpenAsync();
-    var command = connection.CreateCommand();
+    await using var conn = connection ?? new SqliteConnection(ConnectionString);
+    await conn.OpenAsync();
+    var command = conn.CreateCommand();
     command.CommandText =
       @"
         SELECT * FROM devices;
@@ -96,9 +100,10 @@ public static class Database
     return deviceList;
   }
 
-  public static async Task AddDeviceAsync(SqliteConnection connection, Device device, Type type)
+  public static async Task AddDeviceAsync(Device device, Type type, SqliteConnection? connection = null)
   {
-    var command = connection.CreateCommand();
+    await using var conn = connection ?? new SqliteConnection(ConnectionString);
+    var command = conn.CreateCommand();
     var id = device.Id is null ? "NULL" : @$"'{device.Id}'";
     var typeName = type.Name;
     command.CommandText =
@@ -108,17 +113,19 @@ public static class Database
     await command.ExecuteNonQueryAsync();
   }
 
-  public static async Task RemoveDeviceAsync(SqliteConnection connection, Device device)
+  public static async Task RemoveDeviceAsync(Device device, SqliteConnection? connection = null)
   {
-    await connection.OpenAsync();
-    var command = connection.CreateCommand();
+    await using var conn = connection ?? new SqliteConnection(ConnectionString);
+    await conn.OpenAsync();
+    var command = conn.CreateCommand();
     command.CommandText = $"DELETE FROM devices WHERE ip_address = '{device.IpAddress}' AND port = {device.Port}";
 
     await command.ExecuteNonQueryAsync();
   } 
 
-  public static async Task InsertMeasurementsAsync(SqliteConnection connection, IEnumerable<Measurement> measurements, Device sender, Type type)
+  public static async Task InsertMeasurementsAsync(IEnumerable<Measurement> measurements, Device sender, Type type, SqliteConnection? connection = null)
   {
+    await using var conn = connection ?? new SqliteConnection(ConnectionString);
     StringBuilder stringBuilder = new($"INSERT INTO {type.Name}s (");
     foreach (var t in type.GetProperties())
     {
@@ -155,8 +162,8 @@ public static class Database
 
     stringBuilder.Append(';');
 
-    await connection.OpenAsync();
-    var command = connection.CreateCommand();
+    await conn.OpenAsync();
+    var command = conn.CreateCommand();
     command.CommandText = stringBuilder.ToString();
 
     await command.ExecuteNonQueryAsync();

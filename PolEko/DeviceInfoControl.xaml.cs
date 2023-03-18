@@ -121,8 +121,7 @@ public partial class DeviceInfoControl : IDisposable
   private async void DeleteDevice_OnClick(object sender, RoutedEventArgs e)
   {
     // TODO: remove it from the Devices collection as well
-    await using var connection = new SqliteConnection("Data Source=Measurements.db");
-    await Database.RemoveDeviceAsync(connection, _device);
+    await Database.RemoveDeviceAsync(_device);
   }
 
   public async void Dispose()
