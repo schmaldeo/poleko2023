@@ -51,12 +51,46 @@ public static class Database
     while (await reader.ReadAsync())
     {
       // This looks like a bunch of unsafe code, but it shouldn't cause any problems if used as intended
-      var type = types[(string)reader["type"]];
-      var ipAddress = IPAddress.Parse((string)reader["ip_address"]);
-      var port = (ushort)(long)reader["port"];
-      var device = (Device)Activator.CreateInstance(type, ipAddress, port, reader["familiar_name"] is DBNull ? null : reader["familiar_name"]);
+      try
+      {
+        Type type;
+        try
+        {
+          type = types[(string)reader["type"]];
+        }
+        catch (KeyNotFoundException)
+        {
+          const string errorMsg =
+            "Invalid device type value in database. Check if all types are correctly added to _registeredDeviceTypes in App.xaml.cs.";
+          MessageBox.Show(errorMsg);
+          throw new KeyNotFoundException(errorMsg);
+        }
 
-      deviceList.Add(device);
+        var ipAddress = IPAddress.Parse((string)reader["ip_address"]);
+        var port = (ushort)(long)reader["port"];
+        var device = Activator.CreateInstance(type, ipAddress, port,
+          reader["familiar_name"] is DBNull ? null : reader["familiar_name"]);
+
+        if (device is null)
+        {
+          MessageBox.Show($"Error creating an instance of Device {ipAddress}:{port}");
+          continue;
+        }
+        var d = (Device)device;
+        deviceList.Add(d);
+      }
+      catch (InvalidCastException)
+      {
+        const string errorMsg =
+          "Invalid cast reading devices from database. Check if values in devices table are correct";
+        MessageBox.Show(errorMsg);
+        throw new InvalidCastException(errorMsg);
+      }
+      catch (Exception e)
+      {
+        MessageBox.Show(e.Message);
+        throw;
+      }
     }
 
     return deviceList;
