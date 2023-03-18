@@ -51,7 +51,10 @@ public partial class MainWindow
     
     _currentDevice = incomingDevice;
     var httpClient = _httpClient ??= new HttpClient();
-    _deviceInfo = new(_currentDevice, httpClient, EditDevice, RemoveDevice);
+    if (_currentDevice is WeatherDevice device)
+    {
+      _deviceInfo = new(device, httpClient, EditDevice, RemoveDevice);
+    }
     Grid.Children.Add(_deviceInfo);
     Grid.SetColumn(_deviceInfo, 1);
   }

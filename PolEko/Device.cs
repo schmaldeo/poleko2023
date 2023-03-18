@@ -139,6 +139,11 @@ public abstract class Device<T> : Device where T : Measurement, new()
     }
   }
 
+  public void InsertMeasurements()
+  {
+    HandleBufferOverflow(null, EventArgs.Empty);
+  }
+
   public abstract void HandleBufferOverflow(object? sender, EventArgs e);
 }
 

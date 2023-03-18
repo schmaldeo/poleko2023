@@ -11,7 +11,7 @@ public partial class WeatherDeviceInfoControl : IDisposable
 {
   private readonly HttpClient _httpclient;
   // TODO: modify _device when EditDevice is called
-  private readonly Device _device;
+  private readonly WeatherDevice _device;
   private Timer? _timer;
   private byte _retryCounter;
   private bool _disposed;
@@ -34,7 +34,7 @@ public partial class WeatherDeviceInfoControl : IDisposable
   /// <param name="httpclient"><c>HttpClient</c> that will be used to fetch measurements, passed in by reference</param>
   /// <param name="editCallback">Delegate to be called when a device is edited</param>
   /// <param name="removeCallback">Delegate to be called when a device is removed</param>
-  public WeatherDeviceInfoControl(Device device,
+  public WeatherDeviceInfoControl(WeatherDevice device,
     in HttpClient httpclient, 
     Action<IPAddress, ushort, string?> editCallback, 
     Action<Device> removeCallback)
@@ -50,9 +50,7 @@ public partial class WeatherDeviceInfoControl : IDisposable
 
   private async void FetchTimerDelegate(object? _)
   {
-    // TODO: clean up this cast mess
-    var dev = (WeatherDevice)_device;
-    var measurement = await dev.GetMeasurement(_httpclient);
+    var measurement = await _device.GetMeasurement(_httpclient);
     
     if (measurement.Error)
     {
@@ -61,14 +59,14 @@ public partial class WeatherDeviceInfoControl : IDisposable
       _timer!.Change(5000, 5000);
       
       // If it's the first measurement, increment
-      if (dev.LastMeasurement is null)
+      if (_device.LastMeasurement is null)
       {
         _retryCounter = 0;
         return;
       }
       
       // If there were any errors before, but not enough to dispose the timer, reset the counter
-      if (dev.LastMeasurement is not null && !dev.LastMeasurement.Error) _retryCounter = 0;
+      if (_device.LastMeasurement is not null && !_device.LastMeasurement.Error) _retryCounter = 0;
       
       if (_retryCounter < 5)
       {
@@ -109,7 +107,7 @@ public partial class WeatherDeviceInfoControl : IDisposable
     if (_timer is null) return;
     await _timer.DisposeAsync();
     _status = Status.Ready;
-    // TODO: upload buffer
+    _device.InsertMeasurements();
   }
 
   // TODO: need to update UI after device is edited and edit the db entry
