@@ -36,12 +36,6 @@ public partial class App
     var devices = await Database.ExtractDevicesAsync(_registeredDeviceTypes);
     
     MainWindow mainWindow = new(devices);
-    mainWindow.Closing += delegate
-    {
-      // TODO: On main windows closing, dont close instantly, rather send potential leftover buffer to database
-      // Database calls should be happening every whatever items in the buffer (Queue<> ?)
-      MessageBox.Show("Quittin");
-    };
     mainWindow.Show();
   }
 

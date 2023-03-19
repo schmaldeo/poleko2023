@@ -51,9 +51,11 @@ public partial class MainWindow
     
     _currentDevice = incomingDevice;
     var httpClient = _httpClient ??= new HttpClient();
+    // TODO: Reflection
     if (_currentDevice is WeatherDevice device)
     {
       _deviceInfo = new(device, httpClient, EditDevice, RemoveDevice);
+      Closing += device.HandleBufferOverflow;
     }
     Grid.Children.Add(_deviceInfo);
     Grid.SetColumn(_deviceInfo, 1);

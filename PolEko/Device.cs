@@ -148,7 +148,8 @@ public abstract class Device<T> : Device where T : Measurement, new()
 }
 
 /// <summary>
-///   Device that logs temperature and humidity
+/// \~english Device that logs temperature and humidity
+/// \~polish Urządzenie mierzące temperaturę i wilgotność
 /// </summary>
 public class WeatherDevice : Device<WeatherMeasurement>
 {
@@ -166,6 +167,7 @@ public class WeatherDevice : Device<WeatherMeasurement>
   // Methods
   public override async void HandleBufferOverflow(object? sender, EventArgs e)
   {
+    if (MeasurementBuffer.Count == 0) return;
     await Database.InsertMeasurementsAsync(MeasurementBuffer, this, typeof(WeatherMeasurement));
     MeasurementBuffer.Clear();
   }
