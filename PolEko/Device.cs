@@ -38,6 +38,7 @@ public abstract class Device
     get => _ipAddress;
     set
     {
+      if (value.Equals(_ipAddress)) return;
       _toString = null;
       _ipAddress = value;
     }
@@ -48,6 +49,7 @@ public abstract class Device
     get => _port;
     set
     {
+      if (value == _port) return;
       _toString = null;
       _port = value;
     }
@@ -58,6 +60,7 @@ public abstract class Device
     get => _id;
     set
     {
+      if (value == _id) return;
       _toString = null;
       _id = value;
     }

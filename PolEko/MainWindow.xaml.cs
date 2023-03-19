@@ -76,8 +76,6 @@ public partial class MainWindow
   
   private void EditDevice(IPAddress ipAddress, ushort port, string? id)
   {
-    // TODO: figure out if checking for changes is quicker than just potentially overwriting with the same value
-    // causing _toString cache to reset
     if (_currentDevice is null) return;
     
     _currentDevice.IpAddress = ipAddress;
