@@ -8,6 +8,7 @@ using Microsoft.Data.Sqlite;
 
 namespace PolEko;
 
+// TODO: handle DBExceptions
 public static class Database
 {
   private const string ConnectionString = "Data Source=Measurements.db";
@@ -54,6 +55,7 @@ public static class Database
     while (await reader.ReadAsync())
     {
       // This looks like a bunch of unsafe code, but the error handling should help in avoiding awkward errors
+      // and shouldn't generate any problems
       try
       {
         Type type;
