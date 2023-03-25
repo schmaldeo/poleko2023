@@ -216,6 +216,7 @@ public class SmartProDevice : Device<SmartProMeasurement>
   // Methods
   public override async void HandleBufferOverflow(object? sender, EventArgs e)
   {
+    if (MeasurementBuffer.Size == 0) return;
     await Database.InsertMeasurementsAsync(MeasurementBuffer.GetCurrentIteration(), this, typeof(SmartProMeasurement));
   }
 }
@@ -235,6 +236,7 @@ public class ExampleDevice : Device<ExampleMeasurement>
   // Methods
   public override async void HandleBufferOverflow(object? sender, EventArgs e)
   {
-    await Database.InsertMeasurementsAsync(MeasurementBuffer.GetCurrentIteration(), this, typeof(SmartProMeasurement));
+    if (MeasurementBuffer.Size == 0) return;
+    await Database.InsertMeasurementsAsync(MeasurementBuffer.GetCurrentIteration(), this, typeof(ExampleMeasurement));
   }
 }

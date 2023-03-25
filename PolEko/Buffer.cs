@@ -11,6 +11,8 @@ public class Buffer<T> : IEnumerable<T> where T : Measurement
   private bool _overflownOnce;
   public event EventHandler? BufferOverflow;
 
+  public int Size => _buffer.Count;
+
   public Buffer(uint size)
   {
     _size = new BufferSize(size);
