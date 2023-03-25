@@ -9,7 +9,6 @@ using System.Windows.Input;
 
 namespace PolEko;
 
-// TODO: device type dropdown
 public partial class IpPrompt
 {
   /// <summary>
