@@ -116,13 +116,12 @@ public abstract class Device<T> : Device where T : Measurement, new()
 {
   protected Device(IPAddress ipAddress, ushort port, string? id = null) : base(ipAddress, port, id)
   {
-    BufferSize.BufferOverflow += HandleBufferOverflow;
+    MeasurementBuffer.BufferOverflow += HandleBufferOverflow;
   }
   
   public T? LastValidMeasurement { get; protected set; }
   public T? LastMeasurement { get; protected set; }
-  public Queue<T> MeasurementBuffer { get; } = new();
-  protected BufferSize BufferSize { get; set; } = new(5);
+  public Buffer<T> MeasurementBuffer { get; } = new(5);
   public DateTime TimeOfLastMeasurement { get; protected set; }
   
   public virtual async Task<T> GetMeasurement(HttpClient client)
@@ -131,8 +130,7 @@ public abstract class Device<T> : Device where T : Measurement, new()
     {
       var data = await client.GetFromJsonAsync<T>(DeviceUri);
       if (data is null) throw new HttpRequestException("No data was returned from query");
-      MeasurementBuffer.Enqueue(data);
-      BufferSize++;
+      MeasurementBuffer.Add(data);
       LastValidMeasurement = data;
       LastMeasurement = data;
       TimeOfLastMeasurement = data.TimeStamp;
@@ -144,8 +142,7 @@ public abstract class Device<T> : Device where T : Measurement, new()
       {
         Error = true
       };
-      MeasurementBuffer.Enqueue(errorMeasurement);
-      BufferSize++;
+      MeasurementBuffer.Add(errorMeasurement);
       LastMeasurement = errorMeasurement;
       return errorMeasurement;
     }
@@ -198,8 +195,7 @@ public class SmartProDevice : Device<SmartProMeasurement>
         Error = error
       };
       
-      MeasurementBuffer.Enqueue(measurement);
-      BufferSize++;
+      MeasurementBuffer.Add(measurement);
       LastValidMeasurement = measurement;
       LastMeasurement = measurement;
       TimeOfLastMeasurement = measurement.TimeStamp;
@@ -211,8 +207,7 @@ public class SmartProDevice : Device<SmartProMeasurement>
       {
         Error = true
       };
-      MeasurementBuffer.Enqueue(errorMeasurement);
-      BufferSize++;
+      MeasurementBuffer.Add(errorMeasurement);
       LastMeasurement = errorMeasurement;
       return errorMeasurement;
     }
@@ -221,9 +216,7 @@ public class SmartProDevice : Device<SmartProMeasurement>
   // Methods
   public override async void HandleBufferOverflow(object? sender, EventArgs e)
   {
-    if (MeasurementBuffer.Count == 0) return;
     await Database.InsertMeasurementsAsync(MeasurementBuffer, this, typeof(SmartProMeasurement));
-    MeasurementBuffer.Clear();
   }
 }
 
@@ -246,27 +239,27 @@ public class ExampleDevice : Device<ExampleMeasurement>
   }
 }
 
-public class BufferSize
-{
-  private readonly uint _limit;
-  private uint _count;
-  public event EventHandler? BufferOverflow;
-  
-  public BufferSize(uint limit)
-  {
-    _limit = limit;
-  }
-  
-  public void Increment()
-  {
-    _count++;
-    if (_count < _limit) return;
-    BufferOverflow?.Invoke(this,EventArgs.Empty);
-    _count = 0;
-  }
-  public static BufferSize operator ++(BufferSize a)
-  {
-    a.Increment();
-    return a;
-  }
-}
+// public class BufferSize
+// {
+//   private readonly uint _limit;
+//   private uint _count;
+//   public event EventHandler? BufferOverflow;
+//   
+//   public BufferSize(uint limit)
+//   {
+//     _limit = limit;
+//   }
+//   
+//   public void Increment()
+//   {
+//     _count++;
+//     if (_count < _limit) return;
+//     BufferOverflow?.Invoke(this,EventArgs.Empty);
+//     _count = 0;
+//   }
+//   public static BufferSize operator ++(BufferSize a)
+//   {
+//     a.Increment();
+//     return a;
+//   }
+// }
