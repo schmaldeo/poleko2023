@@ -14,6 +14,8 @@ public partial class SideMenu
   /// </summary>
   private readonly Action<IPAddress, ushort, string?> _newDeviceAction;
 
+  private readonly RoutedEventHandler _changeDisplayedDevice;
+
   /// <summary>
   /// 
   /// </summary>
@@ -23,25 +25,46 @@ public partial class SideMenu
   public SideMenu(ObservableCollection<Device> devices, Action<IPAddress, ushort, string?> addNewDevice, RoutedEventHandler changeDisplayedDevice)
   {
     _newDeviceAction = addNewDevice;
+    _changeDisplayedDevice = changeDisplayedDevice;
 
     InitializeComponent();
     // When items are added to devices collection, create a WPF item for them
-    devices.CollectionChanged += delegate(object? _, NotifyCollectionChangedEventArgs args)
-    {
-      if (args.NewItems == null) return;
-      foreach (var item in args.NewItems)
-      {
-        var dev = (Device)item;
-        ListBoxItem listBoxItem = new()
-        {
-          Content = dev
-        };
-        listBoxItem.Selected += changeDisplayedDevice;
-        ListBox.Items.Add(listBoxItem);
-      }
-    };
+    devices.CollectionChanged += HandleAddDevice;
+    devices.CollectionChanged += HandleRemoveDevice;
   }
 
+  private void HandleAddDevice(object? _, NotifyCollectionChangedEventArgs args)
+  {
+    if (args.NewItems is null) return;
+    foreach (var item in args.NewItems)
+    {
+      var dev = (Device)item;
+      ListBoxItem listBoxItem = new()
+      {
+        Content = dev
+      };
+      listBoxItem.Selected += _changeDisplayedDevice;
+      ListBox.Items.Add(listBoxItem);
+    }
+  }
+  
+  private void HandleRemoveDevice(object? _, NotifyCollectionChangedEventArgs args)
+  {
+    if (args.OldItems is null) return;
+    foreach (var oldItem in args.OldItems)
+    {
+      ListBoxItem? itemToRemove = null;
+      foreach (var item in ListBox.Items)
+      {
+        var i = (ListBoxItem)item;
+        if (i.Content == oldItem) itemToRemove = i;
+      }
+
+      if (itemToRemove is null) return;
+      ListBox.Items.Remove(itemToRemove);
+    }
+  }
+  
   private void AddNewDevice_Click(object sender, RoutedEventArgs e)
   {
     IpPrompt prompt = new(_newDeviceAction);

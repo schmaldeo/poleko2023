@@ -60,6 +60,7 @@ public partial class MainWindow
     Grid.Children.Add(_deviceInfo);
     Grid.SetColumn(_deviceInfo, 1);
   }
+  
   // TODO: reflection
   private async void AddNewDevice(IPAddress ipAddress, ushort port, string? id)
   {
@@ -86,6 +87,7 @@ public partial class MainWindow
   private async void RemoveDevice(Device device)
   {
     await Database.RemoveDeviceAsync(device);
+    Grid.Children.Remove(_deviceInfo);
     _devices.Remove(device);
   }
 }

@@ -120,6 +120,7 @@ public partial class WeatherDeviceInfoControl : IDisposable
   private void DeleteDevice_OnClick(object sender, RoutedEventArgs e)
   {
     _removeCallback(_device);
+    Dispose();
   }
 
   public async void Dispose()
