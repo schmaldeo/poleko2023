@@ -17,5 +17,6 @@
         Cursor="Hand"
         MouseLeftButtonDown="AddNewDevice_Click"/>
     </DockPanel>
+    <ListBox Name="ListBox"></ListBox>
   </StackPanel>
 </UserControl>

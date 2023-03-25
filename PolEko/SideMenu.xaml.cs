@@ -26,19 +26,18 @@ public partial class SideMenu
 
     InitializeComponent();
     // When items are added to devices collection, create a WPF item for them
-    // TODO: change the button to something else
     devices.CollectionChanged += delegate(object? _, NotifyCollectionChangedEventArgs args)
     {
       if (args.NewItems == null) return;
       foreach (var item in args.NewItems)
       {
         var dev = (Device)item;
-        Button btn = new()
+        ListBoxItem listBoxItem = new()
         {
           Content = dev
         };
-        btn.Click += changeDisplayedDevice; 
-        Stack.Children.Add(btn);
+        listBoxItem.Selected += changeDisplayedDevice;
+        ListBox.Items.Add(listBoxItem);
       }
     };
   }

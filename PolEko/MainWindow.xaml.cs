@@ -39,7 +39,7 @@ public partial class MainWindow
   private void HandleDeviceChange(object sender, RoutedEventArgs e)
   {
     // Check for potential invalid args
-    if (sender is not Button value) throw new ArgumentException("You can only use this method to handle Button Click event");
+    if (sender is not ListBoxItem value) throw new ArgumentException("You can only use this method to handle ListBoxItem Click event");
     if (value.Content is not Device incomingDevice) throw new ArgumentException("Button's content can only be of type Device");
 
     // Disallow reopening a device that's currently open
@@ -60,7 +60,7 @@ public partial class MainWindow
     Grid.Children.Add(_deviceInfo);
     Grid.SetColumn(_deviceInfo, 1);
   }
-
+  // TODO: reflection
   private async void AddNewDevice(IPAddress ipAddress, ushort port, string? id)
   {
     SmartProDevice smartProDevice = new(ipAddress, port, id);
