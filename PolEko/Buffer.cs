@@ -4,8 +4,6 @@ using System.Collections.Generic;
 
 namespace PolEko;
 
-// TODO: buffer needs to be a Queue<T>, not a List<T>. Need to keep filling the Queue until it reaches the buffer limit,
-// then start dequeuing and enqueueing new measurements 
 public class Buffer<T> : IEnumerable<T> where T : Measurement
 {
   private readonly Queue<T> _buffer = new();
@@ -26,10 +24,21 @@ public class Buffer<T> : IEnumerable<T> where T : Measurement
   public void Add(T item)
   {
     _buffer.Enqueue(item);
-    if (!_overflownOnce) return;
-    _buffer.Dequeue();
-    
+    if (_overflownOnce) _buffer.Dequeue();
     _size++;
+  }
+  
+  public IEnumerable<T> GetCurrentIteration()
+  {
+    if (!_overflownOnce) return _buffer;
+    var tempBuffer = new Queue<T>(_buffer);
+    var amountToDequeue = _size.Limit - _size.Count;
+    for (var i = 0; i < amountToDequeue; i++)
+    {
+      tempBuffer.Dequeue();
+    }
+
+    return tempBuffer;
   }
 
   public IEnumerator<T> GetEnumerator()
@@ -44,21 +53,21 @@ public class Buffer<T> : IEnumerable<T> where T : Measurement
   
   private class BufferSize
   {
-    private readonly uint _limit;
-    private uint _count;
+    public readonly uint Limit;
+    public uint Count;
     public event EventHandler? BufferOverflow;
   
     public BufferSize(uint limit)
     {
-      _limit = limit;
+      Limit = limit;
     }
   
     private void Increment()
     {
-      _count++;
-      if (_count < _limit) return;
+      Count++;
+      if (Count < Limit) return;
       BufferOverflow?.Invoke(this,EventArgs.Empty);
-      _count = 0;
+      Count = 0;
     }
     
     public static BufferSize operator ++(BufferSize a)

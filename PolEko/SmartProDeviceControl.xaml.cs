@@ -107,7 +107,6 @@ public partial class WeatherDeviceInfoControl : IDisposable
     if (_timer is null) return;
     await _timer.DisposeAsync();
     _status = Status.Ready;
-    _device.InsertMeasurements();
   }
 
   // TODO: need to update UI after device is edited and edit the db entry
