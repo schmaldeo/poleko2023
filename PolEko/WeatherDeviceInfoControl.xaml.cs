@@ -90,8 +90,8 @@ public partial class WeatherDeviceInfoControl : IDisposable
 
     await Dispatcher.BeginInvoke(() =>
     {
-      TemperatureBlock.Text = measurement.Temperature.ToString(CultureInfo.InvariantCulture);
-      HumidityBlock.Text = measurement.Humidity.ToString();
+      TemperatureBlock.Text = measurement.Temperature.ToString();
+      IsRunningBlock.Text = measurement.IsRunning.ToString();
     });
   }
 

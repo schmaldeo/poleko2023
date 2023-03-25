@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace PolEko;
@@ -66,9 +67,11 @@ public abstract class Device
     }
   }
   
+  public Status CurrentStatus { get; set; }
+  
   public abstract string Type { get; }
   public abstract string Description { get; }
-  protected Uri DeviceUri { get; }
+  protected Uri DeviceUri { get; init; }
 
   /// <summary>
   ///   Custom <c>ToString()</c> implementation
@@ -101,6 +104,12 @@ public abstract class Device
   {
     return HashCode.Combine(IpAddress, Port, Id);
   }
+
+  public enum Status
+  {
+    Running,
+    Stopped
+  }
 }
 
 public abstract class Device<T> : Device where T : Measurement, new()
@@ -113,10 +122,10 @@ public abstract class Device<T> : Device where T : Measurement, new()
   public T? LastValidMeasurement { get; protected set; }
   public T? LastMeasurement { get; protected set; }
   public Queue<T> MeasurementBuffer { get; } = new();
-  private BufferSize BufferSize { get; set; } = new(5);
+  protected BufferSize BufferSize { get; set; } = new(5);
   public DateTime TimeOfLastMeasurement { get; protected set; }
   
-  public async Task<T> GetMeasurement(HttpClient client)
+  public virtual async Task<T> GetMeasurement(HttpClient client)
   {
     try
     {
@@ -160,12 +169,54 @@ public class WeatherDevice : Device<WeatherMeasurement>
   public WeatherDevice(IPAddress ipAddress, ushort port, string? id = null)
     : base(ipAddress, port, id)
   {
+    DeviceUri = new Uri($"http://{ipAddress}:{port}/api/v1/school/status");
   }
 
   // Properties
   public override string Type => "Weather Device";
 
   public override string Description => "Device used to measure temperature and humidity";
+
+  public override async Task<WeatherMeasurement> GetMeasurement(HttpClient client)
+  {
+    try
+    {
+      var data = await client.GetStringAsync(DeviceUri);
+      using var document = JsonDocument.Parse(data);
+      var root = document.RootElement;
+      var isRunning = root.GetProperty("IS_RUNNING").GetBoolean();
+      var temperatureElement = root.GetProperty("TEMPERATURE_MAIN");
+      var temperature = temperatureElement.GetProperty("value").GetInt32();
+      var error = temperatureElement.GetProperty("error").GetBoolean();
+
+      CurrentStatus = isRunning ? Status.Running : Status.Stopped;
+
+      var measurement = new WeatherMeasurement
+      {
+        IsRunning = isRunning,
+        Temperature = temperature,
+        Error = error
+      };
+      
+      MeasurementBuffer.Enqueue(measurement);
+      BufferSize++;
+      LastValidMeasurement = measurement;
+      LastMeasurement = measurement;
+      TimeOfLastMeasurement = measurement.TimeStamp;
+      return measurement;
+    }
+    catch (Exception)
+    {
+      var errorMeasurement = new WeatherMeasurement
+      {
+        Error = true
+      };
+      MeasurementBuffer.Enqueue(errorMeasurement);
+      BufferSize++;
+      LastMeasurement = errorMeasurement;
+      return errorMeasurement;
+    }
+  }
 
   // Methods
   public override async void HandleBufferOverflow(object? sender, EventArgs e)

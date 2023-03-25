@@ -22,24 +22,14 @@ public abstract class Measurement
 [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
 public class WeatherMeasurement : Measurement
 {
-  // Constructor
-  public WeatherMeasurement() {}
-  
-  public WeatherMeasurement(float temperature, int humidity) 
-  {
-    Temperature = temperature;
-    Humidity = humidity;
-  }
-
   // Properties
-  [JsonPropertyName("temperature")]
-  public float Temperature { get; set; }
-  [JsonPropertyName("humidity")]
-  public int Humidity { get; set; }
+  public bool IsRunning { get; init; }
+  
+  public int Temperature { get; init; }
 
   public override string ToString()
   {
-    return $"Temperature: {Temperature}, humidity: {Humidity}, time of request: {TimeStamp}";
+    return $"Temperature: {Temperature}, time of request: {TimeStamp}";
   }
 }
 public class ExampleMeasurement : Measurement
