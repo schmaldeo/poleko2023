@@ -10,14 +10,12 @@ namespace PolEko;
 public partial class WeatherDeviceInfoControl : IDisposable
 {
   private readonly HttpClient _httpclient;
-  // TODO: modify _device when EditDevice is called
   private readonly SmartProDevice _device;
   private Timer? _timer;
   private byte _retryCounter;
   private bool _disposed;
   private Status _status;
 
-  private readonly Action<IPAddress, ushort, string?> _editCallback;
   private readonly Action<Device> _removeCallback;
 
   private enum Status
@@ -36,12 +34,10 @@ public partial class WeatherDeviceInfoControl : IDisposable
   /// <param name="removeCallback">Delegate to be called when a device is removed</param>
   public WeatherDeviceInfoControl(SmartProDevice device,
     in HttpClient httpclient, 
-    Action<IPAddress, ushort, string?> editCallback, 
     Action<Device> removeCallback)
   {
     _device = device;
     _httpclient = httpclient;
-    _editCallback = editCallback;
     _removeCallback = removeCallback;
     
     InitializeComponent();
@@ -109,13 +105,6 @@ public partial class WeatherDeviceInfoControl : IDisposable
     _status = Status.Ready;
   }
 
-  // TODO: need to update UI after device is edited and edit the db entry
-  private void EditDevice_OnClick(object sender, RoutedEventArgs e)
-  {
-    var prompt = new IpPrompt(_editCallback, _device.IpAddress, _device.Port, _device.Id);
-    prompt.Show();
-  }
-  
   private void DeleteDevice_OnClick(object sender, RoutedEventArgs e)
   {
     _removeCallback(_device);

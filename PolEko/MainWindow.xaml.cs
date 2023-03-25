@@ -54,7 +54,7 @@ public partial class MainWindow
     // TODO: Reflection
     if (_currentDevice is SmartProDevice device)
     {
-      _deviceInfo = new(device, httpClient, EditDevice, RemoveDevice);
+      _deviceInfo = new(device, httpClient, RemoveDevice);
       Closing += device.HandleBufferOverflow;
     }
     Grid.Children.Add(_deviceInfo);
@@ -75,15 +75,6 @@ public partial class MainWindow
     _devices.Add(smartProDevice);
   }
   
-  private void EditDevice(IPAddress ipAddress, ushort port, string? id)
-  {
-    if (_currentDevice is null) return;
-    
-    _currentDevice.IpAddress = ipAddress;
-    _currentDevice.Port = port;
-    _currentDevice.Id = id;
-  }
-
   private async void RemoveDevice(Device device)
   {
     await Database.RemoveDeviceAsync(device);
