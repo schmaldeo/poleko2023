@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Windows;
@@ -15,6 +16,7 @@ public partial class MainWindow
 {
   private Device? _currentDevice;
   private WeatherDeviceInfoControl? _deviceInfo;
+  private List<TabItem> _openDevices = new();
   private HttpClient? _httpClient;
   private readonly ObservableCollection<Device> _devices = new();
 
@@ -23,7 +25,7 @@ public partial class MainWindow
     InitializeComponent();
     SideMenu sideMenu = new(_devices, AddNewDevice, HandleDeviceChange, types)
     {
-      Margin = new Thickness(5)
+      Margin = new Thickness(5),
     };
     if (devices is not null)
     {
@@ -44,11 +46,7 @@ public partial class MainWindow
 
     // Disallow reopening a device that's currently open
     if (_currentDevice is not null && _currentDevice.Equals(incomingDevice)) return;
-    
-    // If some device is currently displayed, dispose its timer and remove it from view
-    _deviceInfo?.Dispose();
-    if (_deviceInfo is not null) Grid.Children.Remove(_deviceInfo);
-    
+
     _currentDevice = incomingDevice;
     var httpClient = _httpClient ??= new HttpClient();
     // TODO: Reflection
@@ -63,13 +61,22 @@ public partial class MainWindow
       MessageBox.Show("Unimplemented");
       return;
     }
-    Grid.Children.Add(_deviceInfo);
-    Grid.SetColumn(_deviceInfo, 1);
+
+    var item = new TabItem
+    {
+      Content = _deviceInfo,
+      Header = $"{_currentDevice.IpAddress}:{_currentDevice.Port}"
+    };
+    if (_openDevices.Exists(x => (string)x.Header == $"{_currentDevice.IpAddress}:{_currentDevice.Port}")) return;
+    _openDevices.Add(item);
+    TabControl.Items.Add(item);
+    TabControl.SelectedItem = item;
   }
   
   private async void AddNewDevice(IPAddress ipAddress, ushort port, string? id, Type type)
   {
     var device = (Device)Activator.CreateInstance(type, ipAddress, port, id);
+    // TODO: figure out why this doesn't trigger when the type is different but ip and port the same
     if (_devices.Contains(device))
     {
       MessageBox.Show("Urządzenie już istnieje");

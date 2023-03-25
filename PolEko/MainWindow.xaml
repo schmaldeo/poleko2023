@@ -9,12 +9,15 @@
   <Grid Name="Grid">
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>
+      <RowDefinition Height="20"/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="1*" />
       <ColumnDefinition Width="5*" />
     </Grid.ColumnDefinitions>
     
-    <GridSplitter Width="3" />
+    <GridSplitter Grid.RowSpan="3" Width="3" />
+    <TabControl Grid.Row="0" Grid.Column="1" Name="TabControl"></TabControl>
+    <StatusBar Grid.Row="1" Grid.Column="0" Name="StatusBar" Grid.ColumnSpan="2" Height="20" Background="#FFABABAB"/>
   </Grid>
 </Window>
