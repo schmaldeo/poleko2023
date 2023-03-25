@@ -14,10 +14,13 @@ public partial class IpPrompt
   /// <summary>
   ///   Callback used to return the IP address, port and friendly name to the caller
   /// </summary>
-  private readonly Action<IPAddress, ushort, string?> _callback;
+  private readonly Action<IPAddress, ushort, string?, Type> _callback;
+
+  private readonly Dictionary<string, Type> _types;
   
-  public IpPrompt(Action<IPAddress, ushort, string?> callback, Dictionary<string, Type> types)
+  public IpPrompt(Action<IPAddress, ushort, string?, Type> callback, Dictionary<string, Type> types)
   {
+    _types = types;
     InitializeComponent();
     foreach (var (name, _) in types)
     {
@@ -64,12 +67,14 @@ public partial class IpPrompt
       return;
     }
 
-    // As friendly name (referred to as ID) is optional, set it to null and only set a value to it if the input isnt empty
+    // As friendly name (referred to as ID) is optional, set it to null and only set a value to it if the input isn't empty
     string? id = null;
     if (IdTextBox.Text != string.Empty) id = IdTextBox.Text;
 
     var ip = IPAddress.Parse(IpTextBox.Text);
-    _callback(ip, (ushort)port, id);
+
+    var type = _types[TypesComboBox.Text];
+    _callback(ip, (ushort)port, id, type);
     
     Close();
   }

@@ -62,17 +62,17 @@ public partial class MainWindow
   }
   
   // TODO: add based on dropdown
-  private async void AddNewDevice(IPAddress ipAddress, ushort port, string? id)
+  private async void AddNewDevice(IPAddress ipAddress, ushort port, string? id, Type type)
   {
-    SmartProDevice smartProDevice = new(ipAddress, port, id);
-    if (_devices.Contains(smartProDevice))
+    SmartProDevice device = new(ipAddress, port, id);
+    if (_devices.Contains(device))
     {
       MessageBox.Show("Urządzenie już istnieje");
       return;
     }
 
-    await Database.AddDeviceAsync(smartProDevice, typeof(SmartProDevice));
-    _devices.Add(smartProDevice);
+    await Database.AddDeviceAsync(device, type);
+    _devices.Add(device);
   }
   
   private async void RemoveDevice(Device device)
