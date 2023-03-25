@@ -11,7 +11,7 @@ public partial class WeatherDeviceInfoControl : IDisposable
 {
   private readonly HttpClient _httpclient;
   // TODO: modify _device when EditDevice is called
-  private readonly WeatherDevice _device;
+  private readonly SmartProDevice _device;
   private Timer? _timer;
   private byte _retryCounter;
   private bool _disposed;
@@ -34,7 +34,7 @@ public partial class WeatherDeviceInfoControl : IDisposable
   /// <param name="httpclient"><c>HttpClient</c> that will be used to fetch measurements, passed in by reference</param>
   /// <param name="editCallback">Delegate to be called when a device is edited</param>
   /// <param name="removeCallback">Delegate to be called when a device is removed</param>
-  public WeatherDeviceInfoControl(WeatherDevice device,
+  public WeatherDeviceInfoControl(SmartProDevice device,
     in HttpClient httpclient, 
     Action<IPAddress, ushort, string?> editCallback, 
     Action<Device> removeCallback)

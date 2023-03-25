@@ -160,24 +160,24 @@ public abstract class Device<T> : Device where T : Measurement, new()
 }
 
 /// <summary>
-/// \~english Device that logs temperature and humidity
-/// \~polish Urządzenie mierzące temperaturę i wilgotność
+/// \~english Device that logs temperature
+/// \~polish Urządzenie mierzące temperaturę
 /// </summary>
-public class WeatherDevice : Device<WeatherMeasurement>
+public class SmartProDevice : Device<SmartProMeasurement>
 {
   // Constructors
-  public WeatherDevice(IPAddress ipAddress, ushort port, string? id = null)
+  public SmartProDevice(IPAddress ipAddress, ushort port, string? id = null)
     : base(ipAddress, port, id)
   {
     DeviceUri = new Uri($"http://{ipAddress}:{port}/api/v1/school/status");
   }
 
   // Properties
-  public override string Type => "Weather Device";
+  public override string Type => "POL-EKO Smart Pro";
 
-  public override string Description => "Device used to measure temperature and humidity";
+  public override string Description => "Inkubator laboratoryjny z układem chłodzenia opartym na technologii ogniw Peltiera";
 
-  public override async Task<WeatherMeasurement> GetMeasurement(HttpClient client)
+  public override async Task<SmartProMeasurement> GetMeasurement(HttpClient client)
   {
     try
     {
@@ -191,7 +191,7 @@ public class WeatherDevice : Device<WeatherMeasurement>
 
       CurrentStatus = isRunning ? Status.Running : Status.Stopped;
 
-      var measurement = new WeatherMeasurement
+      var measurement = new SmartProMeasurement
       {
         IsRunning = isRunning,
         Temperature = temperature,
@@ -207,7 +207,7 @@ public class WeatherDevice : Device<WeatherMeasurement>
     }
     catch (Exception)
     {
-      var errorMeasurement = new WeatherMeasurement
+      var errorMeasurement = new SmartProMeasurement
       {
         Error = true
       };
@@ -222,7 +222,7 @@ public class WeatherDevice : Device<WeatherMeasurement>
   public override async void HandleBufferOverflow(object? sender, EventArgs e)
   {
     if (MeasurementBuffer.Count == 0) return;
-    await Database.InsertMeasurementsAsync(MeasurementBuffer, this, typeof(WeatherMeasurement));
+    await Database.InsertMeasurementsAsync(MeasurementBuffer, this, typeof(SmartProMeasurement));
     MeasurementBuffer.Clear();
   }
 }
@@ -242,7 +242,7 @@ public class ExampleDevice : Device<ExampleMeasurement>
   // Methods
   public override async void HandleBufferOverflow(object? sender, EventArgs e)
   {
-    await Database.InsertMeasurementsAsync(MeasurementBuffer, this, typeof(WeatherMeasurement));
+    await Database.InsertMeasurementsAsync(MeasurementBuffer, this, typeof(SmartProMeasurement));
   }
 }
 

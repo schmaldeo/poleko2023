@@ -52,7 +52,7 @@ public partial class MainWindow
     _currentDevice = incomingDevice;
     var httpClient = _httpClient ??= new HttpClient();
     // TODO: Reflection
-    if (_currentDevice is WeatherDevice device)
+    if (_currentDevice is SmartProDevice device)
     {
       _deviceInfo = new(device, httpClient, EditDevice, RemoveDevice);
       Closing += device.HandleBufferOverflow;
@@ -63,15 +63,15 @@ public partial class MainWindow
 
   private async void AddNewDevice(IPAddress ipAddress, ushort port, string? id)
   {
-    WeatherDevice weatherDevice = new(ipAddress, port, id);
-    if (_devices.Contains(weatherDevice))
+    SmartProDevice smartProDevice = new(ipAddress, port, id);
+    if (_devices.Contains(smartProDevice))
     {
       MessageBox.Show("Urządzenie już istnieje");
       return;
     }
 
-    await Database.AddDeviceAsync(weatherDevice, typeof(WeatherDevice));
-    _devices.Add(weatherDevice);
+    await Database.AddDeviceAsync(smartProDevice, typeof(SmartProDevice));
+    _devices.Add(smartProDevice);
   }
   
   private void EditDevice(IPAddress ipAddress, ushort port, string? id)

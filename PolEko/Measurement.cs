@@ -20,7 +20,7 @@ public abstract class Measurement
 
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
-public class WeatherMeasurement : Measurement
+public class SmartProMeasurement : Measurement
 {
   // Properties
   public bool IsRunning { get; init; }
