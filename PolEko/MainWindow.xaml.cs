@@ -57,14 +57,19 @@ public partial class MainWindow
       _deviceInfo = new(device, httpClient, RemoveDevice);
       Closing += device.HandleBufferOverflow;
     }
+
+    if (_currentDevice is ExampleDevice)
+    {
+      MessageBox.Show("Unimplemented");
+      return;
+    }
     Grid.Children.Add(_deviceInfo);
     Grid.SetColumn(_deviceInfo, 1);
   }
   
-  // TODO: add based on dropdown
   private async void AddNewDevice(IPAddress ipAddress, ushort port, string? id, Type type)
   {
-    SmartProDevice device = new(ipAddress, port, id);
+    var device = (Device)Activator.CreateInstance(type, ipAddress, port, id);
     if (_devices.Contains(device))
     {
       MessageBox.Show("Urządzenie już istnieje");
