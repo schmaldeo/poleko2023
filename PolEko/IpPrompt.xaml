@@ -10,7 +10,7 @@
         WindowStartupLocation="CenterOwner"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
-        Title="Dodaj urządzenie" Height="140" Width="800">
+        Title="Dodaj urządzenie" Height="170" Width="800">
   <Grid Margin="10">
     <Grid.Resources>
       <Style TargetType="{x:Type Label}">
@@ -37,6 +37,7 @@
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
     <Label>IP urządzenia:</Label>
@@ -57,8 +58,11 @@
     
     <Label Grid.Column="0" Grid.Row="2">ID (opcjonalne):</Label>
     <TextBox Name="IdTextBox" Grid.Row="2" Grid.Column="1" />
+    
+    <Label Grid.Column="0" Grid.Row="3">Typ:</Label>
+    <ComboBox Grid.Column="1" Grid.Row="3" Height="25" Margin="0 0 0 5" Name="TypesComboBox"></ComboBox>
 
-    <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+    <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
       <Button Click="OkButton_Click" IsDefault="True">OK</Button>
       <Button Click="CancelButton_Click" IsCancel="True">Cancel</Button>
     </StackPanel>

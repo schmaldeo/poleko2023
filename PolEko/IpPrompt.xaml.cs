@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PolEko;
@@ -15,16 +17,23 @@ public partial class IpPrompt
   /// </summary>
   private readonly Action<IPAddress, ushort, string?> _callback;
   
-  public IpPrompt(Action<IPAddress, ushort, string?> callback, IPAddress? ipAddress = null, ushort? port = null, string? id = null)
+  public IpPrompt(Action<IPAddress, ushort, string?> callback, Dictionary<string, Type> types)
   {
     InitializeComponent();
+    foreach (var (name, _) in types)
+    {
+      var item = new ComboBoxItem
+      {
+        Content = name
+      };
+      TypesComboBox.Items.Add(item);
+    }
+
+    // Select first device by default
+    TypesComboBox.SelectedIndex = 0;
     // Focus on the topmost TextBox when the window is opened
     IpTextBox.Focus();
     _callback = callback;
-
-    IpTextBox.Text = ipAddress?.ToString() ?? "";
-    PortTextBox.Text = port.ToString() ?? "";
-    IdTextBox.Text = id ?? "";
   }
 
   /// <summary>

@@ -18,10 +18,10 @@ public partial class MainWindow
   private HttpClient? _httpClient;
   private readonly ObservableCollection<Device> _devices = new();
 
-  public MainWindow(IEnumerable<Device>? devices = null)
+  public MainWindow(Dictionary<string, Type> types, IEnumerable<Device>? devices = null)
   {
     InitializeComponent();
-    SideMenu sideMenu = new(_devices, AddNewDevice, HandleDeviceChange)
+    SideMenu sideMenu = new(_devices, AddNewDevice, HandleDeviceChange, types)
     {
       Margin = new Thickness(5)
     };
@@ -61,7 +61,7 @@ public partial class MainWindow
     Grid.SetColumn(_deviceInfo, 1);
   }
   
-  // TODO: reflection
+  // TODO: add based on dropdown
   private async void AddNewDevice(IPAddress ipAddress, ushort port, string? id)
   {
     SmartProDevice smartProDevice = new(ipAddress, port, id);

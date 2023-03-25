@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Net;
@@ -14,6 +15,8 @@ public partial class SideMenu
   /// </summary>
   private readonly Action<IPAddress, ushort, string?> _newDeviceAction;
 
+  private readonly Dictionary<string, Type> _types;
+
   private readonly RoutedEventHandler _changeDisplayedDevice;
 
   /// <summary>
@@ -22,10 +25,11 @@ public partial class SideMenu
   /// <param name="devices"><c>ObservableCollection</c>, which the <c>SideMenu</c>'s content will be based on></param>
   /// <param name="addNewDevice"><c>Action</c> to fire when a new device is added through a prompt</param>
   /// <param name="changeDisplayedDevice"><c>RoutedEventHandler</c> which will be fired when device to display is changed</param>
-  public SideMenu(ObservableCollection<Device> devices, Action<IPAddress, ushort, string?> addNewDevice, RoutedEventHandler changeDisplayedDevice)
+  public SideMenu(ObservableCollection<Device> devices, Action<IPAddress, ushort, string?> addNewDevice, RoutedEventHandler changeDisplayedDevice, Dictionary<string, Type> types)
   {
     _newDeviceAction = addNewDevice;
     _changeDisplayedDevice = changeDisplayedDevice;
+    _types = types;
 
     InitializeComponent();
     // When items are added to devices collection, create a WPF item for them
@@ -67,7 +71,7 @@ public partial class SideMenu
   
   private void AddNewDevice_Click(object sender, RoutedEventArgs e)
   {
-    IpPrompt prompt = new(_newDeviceAction);
+    IpPrompt prompt = new(_newDeviceAction, _types);
     prompt.Show();
   }
 }

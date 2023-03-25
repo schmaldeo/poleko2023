@@ -35,7 +35,7 @@ public partial class App
     await Database.CreateTablesAsync(_registeredMeasurementTypes);
     var devices = await Database.ExtractDevicesAsync(_registeredDeviceTypes);
     
-    MainWindow mainWindow = new(devices);
+    MainWindow mainWindow = new(_registeredDeviceTypes, devices);
     mainWindow.Show();
   }
 
