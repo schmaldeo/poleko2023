@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 
 namespace PolEko;
 
@@ -15,6 +16,21 @@ public partial class WeatherDeviceInfoControl : IDisposable
   private byte _retryCounter;
   private bool _disposed;
   private Status _status;
+
+  private Status CurrentStatus
+  {
+    get => _status;
+    set
+    {
+      _status = value;
+      var item = new StatusBarItem
+      {
+        Content = "changed"
+      };
+      // TODO: fix
+      // Dispatcher.Invoke(() => StatusBar.Items.Add(item));
+    }
+  }
 
   private readonly Action<Device> _removeCallback;
 
@@ -51,7 +67,7 @@ public partial class WeatherDeviceInfoControl : IDisposable
     if (measurement.Error)
     {
       // Increase the timer interval to 5 seconds when there's an error
-      _status = Status.Error;
+      CurrentStatus = Status.Error;
       _timer!.Change(5000, 5000);
       
       // If it's the first measurement, increment
@@ -72,7 +88,7 @@ public partial class WeatherDeviceInfoControl : IDisposable
       {
         await _timer!.DisposeAsync();
         _retryCounter = 0;
-        _status = Status.Ready;
+        CurrentStatus = Status.Ready;
       }
 
       // TODO: show this on the status bar instead
@@ -81,8 +97,8 @@ public partial class WeatherDeviceInfoControl : IDisposable
     }
 
     // If connection was restored, put the previous timer params back
-    if (_status == Status.Error) _timer!.Change(_device.RefreshRate * 1000, _device.RefreshRate * 1000);
-    _status = Status.Fetching;
+    if (CurrentStatus == Status.Error) _timer!.Change(_device.RefreshRate * 1000, _device.RefreshRate * 1000);
+    CurrentStatus = Status.Fetching;
 
     await Dispatcher.BeginInvoke(() =>
     {
@@ -93,16 +109,16 @@ public partial class WeatherDeviceInfoControl : IDisposable
 
   private void FetchData_OnClick(object sender, RoutedEventArgs e)
   {
-    if (_status == Status.Fetching) return;
+    if (CurrentStatus == Status.Fetching) return;
     _timer = new Timer(FetchTimerDelegate, null, 0, _device.RefreshRate * 1000);
-    _status = Status.Fetching;
+    CurrentStatus = Status.Fetching;
   }
   
   private async void StopFetching_OnClick(object sender, RoutedEventArgs e)
   {
     if (_timer is null) return;
     await _timer.DisposeAsync();
-    _status = Status.Ready;
+    CurrentStatus = Status.Ready;
   }
 
   private void DeleteDevice_OnClick(object sender, RoutedEventArgs e)
