@@ -62,12 +62,19 @@ public partial class MainWindow
       return;
     }
 
+    var formattedHeader = $"{_currentDevice.IpAddress}:{_currentDevice.Port}"; 
     var item = new TabItem
     {
       Content = _deviceInfo,
-      Header = $"{_currentDevice.IpAddress}:{_currentDevice.Port}"
+      Header = formattedHeader
     };
-    if (_openDevices.Exists(x => (string)x.Header == $"{_currentDevice.IpAddress}:{_currentDevice.Port}")) return;
+    // For some reason content comparison doesn't work
+    var found = _openDevices.Find(x => (string)x.Header == formattedHeader);
+    if (found is not null)
+    {
+      TabControl.SelectedItem = found;
+      return;
+    }
     _openDevices.Add(item);
     TabControl.Items.Add(item);
     TabControl.SelectedItem = item;
@@ -75,7 +82,9 @@ public partial class MainWindow
   
   private async void AddNewDevice(IPAddress ipAddress, ushort port, string? id, Type type)
   {
-    var device = (Device)Activator.CreateInstance(type, ipAddress, port, id);
+    var activated = Activator.CreateInstance(type, ipAddress, port, id);
+    if (activated is null) throw new Exception("Null instance returned from activator");
+    var device = (Device)activated;
     // TODO: figure out why this doesn't trigger when the type is different but ip and port the same
     if (_devices.Contains(device))
     {
@@ -89,8 +98,9 @@ public partial class MainWindow
   
   private async void RemoveDevice(Device device)
   {
+    // TODO: hacked a bit, might wanna do it different way
+    TabControl.Items.Remove(TabControl.SelectedItem);
     await Database.RemoveDeviceAsync(device);
-    Grid.Children.Remove(_deviceInfo);
     _devices.Remove(device);
   }
 }
