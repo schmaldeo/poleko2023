@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Globalization;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls.Primitives;
 
 namespace PolEko;
 
@@ -16,21 +13,6 @@ public partial class WeatherDeviceInfoControl : IDisposable
   private byte _retryCounter;
   private bool _disposed;
   private Status _status;
-
-  private Status CurrentStatus
-  {
-    get => _status;
-    set
-    {
-      _status = value;
-      var item = new StatusBarItem
-      {
-        Content = "changed"
-      };
-      // TODO: fix
-      // Dispatcher.Invoke(() => StatusBar.Items.Add(item));
-    }
-  }
 
   private readonly Action<Device> _removeCallback;
 
@@ -46,7 +28,6 @@ public partial class WeatherDeviceInfoControl : IDisposable
   /// </summary>
   /// <param name="device"><c>Device</c> whose parameters will be displayed</param>
   /// <param name="httpclient"><c>HttpClient</c> that will be used to fetch measurements, passed in by reference</param>
-  /// <param name="editCallback">Delegate to be called when a device is edited</param>
   /// <param name="removeCallback">Delegate to be called when a device is removed</param>
   public WeatherDeviceInfoControl(SmartProDevice device,
     in HttpClient httpclient, 
@@ -58,6 +39,37 @@ public partial class WeatherDeviceInfoControl : IDisposable
     
     InitializeComponent();
     DeviceString.Text = device.ToString();
+    CurrentStatus = Status.Ready;
+  }
+
+  private Status CurrentStatus
+  {
+    get => _status;
+    set
+    {
+      _status = value;
+      switch (value)
+      {
+        case Status.Fetching:
+          Dispatcher.Invoke(() =>
+          {
+            StatusItem.Content = "Fetching";
+          });
+          break;
+        case Status.Ready:
+          Dispatcher.Invoke(() =>
+          {
+            StatusItem.Content = "Ready";
+          });
+          break;
+        case Status.Error:
+          Dispatcher.Invoke(() =>
+          {
+            StatusItem.Content = $"Request timed out {_retryCounter.ToString()} times";
+          });
+          break;
+      }
+    }
   }
 
   private async void FetchTimerDelegate(object? _)
@@ -90,9 +102,7 @@ public partial class WeatherDeviceInfoControl : IDisposable
         _retryCounter = 0;
         CurrentStatus = Status.Ready;
       }
-
-      // TODO: show this on the status bar instead
-      MessageBox.Show($"Request timed out {_retryCounter} time(s)");
+      
       return;
     }
 

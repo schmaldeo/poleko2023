@@ -29,9 +29,13 @@
     <TextBlock x:Name="TemperatureBlock" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="25" FontFamily="Bahnschrift Light" Text="" Grid.Row="2" Grid.Column="1"/>
     <Label x:Name="IsRunningLabel" Content="Is Running?" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Bahnschrift Light" FontSize="23" Grid.Row="1" Grid.Column="2"/>
     <TextBlock x:Name="IsRunningBlock" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="25" FontFamily="Bahnschrift Light" Text="" Grid.Row="2" Grid.Column="2"/>
-    <Button x:Name="Fetch" Content="Fetch" HorizontalAlignment="Left" Height="30" VerticalAlignment="Center" Width="70" Click="FetchData_OnClick" Grid.Column="3"/>
-    <Button x:Name="DeleteButton" Content="Delete" HorizontalAlignment="Right" VerticalAlignment="Center" Width="70" Height="30" Click="DeleteDevice_OnClick"/>
-    <Button x:Name="StopFetchButton" Grid.Column="3" Content="Stop" HorizontalAlignment="Right" Height="30" VerticalAlignment="Center" Width="70" Click="StopFetching_OnClick"/>
-    <StatusBar Grid.Row="5" Grid.Column="0" Name="StatusBar" Grid.ColumnSpan="4" Height="20" Background="#FFABABAB"/>
+    <Button Grid.Row="0" x:Name="Fetch" Content="Fetch" HorizontalAlignment="Left" Height="30" VerticalAlignment="Center" Width="70" Click="FetchData_OnClick" Grid.Column="3"/>
+    <Button Grid.Row="0" x:Name="DeleteButton" Content="Delete" HorizontalAlignment="Right" VerticalAlignment="Center" Width="70" Height="30" Click="DeleteDevice_OnClick"/>
+    <Button Grid.Row="0" x:Name="StopFetchButton" Grid.Column="3" Content="Stop" HorizontalAlignment="Right" Height="30" VerticalAlignment="Center" Width="70" Click="StopFetching_OnClick"/>
+    <StatusBar Grid.Row="5" Grid.Column="0" Name="StatusBar" Grid.ColumnSpan="4" Height="20" Background="#FFABABAB">
+      <StatusBarItem Name="StatusItem"/>
+      <Separator Width="2" HorizontalAlignment="Left"/>
+      <StatusBarItem Name="FetchErrorItem"/>
+    </StatusBar>
   </Grid>
 </UserControl>
