@@ -3,3 +3,11 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+node_modules/
+package-lock.json
+.eslintrc.json
+html/
+.vs/
+.idea/
+Doxyfile
+settings.json
