@@ -34,14 +34,12 @@ public class SmartProMeasurement : Measurement
 }
 public class ExampleMeasurement : Measurement
 {
-  public ExampleMeasurement() {}
-  
   [JsonPropertyName("altitude")]
-  public int Altitude { get; set; }
+  public int Altitude { get; init; }
   [JsonPropertyName("speed")]
-  public int Speed { get; set; }
+  public int Speed { get; init; }
   [JsonPropertyName("distanceTravelled")]
-  public int DistanceTravelled { get; set; }
+  public int DistanceTravelled { get; init; }
 
   
   public override string ToString()
