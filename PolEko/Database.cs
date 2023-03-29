@@ -196,7 +196,7 @@ public static class Database
       ip_address TEXT NOT NULL,
       port INTEGER NOT NULL,
       PRIMARY KEY (timestamp, ip_address, port),
-      FOREIGN KEY (ip_address, port) REFERENCES devices(ip_address, port) ON DELETE CASCADE ON UPDATE CASCADE);");
+      FOREIGN KEY (ip_address, port, error) REFERENCES devices(ip_address, port) ON DELETE CASCADE ON UPDATE CASCADE);");
     
     return stringBuilder.ToString();
   }
