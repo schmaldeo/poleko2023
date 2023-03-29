@@ -52,7 +52,7 @@ public partial class MainWindow
     if (_currentDevice is SmartProDevice device)
     {
       _deviceInfo = new(device, httpClient, RemoveDevice);
-      Closing += device.HandleBufferOverflow;
+      Closing += delegate { _deviceInfo.Dispose(); };
     }
 
     if (_currentDevice is ExampleDevice)

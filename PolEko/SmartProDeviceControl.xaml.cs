@@ -107,7 +107,11 @@ public partial class WeatherDeviceInfoControl : IDisposable
     }
 
     // If connection was restored, put the previous timer params back
-    if (CurrentStatus == Status.Error) _timer!.Change(_device.RefreshRate * 1000, _device.RefreshRate * 1000);
+    if (CurrentStatus == Status.Error)
+    {
+      _timer!.Change(_device.RefreshRate * 1000, _device.RefreshRate * 1000);
+      _retryCounter = 0;
+    }
     CurrentStatus = Status.Fetching;
 
     await Dispatcher.BeginInvoke(() =>
@@ -140,6 +144,7 @@ public partial class WeatherDeviceInfoControl : IDisposable
   public async void Dispose()
   {
     if (_timer == null || _disposed) return;
+    _device.HandleBufferOverflow(null, EventArgs.Empty);
     _disposed = true;
     GC.SuppressFinalize(this);
     await _timer.DisposeAsync();
