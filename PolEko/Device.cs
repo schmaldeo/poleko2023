@@ -123,6 +123,8 @@ public abstract class Device<T> : Device where T : Measurement, new()
   public Buffer<T> MeasurementBuffer { get; } = new(5);
   public DateTime TimeOfLastMeasurement { get; protected set; }
   
+  // TODO: maybe utilise only one GetMeasurement method or add something like HandleMeasurements where you'd pass
+  // ready objects
   public virtual async Task<T> GetMeasurement(HttpClient client)
   {
     try

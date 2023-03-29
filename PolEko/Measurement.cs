@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 namespace PolEko;
 
 
+// TODO: think about making this a structure
 public abstract class Measurement
 {
   /// <summary>
