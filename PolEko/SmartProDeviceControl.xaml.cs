@@ -144,7 +144,7 @@ public partial class WeatherDeviceInfoControl : IDisposable
   public async void Dispose()
   {
     if (_timer == null || _disposed) return;
-    _device.HandleBufferOverflow(null, EventArgs.Empty);
+    _device.InsertMeasurements();
     _disposed = true;
     GC.SuppressFinalize(this);
     await _timer.DisposeAsync();

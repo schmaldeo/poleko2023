@@ -11,6 +11,8 @@ namespace PolEko;
 
 public static class Database
 {
+  // Connections to SQLite are very cheap as they don't utilise network, so it's OK to just open new connection in each
+  // of these methods, especially as they are not called all that frequently 
   private const string ConnectionString = "Data Source=Measurements.db";
   
   public static async Task CreateTablesAsync(IEnumerable<Type> types, SqliteConnection? connection = null)
