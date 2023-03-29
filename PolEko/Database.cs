@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,6 @@ using Microsoft.Data.Sqlite;
 
 namespace PolEko;
 
-// TODO: handle DBExceptions
 public static class Database
 {
   private const string ConnectionString = "Data Source=Measurements.db";
@@ -34,7 +34,14 @@ public static class Database
     {
       var query = GetMeasurementTablesDefinitions(type);
       command.CommandText = query;
-      await command.ExecuteNonQueryAsync();
+      try
+      {
+        await command.ExecuteNonQueryAsync();
+      }
+      catch (DbException e)
+      {
+        MessageBox.Show($"Error creating a table for {type.Name} \n {e.Message}");
+      }
     }
   }
 
@@ -48,56 +55,65 @@ public static class Database
         SELECT * FROM devices;
       ";
 
-    await using var reader = command.ExecuteReader();
-    
     List<Device> deviceList = new();
     
-    while (await reader.ReadAsync())
+    try
     {
-      // This looks like a bunch of unsafe code, but the error handling should help in avoiding awkward errors
-      // and shouldn't generate any problems
-      try
+      await using var reader = command.ExecuteReader();
+
+
+      while (await reader.ReadAsync())
       {
-        Type type;
+        // This looks like a bunch of unsafe code, but the error handling should help in avoiding awkward errors
+        // and shouldn't generate any problems
         try
         {
-          type = types[(string)reader["type"]];
+          Type type;
+          try
+          {
+            type = types[(string)reader["type"]];
+          }
+          catch (KeyNotFoundException)
+          {
+            const string errorMsg =
+              "Invalid device type value in database. Check if all types are correctly added to _registeredDeviceTypes in App.xaml.cs.";
+            MessageBox.Show(errorMsg);
+            throw new KeyNotFoundException(errorMsg);
+          }
+
+          var ipAddress = IPAddress.Parse((string)reader["ip_address"]);
+          var port = (ushort)(long)reader["port"];
+          var device = Activator.CreateInstance(type, ipAddress, port,
+            reader["familiar_name"] is DBNull ? null : reader["familiar_name"]);
+
+          if (device is null)
+          {
+            MessageBox.Show($"Error creating an instance of Device {ipAddress}:{port}");
+            continue;
+          }
+
+          var d = (Device)device;
+          deviceList.Add(d);
         }
-        catch (KeyNotFoundException)
+        catch (InvalidCastException)
         {
           const string errorMsg =
-            "Invalid device type value in database. Check if all types are correctly added to _registeredDeviceTypes in App.xaml.cs.";
+            "Invalid cast reading devices from database. Check if values in devices table are correct";
           MessageBox.Show(errorMsg);
-          throw new KeyNotFoundException(errorMsg);
+          throw new InvalidCastException(errorMsg);
         }
-
-        var ipAddress = IPAddress.Parse((string)reader["ip_address"]);
-        var port = (ushort)(long)reader["port"];
-        var device = Activator.CreateInstance(type, ipAddress, port,
-          reader["familiar_name"] is DBNull ? null : reader["familiar_name"]);
-
-        if (device is null)
+        catch (Exception e)
         {
-          MessageBox.Show($"Error creating an instance of Device {ipAddress}:{port}");
-          continue;
+          MessageBox.Show(e.Message);
+          throw;
         }
-        var d = (Device)device;
-        deviceList.Add(d);
       }
-      catch (InvalidCastException)
-      {
-        const string errorMsg =
-          "Invalid cast reading devices from database. Check if values in devices table are correct";
-        MessageBox.Show(errorMsg);
-        throw new InvalidCastException(errorMsg);
-      }
-      catch (Exception e)
-      {
-        MessageBox.Show(e.Message);
-        throw;
-      }
-    }
 
+    }
+    catch (DbException e)
+    {
+      MessageBox.Show($"Error getting devices from database \n {e.Message}");
+    }
     return deviceList;
   }
 
@@ -112,7 +128,15 @@ public static class Database
       $@"
         INSERT INTO devices (ip_address, port, familiar_name, type) VALUES ('{device.IpAddress}', {device.Port}, {id}, '{typeName}');
       ";
-    await command.ExecuteNonQueryAsync();
+
+    try
+    {
+      await command.ExecuteNonQueryAsync();
+    }
+    catch (DbException e)
+    {
+      MessageBox.Show($"Error adding a device to database. Added device will only be seen locally until program exits \n {e.Message}");
+    }
   }
 
   public static async Task RemoveDeviceAsync(Device device, SqliteConnection? connection = null)
@@ -122,7 +146,14 @@ public static class Database
     var command = conn.CreateCommand();
     command.CommandText = $"DELETE FROM devices WHERE ip_address = '{device.IpAddress}' AND port = {device.Port}";
 
-    await command.ExecuteNonQueryAsync();
+    try
+    {
+      await command.ExecuteNonQueryAsync();
+    }
+    catch (DbException e)
+    {
+      MessageBox.Show($"Error removing a device from database \n {e.Message}");
+    }
   } 
 
   public static async Task InsertMeasurementsAsync(IEnumerable<Measurement> measurements, Device sender, Type type, SqliteConnection? connection = null)
@@ -168,7 +199,14 @@ public static class Database
     var command = conn.CreateCommand();
     command.CommandText = stringBuilder.ToString();
 
-    await command.ExecuteNonQueryAsync();
+    try
+    {
+      await command.ExecuteNonQueryAsync();
+    }
+    catch (DbException e)
+    {
+      MessageBox.Show($"Error inserting measurements into database \n {e.Message}");
+    }
   }
 
   /// <summary>
