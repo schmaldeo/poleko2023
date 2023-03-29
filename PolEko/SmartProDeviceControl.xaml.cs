@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace PolEko;
 
-public partial class WeatherDeviceInfoControl : IDisposable
+public partial class SmartProDeviceControl : IDisposable
 {
   private readonly HttpClient _httpclient;
   private readonly SmartProDevice _device;
@@ -29,7 +29,7 @@ public partial class WeatherDeviceInfoControl : IDisposable
   /// <param name="device"><c>Device</c> whose parameters will be displayed</param>
   /// <param name="httpclient"><c>HttpClient</c> that will be used to fetch measurements, passed in by reference</param>
   /// <param name="removeCallback">Delegate to be called when a device is removed</param>
-  public WeatherDeviceInfoControl(SmartProDevice device,
+  public SmartProDeviceControl(SmartProDevice device,
     in HttpClient httpclient, 
     Action<Device> removeCallback)
   {
