@@ -22,7 +22,7 @@ public abstract class Device
   /// </summary>
   private string? _id;
   
-  public int RefreshRate => 2;
+  public int RefreshRate => 1;
 
   protected Device(IPAddress ipAddress, ushort port, string? id = null)
   {
