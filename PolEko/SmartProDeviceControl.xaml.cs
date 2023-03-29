@@ -116,7 +116,9 @@ public partial class SmartProDeviceControl : IDisposable
 
     await Dispatcher.BeginInvoke(() =>
     {
-      TemperatureBlock.Text = measurement.Temperature.ToString();
+      // Parse to float with and then display as string with 2 decimal places (by default it would display x.x0 as x.x)
+      var parsedTemperature = (float)measurement.Temperature / 100;
+      TemperatureBlock.Text = parsedTemperature.ToString("N2");
       IsRunningBlock.Text = measurement.IsRunning.ToString();
     });
   }
