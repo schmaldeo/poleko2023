@@ -101,6 +101,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
       else
       {
         await _timer!.DisposeAsync();
+        MessageBox.Show("Request timed out 5 times, aborting");
         _retryCounter = 0;
         CurrentStatus = Status.Ready;
       }
