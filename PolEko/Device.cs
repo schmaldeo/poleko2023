@@ -219,7 +219,7 @@ public class SmartProDevice : Device<SmartProMeasurement>
   public override async Task InsertMeasurementsAsync()
   {
     if (MeasurementBuffer.Size == 0) return;
-    await Database.InsertMeasurementsAsync(MeasurementBuffer.GetCurrentIteration(), this, typeof(SmartProMeasurement));
+    await Database.InsertMeasurementsAsync(MeasurementBuffer.GetCurrentIteration(), this);
   }
 }
 
@@ -240,6 +240,6 @@ public class ExampleDevice : Device<ExampleMeasurement>
   public override async Task InsertMeasurementsAsync()
   {
     if (MeasurementBuffer.Size == 0) return;
-    await Database.InsertMeasurementsAsync(MeasurementBuffer.GetCurrentIteration(), this, typeof(ExampleMeasurement));
+    await Database.InsertMeasurementsAsync(MeasurementBuffer.GetCurrentIteration(), this);
   }
 }

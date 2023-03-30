@@ -13,7 +13,7 @@ public partial class App
 {
   private List<Type> _registeredMeasurementTypes = new();
 
-  private readonly Dictionary<string, Type> _registeredDeviceTypes = new();
+  private readonly Dictionary<string, (Type, Type)> _registeredDeviceTypes = new();
 
   private async void App_Startup(object sender, StartupEventArgs e)
   {
@@ -26,11 +26,13 @@ public partial class App
     var deviceTypes = FindDerivedTypes(typeof(Device));
     foreach (var t in deviceTypes)
     {
-      _registeredDeviceTypes[t.Name] = t;
+      var baseType = t.BaseType!;
+      var measurementType = baseType.GetGenericArguments().First();
+      _registeredDeviceTypes[t.Name] = (t, measurementType);
     }
     
     _registeredMeasurementTypes = FindDerivedTypes(typeof(Measurement));
-    
+
     await Database.CreateTablesAsync(_registeredMeasurementTypes);
     var devices = await Database.ExtractDevicesAsync(_registeredDeviceTypes);
     

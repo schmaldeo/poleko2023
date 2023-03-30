@@ -15,7 +15,7 @@ public partial class SideMenu
   /// </summary>
   private readonly Action<IPAddress, ushort, string?, Type> _newDeviceAction;
 
-  private readonly Dictionary<string, Type> _types;
+  private readonly Dictionary<string, (Type, Type)> _types;
 
   private readonly RoutedEventHandler _changeDisplayedDevice;
 
@@ -29,7 +29,7 @@ public partial class SideMenu
   public SideMenu(ObservableCollection<Device> devices,
     Action<IPAddress, ushort, string?, Type> addNewDevice,
     RoutedEventHandler changeDisplayedDevice,
-    Dictionary<string, Type> types)
+    Dictionary<string, (Type, Type)> types)
   {
     _newDeviceAction = addNewDevice;
     _changeDisplayedDevice = changeDisplayedDevice;

@@ -47,7 +47,7 @@ public static class Database
     }
   }
 
-  public static async Task<List<Device>> ExtractDevicesAsync(Dictionary<string, Type> types, SqliteConnection? connection = null)
+  public static async Task<List<Device>> ExtractDevicesAsync(Dictionary<string, (Type, Type)> types, SqliteConnection? connection = null)
   {
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
     await conn.OpenAsync();
@@ -73,7 +73,7 @@ public static class Database
           Type type;
           try
           {
-            type = types[(string)reader["type"]];
+            type = types[(string)reader["type"]].Item1;
           }
           catch (KeyNotFoundException)
           {
@@ -158,8 +158,10 @@ public static class Database
     }
   } 
 
-  public static async Task InsertMeasurementsAsync(IEnumerable<Measurement> measurements, Device sender, Type type, SqliteConnection? connection = null)
+  public static async Task InsertMeasurementsAsync(IEnumerable<Measurement> measurements, Device sender, SqliteConnection? connection = null)
   {
+    var type = sender.GetType();
+    
     StringBuilder stringBuilder = new($"INSERT INTO {type.Name}s (");
     foreach (var t in type.GetProperties())
     {
@@ -216,6 +218,65 @@ public static class Database
       MessageBox.Show($"Error inserting measurements into database \n {e.Message}");
     }
   }
+  
+  // TODO: dont use this stupid Type parameter, instead just get the type from typeof(sender) and then just change the shit in Device<>
+  // public static async Task InsertMeasurementsAsync(IEnumerable<Measurement> measurements, Device sender, Type type, SqliteConnection? connection = null)
+  // {
+  //   await using var conn = connection ?? new SqliteConnection(ConnectionString);
+  //   await conn.OpenAsync();
+  //   await using var transaction = await conn.BeginTransactionAsync();
+  //
+  //   var command = conn.CreateCommand();
+  //
+  //   StringBuilder stringBuilder = new($"INSERT INTO {type.Name}s (");
+  //   foreach (var t in type.GetProperties())
+  //   {
+  //     var name = t.Name.ToLower();
+  //     stringBuilder.Append($"{name}");
+  //     stringBuilder.Append(',');
+  //   }
+  //
+  //   stringBuilder.Append("ip_address,port) VALUES ($values);");
+  //
+  //   command.CommandText = stringBuilder.ToString();
+  //
+  //   var parameter = command.CreateParameter();
+  //   parameter.ParameterName = "$values";
+  //   command.Parameters.Add(parameter);
+  //   
+  //   foreach (var measurement in measurements)
+  //   {
+  //     if (index > 0) stringBuilder.Append(',');
+  //     stringBuilder.Append('(');
+  //     
+  //     foreach (var property in type.GetProperties())
+  //     {
+  //       var prop = property.GetValue(measurement);
+  //       switch (prop)
+  //       {
+  //         case bool b:
+  //           stringBuilder.Append(b ? 1 : 0);
+  //           stringBuilder.Append(',');
+  //           continue;
+  //         case DateTime dateTime:
+  //           stringBuilder.Append($"'{dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff")}'");
+  //           stringBuilder.Append(',');
+  //           continue;
+  //         default:
+  //           stringBuilder.Append($"'{prop}'");
+  //           stringBuilder.Append(',');
+  //           break;
+  //       }
+  //     }
+  //     
+  //     stringBuilder.Append($"'{sender.IpAddress}',{sender.Port})");
+  //     index++;
+  //   }
+  //
+  //   stringBuilder.Append(';');
+  //   
+  //   command.CommandText = stringBuilder.ToString();
+  // }
 
   /// <summary>
   /// Method that takes in a <c>Type</c> derived from <c>Measurement</c> and returns a SQLite query
