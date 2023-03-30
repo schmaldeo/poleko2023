@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace PolEko;
 
-public partial class SmartProDeviceControl : IDisposable
+// TODO: disable fetch/stop buttons based on _status
+public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
 {
   private readonly HttpClient _httpclient;
   private readonly SmartProDevice _device;
@@ -146,7 +148,16 @@ public partial class SmartProDeviceControl : IDisposable
   public async void Dispose()
   {
     if (_timer == null || _disposed) return;
-    _device.InsertMeasurements();
+    await _device.InsertMeasurementsAsync();
+    _disposed = true;
+    GC.SuppressFinalize(this);
+    _timer.Dispose();
+  }
+
+  public async ValueTask DisposeAsync()
+  {
+    if (_timer == null || _disposed) return;
+    await _device.InsertMeasurementsAsync();
     _disposed = true;
     GC.SuppressFinalize(this);
     await _timer.DisposeAsync();

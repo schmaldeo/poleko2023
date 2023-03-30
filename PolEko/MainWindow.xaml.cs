@@ -52,7 +52,7 @@ public partial class MainWindow
     if (_currentDevice is SmartProDevice device)
     {
       _deviceInfo = new(device, httpClient, RemoveDevice);
-      Closing += delegate { _deviceInfo.Dispose(); };
+      Closing += async delegate { await _deviceInfo.DisposeAsync(); };
     }
 
     if (_currentDevice is ExampleDevice)

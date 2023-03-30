@@ -149,11 +149,11 @@ public abstract class Device<T> : Device where T : Measurement, new()
     }
   }
 
-  public abstract void InsertMeasurements();
+  public abstract Task InsertMeasurementsAsync();
 
   private void HandleBufferOverflow(object? sender, EventArgs e)
   {
-    InsertMeasurements();
+    InsertMeasurementsAsync();
   }
 }
 
@@ -216,7 +216,7 @@ public class SmartProDevice : Device<SmartProMeasurement>
   }
 
   // Methods
-  public override async void InsertMeasurements()
+  public override async Task InsertMeasurementsAsync()
   {
     if (MeasurementBuffer.Size == 0) return;
     await Database.InsertMeasurementsAsync(MeasurementBuffer.GetCurrentIteration(), this, typeof(SmartProMeasurement));
@@ -237,7 +237,7 @@ public class ExampleDevice : Device<ExampleMeasurement>
   public override string Description => "Device used for presentation";
 
   // Methods
-  public override async void InsertMeasurements()
+  public override async Task InsertMeasurementsAsync()
   {
     if (MeasurementBuffer.Size == 0) return;
     await Database.InsertMeasurementsAsync(MeasurementBuffer.GetCurrentIteration(), this, typeof(ExampleMeasurement));
