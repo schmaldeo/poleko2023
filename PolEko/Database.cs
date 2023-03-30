@@ -164,122 +164,67 @@ public static class Database
     var senderType = sender.GetType();
     var baseType = senderType.BaseType!;
     var type = baseType.GetGenericArguments().First();
-
-    StringBuilder stringBuilder = new($"INSERT INTO {type.Name}s (");
-    foreach (var t in type.GetProperties())
-    {
-      var name = t.Name.ToLower();
-      stringBuilder.Append($"{name}");
-      stringBuilder.Append(',');
-    }
-
-    stringBuilder.Append("ip_address,port) VALUES");
-    
-    var index = 0;
-    foreach (var measurement in measurements)
-    {
-      if (index > 0) stringBuilder.Append(',');
-      stringBuilder.Append('(');
-      
-      foreach (var property in type.GetProperties())
-      {
-        var prop = property.GetValue(measurement);
-        switch (prop)
-        {
-          case bool b:
-            stringBuilder.Append(b ? 1 : 0);
-            stringBuilder.Append(',');
-            continue;
-          case DateTime dateTime:
-            stringBuilder.Append($"'{dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff")}'");
-            stringBuilder.Append(',');
-            continue;
-          default:
-            stringBuilder.Append($"'{prop}'");
-            stringBuilder.Append(',');
-            break;
-        }
-      }
-      
-      stringBuilder.Append($"'{sender.IpAddress}',{sender.Port})");
-      index++;
-    }
-
-    stringBuilder.Append(';');
     
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
     await conn.OpenAsync();
-    var command = conn.CreateCommand();
-    command.CommandText = stringBuilder.ToString();
-
-    try
-    {
-      await command.ExecuteNonQueryAsync();
-    }
-    catch (DbException e)
-    {
-      MessageBox.Show($"Error inserting measurements into database \n {e.Message}");
-    }
-  }
+    await using var transaction = await conn.BeginTransactionAsync();
   
-  // TODO: dont use this stupid Type parameter, instead just get the type from typeof(sender) and then just change the shit in Device<>
-  // public static async Task InsertMeasurementsAsync(IEnumerable<Measurement> measurements, Device sender, Type type, SqliteConnection? connection = null)
-  // {
-  //   await using var conn = connection ?? new SqliteConnection(ConnectionString);
-  //   await conn.OpenAsync();
-  //   await using var transaction = await conn.BeginTransactionAsync();
-  //
-  //   var command = conn.CreateCommand();
-  //
-  //   StringBuilder stringBuilder = new($"INSERT INTO {type.Name}s (");
-  //   foreach (var t in type.GetProperties())
-  //   {
-  //     var name = t.Name.ToLower();
-  //     stringBuilder.Append($"{name}");
-  //     stringBuilder.Append(',');
-  //   }
-  //
-  //   stringBuilder.Append("ip_address,port) VALUES ($values);");
-  //
-  //   command.CommandText = stringBuilder.ToString();
-  //
-  //   var parameter = command.CreateParameter();
-  //   parameter.ParameterName = "$values";
-  //   command.Parameters.Add(parameter);
-  //   
-  //   foreach (var measurement in measurements)
-  //   {
-  //     if (index > 0) stringBuilder.Append(',');
-  //     stringBuilder.Append('(');
-  //     
-  //     foreach (var property in type.GetProperties())
-  //     {
-  //       var prop = property.GetValue(measurement);
-  //       switch (prop)
-  //       {
-  //         case bool b:
-  //           stringBuilder.Append(b ? 1 : 0);
-  //           stringBuilder.Append(',');
-  //           continue;
-  //         case DateTime dateTime:
-  //           stringBuilder.Append($"'{dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff")}'");
-  //           stringBuilder.Append(',');
-  //           continue;
-  //         default:
-  //           stringBuilder.Append($"'{prop}'");
-  //           stringBuilder.Append(',');
-  //           break;
-  //       }
-  //     }
-  //     
-  //     stringBuilder.Append($"'{sender.IpAddress}',{sender.Port})");
-  //     index++;
-  //   }
-  //
-  //   stringBuilder.Append(';');
-  //   
-  //   command.CommandText = stringBuilder.ToString();
-  // }
+    var command = conn.CreateCommand();
+
+    List<SqliteParameter> parameters = new();
+    
+    StringBuilder definitionStringBuilder = new($"INSERT INTO {type.Name}s (");
+    StringBuilder valuesStringBuilder = new("(");
+    foreach (var t in type.GetProperties())
+    {
+      var name = t.Name.ToLower();
+      definitionStringBuilder.Append($"{name}");
+      definitionStringBuilder.Append(',');
+
+      var parameter = command.CreateParameter();
+      parameter.ParameterName = $"${name}";
+      command.Parameters.Add(parameter);
+      parameters.Add(parameter);
+      valuesStringBuilder.Append($"${name},");
+    }
+    definitionStringBuilder.Append("ip_address,port) VALUES ");
+    valuesStringBuilder.Append($"'{sender.IpAddress}', {sender.Port});");
+    definitionStringBuilder.Append(valuesStringBuilder);
+    
+    command.CommandText = definitionStringBuilder.ToString();
+
+    foreach (var measurement in measurements)
+    {
+      foreach (var property in type.GetProperties())
+      {
+        var prop = property.GetValue(measurement);
+        var parameter = parameters.First(x => x.ParameterName == $"${property.Name.ToLower()}");
+        switch (prop)
+        {
+          case bool b:
+            parameter.Value = b ? 1 : 0;
+            continue;
+          case DateTime dateTime:
+            parameter.Value = dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff");
+            continue;
+          default:
+            parameter.Value = prop;
+            break;
+        }
+      }
+
+      try
+      {
+        await command.ExecuteNonQueryAsync();
+      }
+      catch (DbException e)
+      {
+        MessageBox.Show($"Error inserting measurements into database \n {e.Message}");
+      }
+    }
+
+    await transaction.CommitAsync();
+  }
 
   /// <summary>
   /// Method that takes in a <c>Type</c> derived from <c>Measurement</c> and returns a SQLite query
