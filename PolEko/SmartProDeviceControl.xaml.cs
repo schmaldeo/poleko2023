@@ -98,6 +98,17 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
       return;
     }
 
+    if (measurement.Error)
+    {
+      await Dispatcher.BeginInvoke(() =>
+      {
+        TemperatureBlock.Text = "Error";
+        IsRunningBlock.Text = measurement.IsRunning.ToString();
+      });
+      
+      return;
+    }
+
     // If connection was restored, put the previous timer params back
     if (CurrentStatus == Status.Error)
     {
