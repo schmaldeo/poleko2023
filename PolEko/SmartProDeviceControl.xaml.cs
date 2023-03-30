@@ -78,22 +78,12 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
   {
     var measurement = await _device.GetMeasurement(_httpclient);
     
-    if (measurement.Error)
+    if (measurement.NetworkError)
     {
       // Increase the timer interval to 5 seconds when there's an error
       CurrentStatus = Status.Error;
       _timer!.Change(5000, 5000);
-      
-      // If it's the first measurement, increment
-      if (_device.LastMeasurement is null)
-      {
-        _retryCounter = 0;
-        return;
-      }
-      
-      // If there were any errors before, but not enough to dispose the timer, reset the counter
-      if (_device.LastMeasurement is not null && !_device.LastMeasurement.Error) _retryCounter = 0;
-      
+
       if (_retryCounter < 5)
       {
         _retryCounter++;
@@ -102,7 +92,6 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
       {
         await _timer!.DisposeAsync();
         MessageBox.Show("Request timed out 5 times, aborting");
-        _retryCounter = 0;
         CurrentStatus = Status.Ready;
       }
       
@@ -138,6 +127,8 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     if (_timer is null) return;
     await _timer.DisposeAsync();
     CurrentStatus = Status.Ready;
+    // TODO: remove this, test
+    DataGrid.ItemsSource = _device.MeasurementBuffer;
   }
 
   private void DeleteDevice_OnClick(object sender, RoutedEventArgs e)

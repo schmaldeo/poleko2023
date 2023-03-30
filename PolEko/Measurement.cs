@@ -12,7 +12,7 @@ public abstract class Measurement
   /// Indicates that the measurement is invalid
   /// </summary>
 
-  public bool Error { get; init; }
+  public bool NetworkError { get; init; }
 
   public DateTime TimeStamp { get; } = DateTime.Now;
 
@@ -27,10 +27,12 @@ public class SmartProMeasurement : Measurement
   public bool IsRunning { get; init; }
   
   public int Temperature { get; init; }
+  
+  public bool Error { get; init; }
 
   public override string ToString()
   {
-    return $"Temperature: {Temperature}, time of request: {TimeStamp}";
+    return $"Temperature: {Temperature}, time of request: {TimeStamp}, temperature error: {Error}";
   }
 }
 public class ExampleMeasurement : Measurement

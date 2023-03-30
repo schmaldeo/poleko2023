@@ -120,7 +120,7 @@ public abstract class Device<T> : Device where T : Measurement, new()
 
   public T? LastValidMeasurement { get; protected set; }
   public T? LastMeasurement { get; protected set; }
-  public Buffer<T> MeasurementBuffer { get; } = new(5);
+  public Buffer<T> MeasurementBuffer { get; } = new(60);
   public DateTime TimeOfLastMeasurement { get; protected set; }
   
   // TODO: maybe utilise only one GetMeasurement method or add something like HandleMeasurements where you'd pass
@@ -141,7 +141,7 @@ public abstract class Device<T> : Device where T : Measurement, new()
     {
       var errorMeasurement = new T
       {
-        Error = true
+        NetworkError = true
       };
       MeasurementBuffer.Add(errorMeasurement);
       LastMeasurement = errorMeasurement;
@@ -194,7 +194,7 @@ public class SmartProDevice : Device<SmartProMeasurement>
       {
         IsRunning = isRunning,
         Temperature = temperature,
-        Error = error
+        NetworkError = error
       };
       
       MeasurementBuffer.Add(measurement);
@@ -207,7 +207,7 @@ public class SmartProDevice : Device<SmartProMeasurement>
     {
       var errorMeasurement = new SmartProMeasurement
       {
-        Error = true
+        NetworkError = true
       };
       MeasurementBuffer.Add(errorMeasurement);
       LastMeasurement = errorMeasurement;

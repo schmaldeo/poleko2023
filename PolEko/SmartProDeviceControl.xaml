@@ -33,7 +33,9 @@
     <Button Grid.Row="0" x:Name="Fetch" Content="Fetch" HorizontalAlignment="Left" Height="30" VerticalAlignment="Center" Width="70" Click="FetchData_OnClick" Grid.Column="3"/>
     <Button Grid.Row="0" Grid.Column="0" x:Name="DeleteButton" Content="Delete" HorizontalAlignment="Right" VerticalAlignment="Center" Width="70" Height="30" Click="DeleteDevice_OnClick"/>
     <Button Grid.Row="0" x:Name="StopFetchButton" Grid.Column="3" Content="Stop" HorizontalAlignment="Right" Height="30" VerticalAlignment="Center" Width="70" Click="StopFetching_OnClick"/>
-    <xctk:DateTimePicker Grid.Row="2" Grid.Column="1"/>
+    <xctk:DateTimePicker Grid.Row="2" Grid.Column="0" Name="StartingDatePicker"/>
+    <xctk:DateTimePicker Grid.Row="2" Grid.Column="3" Name="EndingDatePicker"/>
+    <DataGrid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Name="DataGrid" IsReadOnly="True"></DataGrid>
     <StatusBar Grid.Row="5" Grid.Column="0" Name="StatusBar" Grid.ColumnSpan="4" Height="25" Background="#FFABABAB">
       <StatusBarItem Name="StatusItem"/>
     </StatusBar>
