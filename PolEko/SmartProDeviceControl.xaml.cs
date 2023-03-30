@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace PolEko;
 
@@ -41,6 +42,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     
     InitializeComponent();
     DeviceString.Text = device.ToString();
+    DeviceString.ToolTip = device.Description;
     CurrentStatus = Status.Ready;
   }
 

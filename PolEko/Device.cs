@@ -158,9 +158,9 @@ public abstract class Device<T> : Device where T : Measurement, new()
     await Database.InsertMeasurementsAsync(MeasurementBuffer.GetCurrentIteration(), this);
   }
 
-  private void HandleBufferOverflow(object? sender, EventArgs e)
+  private async void HandleBufferOverflow(object? sender, EventArgs e)
   {
-    Task.Run(InsertMeasurementsAsync);
+    await InsertMeasurementsAsync();
   }
 }
 
