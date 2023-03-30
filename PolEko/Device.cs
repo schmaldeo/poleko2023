@@ -121,7 +121,7 @@ public abstract class Device<T> : Device where T : Measurement, new()
   public T? LastValidMeasurement { get; protected set; }
   public T? LastMeasurement { get; protected set; }
   public Buffer<T> MeasurementBuffer { get; } = new(5);
-  public long TimeOfLastMeasurement { get; protected set; }
+  public DateTime TimeOfLastMeasurement { get; protected set; }
   
   // TODO: maybe utilise only one GetMeasurement method or add something like HandleMeasurements where you'd pass
   // ready objects

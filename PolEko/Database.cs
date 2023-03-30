@@ -179,15 +179,21 @@ public static class Database
       foreach (var property in type.GetProperties())
       {
         var prop = property.GetValue(measurement);
-        if (prop is bool b)
+        switch (prop)
         {
-          stringBuilder.Append(b ? 1 : 0);
-          stringBuilder.Append(',');
-          continue;
+          case bool b:
+            stringBuilder.Append(b ? 1 : 0);
+            stringBuilder.Append(',');
+            continue;
+          case DateTime dateTime:
+            stringBuilder.Append($"'{dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff")}'");
+            stringBuilder.Append(',');
+            continue;
+          default:
+            stringBuilder.Append($"'{prop}'");
+            stringBuilder.Append(',');
+            break;
         }
-        
-        stringBuilder.Append($"'{prop}'");
-        stringBuilder.Append(',');
       }
       
       stringBuilder.Append($"'{sender.IpAddress}',{sender.Port})");

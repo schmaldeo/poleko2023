@@ -14,7 +14,7 @@ public abstract class Measurement
 
   public bool Error { get; init; }
 
-  public long TimeStamp { get; } = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+  public DateTime TimeStamp { get; } = DateTime.Now;
 
   public abstract override string ToString();
 }
