@@ -149,11 +149,15 @@ public abstract class Device<T> : Device where T : Measurement, new()
     }
   }
 
-  public abstract Task InsertMeasurementsAsync();
+  public async Task InsertMeasurementsAsync()
+  {
+    if (MeasurementBuffer.Size == 0) return;
+    await Database.InsertMeasurementsAsync(MeasurementBuffer.GetCurrentIteration(), this);
+  }
 
   private void HandleBufferOverflow(object? sender, EventArgs e)
   {
-    InsertMeasurementsAsync();
+    Task.Run(InsertMeasurementsAsync);
   }
 }
 
@@ -214,13 +218,6 @@ public class SmartProDevice : Device<SmartProMeasurement>
       return errorMeasurement;
     }
   }
-
-  // Methods
-  public override async Task InsertMeasurementsAsync()
-  {
-    if (MeasurementBuffer.Size == 0) return;
-    await Database.InsertMeasurementsAsync(MeasurementBuffer.GetCurrentIteration(), this);
-  }
 }
 
 // ReSharper disable once ClassNeverInstantiated.Global
@@ -235,11 +232,4 @@ public class ExampleDevice : Device<ExampleMeasurement>
   public override string Type => "Example Device";
 
   public override string Description => "Device used for presentation";
-
-  // Methods
-  public override async Task InsertMeasurementsAsync()
-  {
-    if (MeasurementBuffer.Size == 0) return;
-    await Database.InsertMeasurementsAsync(MeasurementBuffer.GetCurrentIteration(), this);
-  }
 }

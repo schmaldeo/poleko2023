@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -160,8 +161,10 @@ public static class Database
 
   public static async Task InsertMeasurementsAsync(IEnumerable<Measurement> measurements, Device sender, SqliteConnection? connection = null)
   {
-    var type = sender.GetType();
-    
+    var senderType = sender.GetType();
+    var baseType = senderType.BaseType!;
+    var type = baseType.GetGenericArguments().First();
+
     StringBuilder stringBuilder = new($"INSERT INTO {type.Name}s (");
     foreach (var t in type.GetProperties())
     {
