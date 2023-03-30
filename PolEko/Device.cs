@@ -123,14 +123,17 @@ public abstract class Device<T> : Device where T : Measurement, new()
   public Buffer<T> MeasurementBuffer { get; } = new(60);
   public DateTime TimeOfLastMeasurement { get; protected set; }
   
-  // TODO: maybe utilise only one GetMeasurement method or add something like HandleMeasurements where you'd pass
-  // ready objects
-  public virtual async Task<T> GetMeasurement(HttpClient client)
+  protected virtual async Task<T> GetMeasurementFromDeviceAsync(HttpClient client)
+  {
+    var data = await client.GetFromJsonAsync<T>(DeviceUri);
+    return data ?? throw new HttpRequestException("No data was returned from query");
+  }
+  
+  public async Task<T> GetMeasurementAsync(HttpClient client)
   {
     try
     {
-      var data = await client.GetFromJsonAsync<T>(DeviceUri);
-      if (data is null) throw new HttpRequestException("No data was returned from query");
+      var data = await GetMeasurementFromDeviceAsync(client);
       MeasurementBuffer.Add(data);
       LastValidMeasurement = data;
       LastMeasurement = data;
@@ -180,43 +183,26 @@ public class SmartProDevice : Device<SmartProMeasurement>
 
   public override string Description => "Inkubator laboratoryjny z układem chłodzenia opartym na technologii ogniw Peltiera";
   
-  public override async Task<SmartProMeasurement> GetMeasurement(HttpClient client)
+  protected override async Task<SmartProMeasurement> GetMeasurementFromDeviceAsync(HttpClient client)
   {
-    try
-    {
-      var data = await client.GetStringAsync(DeviceUri);
-      using var document = JsonDocument.Parse(data);
-      var root = document.RootElement;
-      var isRunning = root.GetProperty("IS_RUNNING").GetBoolean();
-      var temperatureElement = root.GetProperty("TEMPERATURE_MAIN");
-      var temperature = temperatureElement.GetProperty("value").GetInt32();
-      var error = temperatureElement.GetProperty("error").GetBoolean();
+    var data = await client.GetStringAsync(DeviceUri);
+    using var document = JsonDocument.Parse(data);
+    var root = document.RootElement;
+    var isRunning = root.GetProperty("IS_RUNNING").GetBoolean();
+    var temperatureElement = root.GetProperty("TEMPERATURE_MAIN");
+    var temperature = temperatureElement.GetProperty("value").GetInt32();
+    var error = temperatureElement.GetProperty("error").GetBoolean();
 
-      CurrentStatus = isRunning ? Status.Running : Status.Stopped;
+    CurrentStatus = isRunning ? Status.Running : Status.Stopped;
 
-      var measurement = new SmartProMeasurement
-      {
-        IsRunning = isRunning,
-        Temperature = temperature,
-        NetworkError = error
-      };
-      
-      MeasurementBuffer.Add(measurement);
-      LastValidMeasurement = measurement;
-      LastMeasurement = measurement;
-      TimeOfLastMeasurement = measurement.TimeStamp;
-      return measurement;
-    }
-    catch (Exception)
+    var measurement = new SmartProMeasurement
     {
-      var errorMeasurement = new SmartProMeasurement
-      {
-        NetworkError = true
-      };
-      MeasurementBuffer.Add(errorMeasurement);
-      LastMeasurement = errorMeasurement;
-      return errorMeasurement;
-    }
+      IsRunning = isRunning,
+      Temperature = temperature,
+      NetworkError = error
+    };
+    
+    return measurement;
   }
 }
 

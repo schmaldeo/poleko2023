@@ -76,7 +76,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
 
   private async void FetchTimerDelegate(object? _)
   {
-    var measurement = await _device.GetMeasurement(_httpclient);
+    var measurement = await _device.GetMeasurementAsync(_httpclient);
     
     if (measurement.NetworkError)
     {
