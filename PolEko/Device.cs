@@ -117,11 +117,11 @@ public abstract class Device<T> : Device where T : Measurement, new()
   {
     MeasurementBuffer.BufferOverflow += HandleBufferOverflow;
   }
-  
+
   public T? LastValidMeasurement { get; protected set; }
   public T? LastMeasurement { get; protected set; }
   public Buffer<T> MeasurementBuffer { get; } = new(5);
-  public DateTime TimeOfLastMeasurement { get; protected set; }
+  public long TimeOfLastMeasurement { get; protected set; }
   
   // TODO: maybe utilise only one GetMeasurement method or add something like HandleMeasurements where you'd pass
   // ready objects
@@ -161,6 +161,7 @@ public abstract class Device<T> : Device where T : Measurement, new()
 /// \~english Device that logs temperature
 /// \~polish Urządzenie mierzące temperaturę
 /// </summary>
+// ReSharper disable once ClassNeverInstantiated.Global
 public class SmartProDevice : Device<SmartProMeasurement>
 {
   // Constructors
@@ -174,7 +175,7 @@ public class SmartProDevice : Device<SmartProMeasurement>
   public override string Type => "POL-EKO Smart Pro";
 
   public override string Description => "Inkubator laboratoryjny z układem chłodzenia opartym na technologii ogniw Peltiera";
-
+  
   public override async Task<SmartProMeasurement> GetMeasurement(HttpClient client)
   {
     try
@@ -222,6 +223,7 @@ public class SmartProDevice : Device<SmartProMeasurement>
   }
 }
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class ExampleDevice : Device<ExampleMeasurement>
 {
   public ExampleDevice(IPAddress ipAddress, ushort port, string? id = null)
