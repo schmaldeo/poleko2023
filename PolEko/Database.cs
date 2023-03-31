@@ -159,11 +159,9 @@ public static class Database
     }
   } 
 
-  public static async Task InsertMeasurementsAsync(IEnumerable<Measurement> measurements, Device sender, SqliteConnection? connection = null)
+  public static async Task InsertMeasurementsAsync<T>(IEnumerable<Measurement> measurements, Device sender, SqliteConnection? connection = null)
   {
-    var senderType = sender.GetType();
-    var baseType = senderType.BaseType!;
-    var type = baseType.GetGenericArguments().First();
+    var type = typeof(T);
     
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
     await conn.OpenAsync();

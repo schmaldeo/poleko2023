@@ -111,25 +111,25 @@ public abstract class Device
   }
 }
 
-public abstract class Device<T> : Device where T : Measurement, new()
+public abstract class Device<TMeasurement> : Device where TMeasurement : Measurement, new()
 {
   protected Device(IPAddress ipAddress, ushort port, string? id = null) : base(ipAddress, port, id)
   {
     MeasurementBuffer.BufferOverflow += HandleBufferOverflow;
   }
 
-  public T? LastValidMeasurement { get; protected set; }
-  public T? LastMeasurement { get; protected set; }
-  public Buffer<T> MeasurementBuffer { get; } = new(60);
+  public TMeasurement? LastValidMeasurement { get; protected set; }
+  public TMeasurement? LastMeasurement { get; protected set; }
+  public Buffer<TMeasurement> MeasurementBuffer { get; } = new(60);
   public DateTime TimeOfLastMeasurement { get; protected set; }
   
-  protected virtual async Task<T> GetMeasurementFromDeviceAsync(HttpClient client)
+  protected virtual async Task<TMeasurement> GetMeasurementFromDeviceAsync(HttpClient client)
   {
-    var data = await client.GetFromJsonAsync<T>(DeviceUri);
+    var data = await client.GetFromJsonAsync<TMeasurement>(DeviceUri);
     return data ?? throw new HttpRequestException("No data was returned from query");
   }
   
-  public async Task<T> GetMeasurementAsync(HttpClient client)
+  public async Task<TMeasurement> GetMeasurementAsync(HttpClient client)
   {
     try
     {
@@ -142,7 +142,7 @@ public abstract class Device<T> : Device where T : Measurement, new()
     }
     catch (Exception)
     {
-      var errorMeasurement = new T
+      var errorMeasurement = new TMeasurement
       {
         NetworkError = true
       };
@@ -155,7 +155,7 @@ public abstract class Device<T> : Device where T : Measurement, new()
   public async Task InsertMeasurementsAsync()
   {
     if (MeasurementBuffer.Size == 0) return;
-    await Database.InsertMeasurementsAsync(MeasurementBuffer.GetCurrentIteration(), this);
+    await Database.InsertMeasurementsAsync<TMeasurement>(MeasurementBuffer.GetCurrentIteration(), this);
   }
 
   private async void HandleBufferOverflow(object? sender, EventArgs e)
