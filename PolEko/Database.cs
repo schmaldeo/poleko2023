@@ -48,7 +48,7 @@ public static class Database
     }
   }
 
-  public static async Task<List<Device>> ExtractDevicesAsync(Dictionary<string, (Type, Type)> types, SqliteConnection? connection = null)
+  public static async Task<List<Device>> ExtractDevicesAsync(Dictionary<string, Type> types, SqliteConnection? connection = null)
   {
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
     await conn.OpenAsync();
@@ -74,7 +74,7 @@ public static class Database
           Type type;
           try
           {
-            type = types[(string)reader["type"]].Item1;
+            type = types[(string)reader["type"]];
           }
           catch (KeyNotFoundException)
           {

@@ -19,7 +19,7 @@ public partial class MainWindow
   private HttpClient? _httpClient;
   private readonly ObservableCollection<Device> _devices = new();
 
-  public MainWindow(Dictionary<string, (Type, Type)> types, IEnumerable<Device>? devices = null)
+  public MainWindow(Dictionary<string, Type> types, IEnumerable<Device>? devices = null)
   {
     InitializeComponent();
     SideMenu sideMenu = new(_devices, AddNewDevice, HandleDeviceChange, types)

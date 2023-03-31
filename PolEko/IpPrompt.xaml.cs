@@ -16,9 +16,9 @@ public partial class IpPrompt
   /// </summary>
   private readonly Action<IPAddress, ushort, string?, Type> _callback;
 
-  private readonly Dictionary<string, (Type, Type)> _types;
+  private readonly Dictionary<string, Type> _types;
   
-  public IpPrompt(Action<IPAddress, ushort, string?, Type> callback, Dictionary<string, (Type, Type)> types)
+  public IpPrompt(Action<IPAddress, ushort, string?, Type> callback, Dictionary<string, Type> types)
   {
     _types = types;
     InitializeComponent();
@@ -73,7 +73,7 @@ public partial class IpPrompt
 
     var ip = IPAddress.Parse(IpTextBox.Text);
 
-    var type = _types[TypesComboBox.Text].Item1;
+    var type = _types[TypesComboBox.Text];
     _callback(ip, (ushort)port, id, type);
     
     Close();
