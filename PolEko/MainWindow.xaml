@@ -16,7 +16,7 @@
       <ColumnDefinition Width="5*" />
     </Grid.ColumnDefinitions>
     
-    <local:SideMenu Margin="5"/>
+    <local:SideMenu Margin="5" Devices="{Binding Devices, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"/>
     
     <GridSplitter Grid.RowSpan="3" Width="3"/>
     <TabControl Grid.Row="0" Grid.Column="1" Name="TabControl"/>

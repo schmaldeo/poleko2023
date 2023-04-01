@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d"
+             DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
              d:DesignHeight="300" d:DesignWidth="300">
   <StackPanel Name="Stack">
     <DockPanel>
@@ -19,6 +20,6 @@
         </xctk:IconButton.Icon>
       </xctk:IconButton>
     </DockPanel>
-    <ListBox Name="ListBox"></ListBox>
+    <ListBox Name="ListBox" ItemsSource="{Binding Devices}"></ListBox>
   </StackPanel>
 </UserControl>

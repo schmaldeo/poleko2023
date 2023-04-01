@@ -19,14 +19,15 @@ public partial class SideMenu
 
   private readonly RoutedEventHandler _changeDisplayedDevice;
 
-  public static readonly DependencyProperty DevicesProperty = MainWindow.DevicesProperty;
+  public static readonly DependencyProperty DevicesProperty = 
+    DependencyProperty.Register(nameof(Devices), typeof(IEnumerable<Device>), typeof(SideMenu));
   
   public IEnumerable<Device> Devices
   {
     get => (IEnumerable<Device>)GetValue(DevicesProperty);
     set => SetValue(DevicesProperty, value);
   }
-  
+
   public SideMenu()
   {
     InitializeComponent();
