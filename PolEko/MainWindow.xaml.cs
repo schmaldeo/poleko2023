@@ -15,7 +15,7 @@ public partial class MainWindow
 {
   private Device? _currentDevice;
   private SmartProDeviceControl? _deviceInfo;
-  private List<TabItem> _openDevices = new();
+  private readonly List<TabItem> _openDevices = new();
   private HttpClient? _httpClient;
   private readonly ObservableCollection<Device> _devices = new();
 
@@ -81,10 +81,9 @@ public partial class MainWindow
   
   private async void AddNewDevice(IPAddress ipAddress, ushort port, string? id, Type type)
   {
-    var activated = Activator.CreateInstance(type, ipAddress, port, id);
-    if (activated is null) throw new Exception("Null instance returned from activator");
-    var device = (Device)activated;
-    // TODO: figure out why this doesn't trigger when the type is different but ip and port the same
+    var instance = Activator.CreateInstance(type, ipAddress, port, id);
+    if (instance is null) throw new Exception("Null instance returned from Activator.CreateInstance() call");
+    var device = (Device)instance;
     if (_devices.Contains(device))
     {
       MessageBox.Show("Urządzenie już istnieje");
