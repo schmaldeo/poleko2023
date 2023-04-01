@@ -4,6 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PolEko"
         mc:Ignorable="d"
         Title="Poleko">
   <Grid Name="Grid">
@@ -15,7 +16,9 @@
       <ColumnDefinition Width="5*" />
     </Grid.ColumnDefinitions>
     
-    <GridSplitter Grid.RowSpan="3" Width="3" />
-    <TabControl Grid.Row="0" Grid.Column="1" Name="TabControl"></TabControl>
+    <local:SideMenu Margin="5"/>
+    
+    <GridSplitter Grid.RowSpan="3" Width="3"/>
+    <TabControl Grid.Row="0" Grid.Column="1" Name="TabControl"/>
   </Grid>
 </Window>

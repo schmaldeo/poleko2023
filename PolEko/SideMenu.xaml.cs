@@ -19,6 +19,19 @@ public partial class SideMenu
 
   private readonly RoutedEventHandler _changeDisplayedDevice;
 
+  public static readonly DependencyProperty DevicesProperty = MainWindow.DevicesProperty;
+  
+  public IEnumerable<Device> Devices
+  {
+    get => (IEnumerable<Device>)GetValue(DevicesProperty);
+    set => SetValue(DevicesProperty, value);
+  }
+  
+  public SideMenu()
+  {
+    InitializeComponent();
+  }
+
   /// <summary>
   /// 
   /// </summary>
@@ -75,7 +88,7 @@ public partial class SideMenu
   
   private void AddNewDevice_Click(object sender, RoutedEventArgs e)
   {
-    IpPrompt prompt = new(_newDeviceAction, _types);
+    IpPrompt prompt = new();
     prompt.Show();
   }
 }

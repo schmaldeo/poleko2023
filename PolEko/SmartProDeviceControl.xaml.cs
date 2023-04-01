@@ -26,6 +26,39 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     Error
   }
   
+  public static readonly DependencyProperty DeviceProperty = 
+    DependencyProperty.Register(nameof(Device), typeof(SmartProDevice), typeof(SmartProDeviceControl));
+  
+  public static readonly DependencyProperty RemoveCallbackProperty = 
+    DependencyProperty.Register(nameof(RemoveCallback), typeof(Action<Device>), typeof(SmartProDeviceControl));
+  
+  public static readonly DependencyProperty HttpClientProperty = 
+    DependencyProperty.Register(nameof(HttpClient), typeof(HttpClient), typeof(SmartProDeviceControl));
+
+  public SmartProDevice Device
+  {
+    get => (SmartProDevice)GetValue(DeviceProperty);
+    set => SetValue(DeviceProperty, value);
+  }
+
+  public Action<Device> RemoveCallback
+  {
+    get => (Action<Device>)GetValue(RemoveCallbackProperty);
+    set => SetValue(RemoveCallbackProperty, value);
+  }
+  
+  public HttpClient HttpClient
+  {
+    get => (HttpClient)GetValue(DeviceProperty);
+    set => SetValue(DeviceProperty, value);
+  }
+
+  public SmartProDeviceControl()
+  {
+    InitializeComponent();
+    CurrentStatus = Status.Ready;
+  }
+  
   /// <summary>
   /// Control displaying <c>Device</c>'s parameters and allowing to edit its parameters, as well as fetch measurements
   /// </summary>

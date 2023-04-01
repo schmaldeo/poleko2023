@@ -18,6 +18,29 @@ public partial class MainWindow
   private readonly List<TabItem> _openDevices = new();
   private HttpClient? _httpClient;
   private readonly ObservableCollection<Device> _devices = new();
+  
+  public static readonly DependencyProperty DevicesProperty = 
+    DependencyProperty.Register(nameof(Devices), typeof(IEnumerable<Device>), typeof(SideMenu));
+  
+  public static readonly DependencyProperty TypesProperty =
+    DependencyProperty.Register(nameof(Types), typeof(Dictionary<string, Type>), typeof(IpPrompt));
+  
+  public IEnumerable<Device> Devices
+  {
+    get => (IEnumerable<Device>)GetValue(DevicesProperty);
+    init => SetValue(DevicesProperty, value);
+  }
+
+  public Dictionary<string, Type> Types
+  {
+    get => (Dictionary<string, Type>)GetValue(TypesProperty);
+    set => SetValue(TypesProperty, value);
+  }
+
+  public MainWindow()
+  {
+    InitializeComponent();
+  }
 
   public MainWindow(Dictionary<string, Type> types, IEnumerable<Device>? devices = null)
   {

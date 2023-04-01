@@ -18,6 +18,29 @@ public partial class IpPrompt
 
   private readonly Dictionary<string, Type> _types;
   
+  public static readonly DependencyProperty CallbackProperty = 
+    DependencyProperty.Register(nameof(Callback), typeof(Action<IPAddress, ushort, string?, Type>), typeof(IpPrompt));
+
+  public static readonly DependencyProperty TypesProperty = MainWindow.TypesProperty;
+  
+  public Action<IPAddress, ushort, string?, Type> Callback
+  {
+    get => (Action<IPAddress, ushort, string?, Type>)GetValue(CallbackProperty);
+    set => SetValue(CallbackProperty, value);
+  }
+
+  public IEnumerable<Type> Types
+  {
+    get => (IEnumerable<Type>)GetValue(TypesProperty);
+    set => SetValue(TypesProperty, value);
+  }
+
+  public IpPrompt()
+  {
+    InitializeComponent();
+    IpTextBox.Focus();
+  }
+  
   public IpPrompt(Action<IPAddress, ushort, string?, Type> callback, Dictionary<string, Type> types)
   {
     _types = types;
