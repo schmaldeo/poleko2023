@@ -4,61 +4,34 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PolEko;
 
 public partial class IpPrompt
 {
-  /// <summary>
-  ///   Callback used to return the IP address, port and friendly name to the caller
-  /// </summary>
-  private readonly Action<IPAddress, ushort, string?, Type> _callback;
-
-  private readonly Dictionary<string, Type> _types;
-  
   public static readonly DependencyProperty CallbackProperty = 
     DependencyProperty.Register(nameof(Callback), typeof(Action<IPAddress, ushort, string?, Type>), typeof(IpPrompt));
 
-  public static readonly DependencyProperty TypesProperty = MainWindow.TypesProperty;
-  
-  public Action<IPAddress, ushort, string?, Type> Callback
+  public Action<IPAddress, ushort, string?, Type>? Callback
   {
     get => (Action<IPAddress, ushort, string?, Type>)GetValue(CallbackProperty);
     set => SetValue(CallbackProperty, value);
   }
+  
+  public static readonly DependencyProperty TypesProperty = MainWindow.TypesProperty;
 
-  public IEnumerable<Type> Types
+  public Dictionary<string, Type>? Types
   {
-    get => (IEnumerable<Type>)GetValue(TypesProperty);
+    get => (Dictionary<string, Type>)GetValue(TypesProperty);
     set => SetValue(TypesProperty, value);
   }
 
   public IpPrompt()
   {
+    
     InitializeComponent();
     IpTextBox.Focus();
-  }
-  
-  public IpPrompt(Action<IPAddress, ushort, string?, Type> callback, Dictionary<string, Type> types)
-  {
-    _types = types;
-    InitializeComponent();
-    foreach (var (name, _) in types)
-    {
-      var item = new ComboBoxItem
-      {
-        Content = name
-      };
-      TypesComboBox.Items.Add(item);
-    }
-
-    // Select first device by default
-    TypesComboBox.SelectedIndex = 0;
-    // Focus on the topmost TextBox when the window is opened
-    IpTextBox.Focus();
-    _callback = callback;
   }
 
   /// <summary>
@@ -69,6 +42,11 @@ public partial class IpPrompt
   /// <param name="e"></param>
   private void OkButton_Click(object sender, RoutedEventArgs e)
   {
+    if (Callback is null)
+    {
+      return;
+    }
+
     // Check if IP input is a valid IPv4
     if (!Ipv4Regex().IsMatch(IpTextBox.Text))
     {
@@ -96,8 +74,8 @@ public partial class IpPrompt
 
     var ip = IPAddress.Parse(IpTextBox.Text);
 
-    var type = _types[TypesComboBox.Text];
-    _callback(ip, (ushort)port, id, type);
+    var type = Types[TypesComboBox.Text];
+    Callback(ip, (ushort)port, id, type);
     
     Close();
   }

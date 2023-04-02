@@ -4,10 +4,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:PolEko"
         mc:Ignorable="d"
+        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
         Title="Poleko">
-  <Grid Name="Grid">
+  <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
@@ -16,9 +18,23 @@
       <ColumnDefinition Width="5*" />
     </Grid.ColumnDefinitions>
     
-    <local:SideMenu Margin="5" Devices="{Binding Devices, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}}}"/>
+    <StackPanel>
+      <DockPanel>
+        <TextBlock FontSize="24">
+          Urządzenia
+        </TextBlock>
+        <xctk:IconButton Width="35" HorizontalAlignment="Right" Click="AddNewDevice_Click">
+          <xctk:IconButton.Icon>
+            <Image
+              Source="/images/plus_sign.png"
+              Height="24"/>
+          </xctk:IconButton.Icon>
+        </xctk:IconButton>
+      </DockPanel>
+      <ListBox ItemsSource="{Binding Devices}"/>
+    </StackPanel>
     
-    <GridSplitter Grid.RowSpan="3" Width="3"/>
+    <GridSplitter Grid.Column="0" Grid.RowSpan="3" Width="3"/>
     <TabControl Grid.Row="0" Grid.Column="1" Name="TabControl"/>
   </Grid>
 </Window>

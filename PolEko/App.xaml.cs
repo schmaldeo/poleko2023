@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -34,10 +35,12 @@ public partial class App
     await Database.CreateTablesAsync(_registeredMeasurementTypes);
     var devices = await Database.ExtractDevicesAsync(_registeredDeviceTypes);
 
+    var observableDeviceCollection = new ObservableCollection<Device>(devices);
+
     MainWindow mainWindow = new()
     {
       Types = _registeredDeviceTypes,
-      Devices = devices
+      Devices = observableDeviceCollection
     };
     mainWindow.Show();
   }

@@ -22,18 +22,26 @@ public partial class MainWindow
   public static readonly DependencyProperty TypesProperty =
     DependencyProperty.Register(nameof(Types), typeof(Dictionary<string, Type>), typeof(IpPrompt));
   
-  public Dictionary<string, Type> Types
+  public Dictionary<string, Type>? Types
   {
     get => (Dictionary<string, Type>)GetValue(TypesProperty);
-    set => SetValue(TypesProperty, value);
+    init => SetValue(TypesProperty, value);
   }
+  
+  public static readonly DependencyProperty DevicesProperty =
+    DependencyProperty.Register(nameof(Devices), typeof(ObservableCollection<Device>), typeof(MainWindow));
 
-  public IEnumerable<Device> Devices { get; init; } = new List<Device>();
+  public ObservableCollection<Device>? Devices
+  {
+    get => (ObservableCollection<Device>)GetValue(DevicesProperty);
+    set => SetValue(DevicesProperty, value);
+  }
   
 
   public MainWindow()
   {
     InitializeComponent();
+    Loaded += delegate { Devices ??= new ObservableCollection<Device>(); };
   }
 
   private void HandleDeviceChange(object sender, RoutedEventArgs e)
@@ -83,21 +91,29 @@ public partial class MainWindow
     var instance = Activator.CreateInstance(type, ipAddress, port, id);
     if (instance is null) throw new Exception("Null instance returned from Activator.CreateInstance() call");
     var device = (Device)instance;
-    if (_devices.Contains(device))
+    if (Devices!.Contains(device))
     {
       MessageBox.Show("Urządzenie już istnieje");
       return;
     }
 
     await Database.AddDeviceAsync(device, type);
-    _devices.Add(device);
+    Devices.Add(device);
   }
   
   private async void RemoveDevice(Device device)
   {
-    // TODO: hacked a bit, might wanna do it different way
-    TabControl.Items.Remove(TabControl.SelectedItem);
     await Database.RemoveDeviceAsync(device);
     _devices.Remove(device);
+  }
+  
+  private void AddNewDevice_Click(object sender, RoutedEventArgs e)
+  {
+    IpPrompt prompt = new()
+    {
+      Types = Types,
+      Callback = AddNewDevice
+    };
+    prompt.Show();
   }
 }
