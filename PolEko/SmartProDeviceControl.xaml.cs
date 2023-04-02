@@ -1,23 +1,24 @@
 ﻿using System;
+using System.Globalization;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace PolEko;
 
-// TODO: disable fetch/stop buttons based on _status
+// TODO: disable fetch/stop buttons based on _status, throw some exception if Device is not specified
+// Will create own HttpClient if not provided, not recommended
 public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
 {
-  private readonly HttpClient _httpclient;
-  private readonly SmartProDevice _device;
   private Timer? _timer;
   private byte _retryCounter;
   private bool _disposed;
   private Status _status;
-
-  private readonly Action<Device> _removeCallback;
+  private SmartProDevice _device;
+  private HttpClient _httpClient;
 
   private enum Status
   {
@@ -28,10 +29,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
   
   public static readonly DependencyProperty DeviceProperty = 
     DependencyProperty.Register(nameof(Device), typeof(SmartProDevice), typeof(SmartProDeviceControl));
-  
-  public static readonly DependencyProperty RemoveCallbackProperty = 
-    DependencyProperty.Register(nameof(RemoveCallback), typeof(Action<Device>), typeof(SmartProDeviceControl));
-  
+
   public static readonly DependencyProperty HttpClientProperty = 
     DependencyProperty.Register(nameof(HttpClient), typeof(HttpClient), typeof(SmartProDeviceControl));
 
@@ -41,44 +39,26 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     set => SetValue(DeviceProperty, value);
   }
 
-  public Action<Device> RemoveCallback
+  public HttpClient? HttpClient
   {
-    get => (Action<Device>)GetValue(RemoveCallbackProperty);
-    set => SetValue(RemoveCallbackProperty, value);
+    get => (HttpClient)GetValue(HttpClientProperty);
+    init => SetValue(HttpClientProperty, value);
   }
-  
-  public HttpClient HttpClient
-  {
-    get => (HttpClient)GetValue(DeviceProperty);
-    set => SetValue(DeviceProperty, value);
-  }
+
+  public event EventHandler<RemoveDeviceEventArgs> DeviceRemoved;
 
   public SmartProDeviceControl()
   {
     InitializeComponent();
     CurrentStatus = Status.Ready;
+    // TODO: check if this Loaded shit is needed
+    Loaded += delegate
+    {
+      _httpClient = HttpClient ?? new HttpClient();
+      _device = Device;
+    };
   }
   
-  /// <summary>
-  /// Control displaying <c>Device</c>'s parameters and allowing to edit its parameters, as well as fetch measurements
-  /// </summary>
-  /// <param name="device"><c>Device</c> whose parameters will be displayed</param>
-  /// <param name="httpclient"><c>HttpClient</c> that will be used to fetch measurements, passed in by reference</param>
-  /// <param name="removeCallback">Delegate to be called when a device is removed</param>
-  public SmartProDeviceControl(SmartProDevice device,
-    in HttpClient httpclient, 
-    Action<Device> removeCallback)
-  {
-    _device = device;
-    _httpclient = httpclient;
-    _removeCallback = removeCallback;
-    
-    InitializeComponent();
-    DeviceString.Text = device.ToString();
-    DeviceString.ToolTip = device.Description;
-    CurrentStatus = Status.Ready;
-  }
-
   private Status CurrentStatus
   {
     get => _status;
@@ -111,7 +91,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
 
   private async void FetchTimerDelegate(object? _)
   {
-    var measurement = await _device.GetMeasurementAsync(_httpclient);
+    var measurement = await _device.GetMeasurementAsync(_httpClient);
     
     if (measurement.NetworkError)
     {
@@ -152,13 +132,13 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     }
     CurrentStatus = Status.Fetching;
 
-    await Dispatcher.BeginInvoke(() =>
-    {
-      // Parse to float with and then display as string with 2 decimal places (by default it would display x.x0 as x.x)
-      var parsedTemperature = (float)measurement.Temperature / 100;
-      TemperatureBlock.Text = parsedTemperature.ToString("N2");
-      IsRunningBlock.Text = measurement.IsRunning.ToString();
-    });
+    // await Dispatcher.BeginInvoke(() =>
+    // {
+    //   // Parse to float with and then display as string with 2 decimal places (by default it would display x.x0 as x.x)
+    //   var parsedTemperature = (float)measurement.Temperature / 100;
+    //   TemperatureBlock.Text = parsedTemperature.ToString("N2");
+    //   IsRunningBlock.Text = measurement.IsRunning.ToString();
+    // });
   }
 
   private void FetchData_OnClick(object sender, RoutedEventArgs e)
@@ -179,7 +159,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
 
   private void DeleteDevice_OnClick(object sender, RoutedEventArgs e)
   {
-    _removeCallback(_device);
+    DeviceRemoved(this, new RemoveDeviceEventArgs(_device));
     Dispose();
   }
 
@@ -199,5 +179,35 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     _disposed = true;
     GC.SuppressFinalize(this);
     await _timer.DisposeAsync();
+  }
+
+  public class RemoveDeviceEventArgs : EventArgs
+  {
+    public RemoveDeviceEventArgs(Device device)
+    {
+      Device = device;
+    }
+    public Device Device { get; }
+  }
+}
+
+[ValueConversion(typeof(int), typeof(string))]
+public class SmartProTemperatureConverter : IValueConverter
+{
+  public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+  {
+    var temperature = (int)value;
+    var parsedTemperature = (float)temperature / 100;
+    return parsedTemperature.ToString("N2");
+  }
+
+  public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+  {
+    var strValue = value as string;
+    if (float.TryParse(strValue, out var resultFloat))
+    {
+      return (int)resultFloat * 100;
+    }
+    return DependencyProperty.UnsetValue;
   }
 }

@@ -75,7 +75,12 @@ public partial class MainWindow
     // TODO: Reflection
     if (_currentDevice is SmartProDevice device)
     {
-      _deviceInfo = new(device, httpClient, RemoveDevice);
+      _deviceInfo = new SmartProDeviceControl
+      {
+        Device = device,
+        HttpClient = httpClient
+      };
+      _deviceInfo.DeviceRemoved += RemoveDevice;
       Closing += async delegate { await _deviceInfo.DisposeAsync(); };
     }
 
@@ -120,10 +125,10 @@ public partial class MainWindow
     Devices.Add(device);
   }
   
-  private async void RemoveDevice(Device device)
+  private async void RemoveDevice(object? sender, SmartProDeviceControl.RemoveDeviceEventArgs args)
   {
-    await Database.RemoveDeviceAsync(device);
-    Devices!.Remove(device);
+    await Database.RemoveDeviceAsync(args.Device);
+    Devices!.Remove(args.Device);
   }
   
   private void AddNewDevice_Click(object sender, RoutedEventArgs e)

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -111,15 +113,37 @@ public abstract class Device
   }
 }
 
-public abstract class Device<TMeasurement> : Device where TMeasurement : Measurement, new()
+public abstract class Device<TMeasurement> : Device, INotifyPropertyChanged where TMeasurement : Measurement, new()
 {
+  public event PropertyChangedEventHandler? PropertyChanged;
+
+  private TMeasurement? _lastMeasurement;
+  private TMeasurement? _lastValidMeasurement;
+
   protected Device(IPAddress ipAddress, ushort port, string? id = null) : base(ipAddress, port, id)
   {
     MeasurementBuffer.BufferOverflow += HandleBufferOverflow;
   }
 
-  public TMeasurement? LastValidMeasurement { get; protected set; }
-  public TMeasurement? LastMeasurement { get; protected set; }
+  public TMeasurement? LastValidMeasurement
+  {
+    get => _lastValidMeasurement;
+    protected set
+    {
+      _lastValidMeasurement = value;
+      OnPropertyChanged();
+    }
+  }
+
+  public TMeasurement? LastMeasurement
+  {
+    get => _lastMeasurement;
+    protected set
+    {
+      _lastMeasurement = value;
+      OnPropertyChanged();
+    }
+  }
   public Buffer<TMeasurement> MeasurementBuffer { get; } = new(60);
   public DateTime TimeOfLastMeasurement { get; protected set; }
   
@@ -161,6 +185,11 @@ public abstract class Device<TMeasurement> : Device where TMeasurement : Measure
   private async void HandleBufferOverflow(object? sender, EventArgs e)
   {
     await InsertMeasurementsAsync();
+  }
+  
+  protected void OnPropertyChanged([CallerMemberName] string? name = null)
+  {
+    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
   }
 }
 

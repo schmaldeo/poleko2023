@@ -27,9 +27,9 @@
     
     <TextBlock x:Name="DeviceString" TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontFamily="Bahnschrift Light" FontSize="32" Grid.ColumnSpan="2" Grid.Column="1"/>
     <Label x:Name="TemperatureLabel" Content="Temperature" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Bahnschrift Light" FontSize="23" Grid.Row="1" Grid.Column="1"/>
-    <TextBlock x:Name="TemperatureBlock" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="25" FontFamily="Bahnschrift Light" Text="" Grid.Row="2" Grid.Column="1"/>
+    <TextBlock x:Name="TemperatureBlock" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="25" FontFamily="Bahnschrift Light" Text="{Binding Device.LastMeasurement.Temperature, FallbackValue=0, Converter={StaticResource SmartProTemperatureConverter}}" Grid.Row="2" Grid.Column="1"/>
     <Label x:Name="IsRunningLabel" Content="Is Running?" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Bahnschrift Light" FontSize="23" Grid.Row="1" Grid.Column="2"/>
-    <TextBlock x:Name="IsRunningBlock" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="25" FontFamily="Bahnschrift Light" Text="" Grid.Row="2" Grid.Column="2"/>
+    <TextBlock x:Name="IsRunningBlock" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="25" FontFamily="Bahnschrift Light" Text="{Binding Device.LastMeasurement.IsRunning, FallbackValue=False}" Grid.Row="2" Grid.Column="2"/>
     <Button Grid.Row="0" x:Name="Fetch" Content="Fetch" HorizontalAlignment="Left" Height="30" VerticalAlignment="Center" Width="70" Click="FetchData_OnClick" Grid.Column="3"/>
     <Button Grid.Row="0" Grid.Column="0" x:Name="DeleteButton" Content="Delete" HorizontalAlignment="Right" VerticalAlignment="Center" Width="70" Height="30" Click="DeleteDevice_OnClick"/>
     <Button Grid.Row="0" x:Name="StopFetchButton" Grid.Column="3" Content="Stop" HorizontalAlignment="Right" Height="30" VerticalAlignment="Center" Width="70" Click="StopFetching_OnClick"/>

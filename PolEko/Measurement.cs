@@ -6,10 +6,6 @@ namespace PolEko;
 
 public abstract class Measurement
 {
-  /// <summary>
-  /// Indicates that the measurement is invalid
-  /// </summary>
-
   public bool NetworkError { get; init; }
 
   public DateTime TimeStamp { get; } = DateTime.Now;
