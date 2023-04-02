@@ -15,9 +15,7 @@ public partial class MainWindow
 {
   private Device? _currentDevice;
   private SmartProDeviceControl? _deviceInfo;
-  private readonly List<TabItem> _openDevices = new();
   private HttpClient? _httpClient;
-  private readonly ObservableCollection<Device> _devices = new();
 
   public static readonly DependencyProperty TypesProperty =
     DependencyProperty.Register(nameof(Types), typeof(Dictionary<string, Type>), typeof(IpPrompt));
@@ -37,6 +35,25 @@ public partial class MainWindow
     set => SetValue(DevicesProperty, value);
   }
   
+  public static readonly DependencyProperty OpenDevicesProperty =
+    DependencyProperty.Register(nameof(OpenDevices), typeof(ObservableCollection<TabItem>), typeof(MainWindow));
+
+  public ObservableCollection<TabItem>? OpenDevices
+  {
+    get => (ObservableCollection<TabItem>)GetValue(OpenDevicesProperty);
+    set => SetValue(OpenDevicesProperty, value);
+  }
+  
+  public static readonly DependencyProperty SelectedDeviceControlProperty =
+    DependencyProperty.Register(nameof(SelectedDeviceControl), typeof(TabItem), typeof(MainWindow));
+
+  public TabItem? SelectedDeviceControl
+  {
+    get => (TabItem)GetValue(SelectedDeviceControlProperty);
+    set => SetValue(SelectedDeviceControlProperty, value);
+  }
+  
+  private Dictionary<Device, TabItem> DeviceControls { get; } = new();
 
   public MainWindow()
   {
@@ -74,16 +91,18 @@ public partial class MainWindow
       Content = _deviceInfo,
       Header = formattedHeader
     };
-    // For some reason content comparison doesn't work
-    var found = _openDevices.Find(x => (string)x.Header == formattedHeader);
-    if (found is not null)
+    
+    
+    if (DeviceControls.ContainsKey(incomingDevice))
     {
-      TabControl.SelectedItem = found;
+      SelectedDeviceControl = DeviceControls[incomingDevice];
       return;
     }
-    _openDevices.Add(item);
-    TabControl.Items.Add(item);
-    TabControl.SelectedItem = item;
+    DeviceControls[incomingDevice] = item;
+    
+    OpenDevices ??= new ObservableCollection<TabItem>();
+    OpenDevices.Add(item);
+    SelectedDeviceControl = item;
   }
   
   private async void AddNewDevice(IPAddress ipAddress, ushort port, string? id, Type type)
@@ -104,7 +123,7 @@ public partial class MainWindow
   private async void RemoveDevice(Device device)
   {
     await Database.RemoveDeviceAsync(device);
-    _devices.Remove(device);
+    Devices!.Remove(device);
   }
   
   private void AddNewDevice_Click(object sender, RoutedEventArgs e)
