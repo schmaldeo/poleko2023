@@ -12,9 +12,8 @@ namespace PolEko;
 /// </summary>
 public partial class App
 {
-  private List<Type> _registeredMeasurementTypes = new();
-
   private readonly Dictionary<string, Type> _registeredDeviceTypes = new();
+  private List<Type> _registeredMeasurementTypes = new();
 
   private async void App_Startup(object sender, StartupEventArgs e)
   {
@@ -25,11 +24,8 @@ public partial class App
     // the end user (or, in case of open source software, a person that potentially makes a fork and tries to add
     // their own features) might not understand what certain features do, therefore the choice to use Reflection here.
     var deviceTypes = FindDerivedTypes(typeof(Device));
-    foreach (var t in deviceTypes)
-    {
-      _registeredDeviceTypes[t.Name] = t;
-    }
-    
+    foreach (var t in deviceTypes) _registeredDeviceTypes[t.Name] = t;
+
     _registeredMeasurementTypes = FindDerivedTypes(typeof(Measurement));
 
     await Database.CreateTablesAsync(_registeredMeasurementTypes);

@@ -5,19 +5,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:local="clr-namespace:PolEko"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
         Title="Poleko">
   <Grid>
     <Grid.RowDefinitions>
-      <RowDefinition Height="*"/>
+      <RowDefinition Height="*" />
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="1*" />
       <ColumnDefinition Width="5*" />
     </Grid.ColumnDefinitions>
-    
+
     <StackPanel>
       <DockPanel>
         <TextBlock FontSize="24">
@@ -27,20 +26,21 @@
           <xctk:IconButton.Icon>
             <Image
               Source="/images/plus_sign.png"
-              Height="24"/>
+              Height="24" />
           </xctk:IconButton.Icon>
         </xctk:IconButton>
       </DockPanel>
       <ListBox ItemsSource="{Binding Devices}">
         <ListBox.ItemContainerStyle>
           <Style TargetType="ListBoxItem">
-            <EventSetter Event="Selected" Handler="HandleDeviceChange"></EventSetter>
+            <EventSetter Event="Selected" Handler="HandleDeviceChange" />
           </Style>
         </ListBox.ItemContainerStyle>
       </ListBox>
     </StackPanel>
-    
-    <GridSplitter Grid.Column="0" Grid.RowSpan="3" Width="3"/>
-    <TabControl Grid.Row="0" Grid.Column="1" Name="TabControl" ItemsSource="{Binding OpenDevices}" SelectedItem="{Binding SelectedDeviceControl}"/>
+
+    <GridSplitter Grid.Column="0" Grid.RowSpan="3" Width="3" />
+    <TabControl Grid.Row="0" Grid.Column="1" Name="TabControl" ItemsSource="{Binding OpenDevices}"
+                SelectedItem="{Binding SelectedDeviceControl}" />
   </Grid>
 </Window>

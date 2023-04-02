@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Input;
 
 namespace PolEko;
 
@@ -13,25 +12,30 @@ namespace PolEko;
 // Will create own HttpClient if not provided, not recommended
 public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
 {
-  private Timer? _timer;
-  private byte _retryCounter;
-  private bool _disposed;
-  private Status _status;
-  private SmartProDevice _device;
-  private HttpClient _httpClient;
-
-  private enum Status
-  {
-    Ready,
-    Fetching,
-    Error
-  }
-  
-  public static readonly DependencyProperty DeviceProperty = 
+  public static readonly DependencyProperty DeviceProperty =
     DependencyProperty.Register(nameof(Device), typeof(SmartProDevice), typeof(SmartProDeviceControl));
 
-  public static readonly DependencyProperty HttpClientProperty = 
+  public static readonly DependencyProperty HttpClientProperty =
     DependencyProperty.Register(nameof(HttpClient), typeof(HttpClient), typeof(SmartProDeviceControl));
+
+  private SmartProDevice _device;
+  private bool _disposed;
+  private HttpClient _httpClient;
+  private byte _retryCounter;
+  private Status _status;
+  private Timer? _timer;
+
+  public SmartProDeviceControl()
+  {
+    InitializeComponent();
+    CurrentStatus = Status.Ready;
+    // TODO: check if this Loaded shit is needed
+    Loaded += delegate
+    {
+      _httpClient = HttpClient ?? new HttpClient();
+      _device = Device;
+    };
+  }
 
   public SmartProDevice Device
   {
@@ -45,20 +49,6 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     init => SetValue(HttpClientProperty, value);
   }
 
-  public event EventHandler<RemoveDeviceEventArgs> DeviceRemoved;
-
-  public SmartProDeviceControl()
-  {
-    InitializeComponent();
-    CurrentStatus = Status.Ready;
-    // TODO: check if this Loaded shit is needed
-    Loaded += delegate
-    {
-      _httpClient = HttpClient ?? new HttpClient();
-      _device = Device;
-    };
-  }
-  
   private Status CurrentStatus
   {
     get => _status;
@@ -68,31 +58,42 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
       switch (value)
       {
         case Status.Fetching:
-          Dispatcher.Invoke(() =>
-          {
-            StatusItem.Content = "Fetching";
-          });
+          Dispatcher.Invoke(() => { StatusItem.Content = "Fetching"; });
           break;
         case Status.Ready:
-          Dispatcher.Invoke(() =>
-          {
-            StatusItem.Content = "Ready";
-          });
+          Dispatcher.Invoke(() => { StatusItem.Content = "Ready"; });
           break;
         case Status.Error:
-          Dispatcher.Invoke(() =>
-          {
-            StatusItem.Content = $"Request timed out {_retryCounter.ToString()} times";
-          });
+          Dispatcher.Invoke(() => { StatusItem.Content = $"Request timed out {_retryCounter.ToString()} times"; });
           break;
       }
     }
   }
 
+  public async ValueTask DisposeAsync()
+  {
+    if (_timer == null || _disposed) return;
+    await _device.InsertMeasurementsAsync();
+    _disposed = true;
+    GC.SuppressFinalize(this);
+    await _timer.DisposeAsync();
+  }
+
+  public async void Dispose()
+  {
+    if (_timer == null || _disposed) return;
+    await _device.InsertMeasurementsAsync();
+    _disposed = true;
+    GC.SuppressFinalize(this);
+    _timer.Dispose();
+  }
+
+  public event EventHandler<RemoveDeviceEventArgs> DeviceRemoved;
+
   private async void FetchTimerDelegate(object? _)
   {
     var measurement = await _device.GetMeasurementAsync(_httpClient);
-    
+
     if (measurement.NetworkError)
     {
       // Increase the timer interval to 5 seconds when there's an error
@@ -109,7 +110,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
         MessageBox.Show("Request timed out 5 times, aborting");
         CurrentStatus = Status.Ready;
       }
-      
+
       return;
     }
 
@@ -120,7 +121,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
         TemperatureBlock.Text = "Error";
         IsRunningBlock.Text = measurement.IsRunning.ToString();
       });
-      
+
       return;
     }
 
@@ -130,6 +131,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
       _timer!.Change(_device.RefreshRate * 1000, _device.RefreshRate * 1000);
       _retryCounter = 0;
     }
+
     CurrentStatus = Status.Fetching;
 
     // await Dispatcher.BeginInvoke(() =>
@@ -147,7 +149,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     _timer = new Timer(FetchTimerDelegate, null, 0, _device.RefreshRate * 1000);
     CurrentStatus = Status.Fetching;
   }
-  
+
   private async void StopFetching_OnClick(object sender, RoutedEventArgs e)
   {
     if (_timer is null) return;
@@ -163,22 +165,11 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     Dispose();
   }
 
-  public async void Dispose()
+  private enum Status
   {
-    if (_timer == null || _disposed) return;
-    await _device.InsertMeasurementsAsync();
-    _disposed = true;
-    GC.SuppressFinalize(this);
-    _timer.Dispose();
-  }
-
-  public async ValueTask DisposeAsync()
-  {
-    if (_timer == null || _disposed) return;
-    await _device.InsertMeasurementsAsync();
-    _disposed = true;
-    GC.SuppressFinalize(this);
-    await _timer.DisposeAsync();
+    Ready,
+    Fetching,
+    Error
   }
 
   public class RemoveDeviceEventArgs : EventArgs
@@ -187,6 +178,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     {
       Device = device;
     }
+
     public Device Device { get; }
   }
 }
@@ -204,10 +196,7 @@ public class SmartProTemperatureConverter : IValueConverter
   public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
   {
     var strValue = value as string;
-    if (float.TryParse(strValue, out var resultFloat))
-    {
-      return (int)resultFloat * 100;
-    }
+    if (float.TryParse(strValue, out var resultFloat)) return (int)resultFloat * 100;
     return DependencyProperty.UnsetValue;
   }
 }

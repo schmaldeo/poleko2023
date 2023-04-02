@@ -10,28 +10,27 @@ namespace PolEko;
 
 public partial class IpPrompt
 {
-  public static readonly DependencyProperty CallbackProperty = 
+  public static readonly DependencyProperty CallbackProperty =
     DependencyProperty.Register(nameof(Callback), typeof(Action<IPAddress, ushort, string?, Type>), typeof(IpPrompt));
+
+  public static readonly DependencyProperty TypesProperty = MainWindow.TypesProperty;
+
+  public IpPrompt()
+  {
+    InitializeComponent();
+    IpTextBox.Focus();
+  }
 
   public Action<IPAddress, ushort, string?, Type>? Callback
   {
     get => (Action<IPAddress, ushort, string?, Type>)GetValue(CallbackProperty);
     set => SetValue(CallbackProperty, value);
   }
-  
-  public static readonly DependencyProperty TypesProperty = MainWindow.TypesProperty;
 
   public Dictionary<string, Type>? Types
   {
     get => (Dictionary<string, Type>)GetValue(TypesProperty);
     set => SetValue(TypesProperty, value);
-  }
-
-  public IpPrompt()
-  {
-    
-    InitializeComponent();
-    IpTextBox.Focus();
   }
 
   /// <summary>
@@ -42,10 +41,7 @@ public partial class IpPrompt
   /// <param name="e"></param>
   private void OkButton_Click(object sender, RoutedEventArgs e)
   {
-    if (Callback is null)
-    {
-      return;
-    }
+    if (Callback is null) return;
 
     // Check if IP input is a valid IPv4
     if (!Ipv4Regex().IsMatch(IpTextBox.Text))
@@ -76,7 +72,7 @@ public partial class IpPrompt
 
     var type = Types[TypesComboBox.Text];
     Callback(ip, (ushort)port, id, type);
-    
+
     Close();
   }
 
@@ -86,7 +82,7 @@ public partial class IpPrompt
   }
 
   /// <summary>
-  /// Command binding that disallows copying and pasting
+  ///   Command binding that disallows copying and pasting
   /// </summary>
   /// <param name="sender"></param>
   /// <param name="e"></param>
@@ -95,9 +91,9 @@ public partial class IpPrompt
     e.CanExecute = false;
     e.Handled = true;
   }
-  
+
   /// <summary>
-  /// Event handler disallowing entering anything but numbers into an input
+  ///   Event handler disallowing entering anything but numbers into an input
   /// </summary>
   /// <param name="sender"></param>
   /// <param name="e"></param>
@@ -106,7 +102,7 @@ public partial class IpPrompt
     var regex = NumericRegex();
     e.Handled = regex.IsMatch(e.Text);
   }
-  
+
   /// <summary>
   ///   IPv4 regex
   /// </summary>

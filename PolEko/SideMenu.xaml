@@ -16,10 +16,10 @@
         <xctk:IconButton.Icon>
           <Image
             Source="/images/plus_sign.png"
-            Height="24"/>
+            Height="24" />
         </xctk:IconButton.Icon>
       </xctk:IconButton>
     </DockPanel>
-    <ListBox Name="ListBox" ItemsSource="{Binding Devices}"></ListBox>
+    <ListBox Name="ListBox" ItemsSource="{Binding Devices}" />
   </StackPanel>
 </UserControl>

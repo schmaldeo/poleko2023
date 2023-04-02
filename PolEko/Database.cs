@@ -15,7 +15,7 @@ public static class Database
   // Connections to SQLite are very cheap as they don't utilise network, so it's OK to just open new connection in each
   // of these methods, especially as they are not called all that frequently 
   private const string ConnectionString = "Data Source=Measurements.db";
-  
+
   public static async Task CreateTablesAsync(IEnumerable<Type> types, SqliteConnection? connection = null)
   {
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
@@ -32,7 +32,7 @@ public static class Database
         );
       ";
     await command.ExecuteNonQueryAsync();
-    
+
     foreach (var type in types)
     {
       var query = GetMeasurementTablesDefinitions(type);
@@ -48,7 +48,8 @@ public static class Database
     }
   }
 
-  public static async Task<List<Device>> ExtractDevicesAsync(Dictionary<string, Type> types, SqliteConnection? connection = null)
+  public static async Task<List<Device>> ExtractDevicesAsync(Dictionary<string, Type> types,
+    SqliteConnection? connection = null)
   {
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
     await conn.OpenAsync();
@@ -59,14 +60,13 @@ public static class Database
       ";
 
     List<Device> deviceList = new();
-    
+
     try
     {
       await using var reader = command.ExecuteReader();
 
 
       while (await reader.ReadAsync())
-      {
         // This looks like a bunch of unsafe code, but the error handling should help in avoiding awkward errors
         // and shouldn't generate any problems
         try
@@ -110,13 +110,12 @@ public static class Database
           MessageBox.Show(e.Message);
           throw;
         }
-      }
-
     }
     catch (DbException e)
     {
       MessageBox.Show($"Error getting devices from database \n {e.Message}");
     }
+
     return deviceList;
   }
 
@@ -138,7 +137,8 @@ public static class Database
     }
     catch (DbException e)
     {
-      MessageBox.Show($"Error adding a device to database. Added device will only be seen locally until program exits \n {e.Message}");
+      MessageBox.Show(
+        $"Error adding a device to database. Added device will only be seen locally until program exits \n {e.Message}");
     }
   }
 
@@ -157,20 +157,21 @@ public static class Database
     {
       MessageBox.Show($"Error removing a device from database \n {e.Message}");
     }
-  } 
+  }
 
-  public static async Task InsertMeasurementsAsync<T>(IEnumerable<Measurement> measurements, Device sender, SqliteConnection? connection = null)
+  public static async Task InsertMeasurementsAsync<T>(IEnumerable<Measurement> measurements, Device sender,
+    SqliteConnection? connection = null)
   {
     var type = typeof(T);
-    
+
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
     await conn.OpenAsync();
     await using var transaction = await conn.BeginTransactionAsync();
-  
+
     var command = conn.CreateCommand();
 
     List<SqliteParameter> parameters = new();
-    
+
     StringBuilder definitionStringBuilder = new($"INSERT INTO {type.Name}s (");
     StringBuilder valuesStringBuilder = new("(");
     foreach (var t in type.GetProperties())
@@ -185,10 +186,11 @@ public static class Database
       parameters.Add(parameter);
       valuesStringBuilder.Append($"${name},");
     }
+
     definitionStringBuilder.Append("ip_address,port) VALUES ");
     valuesStringBuilder.Append($"'{sender.IpAddress}', {sender.Port});");
     definitionStringBuilder.Append(valuesStringBuilder);
-    
+
     command.CommandText = definitionStringBuilder.ToString();
 
     foreach (var measurement in measurements)
@@ -225,18 +227,20 @@ public static class Database
   }
 
   /// <summary>
-  /// Method that takes in a <c>Type</c> derived from <c>Measurement</c> and returns a SQLite query
+  ///   Method that takes in a <c>Type</c> derived from <c>Measurement</c> and returns a SQLite query
   /// </summary>
   /// <param name="type">Type that derives from <c>Measurement</c></param>
   /// <returns>SQLite database creation query according to <c>Measurement</c> type</returns>
-  /// <exception cref="InvalidCastException">Thrown if <c>Type</c> passed in does not derive from <c>Measurement</c></exception>
+  /// <exception cref="InvalidCastException">
+  ///   Thrown if <c>Type</c> passed in does not derive from <c>Measurement</c>
+  /// </exception>
   private static string GetMeasurementTablesDefinitions(Type type)
   {
     if (!type.IsSubclassOf(typeof(Measurement)))
       throw new InvalidCastException("Registered measurement types must derive from Measurement");
 
     StringBuilder stringBuilder = new($"CREATE TABLE IF NOT EXISTS {type.Name}s(");
-    
+
     foreach (var property in type.GetProperties())
     {
       var name = property.Name.ToLower();
@@ -250,13 +254,14 @@ public static class Database
       port INTEGER NOT NULL,
       PRIMARY KEY (timestamp, ip_address, port),
       FOREIGN KEY (ip_address, port) REFERENCES devices(ip_address, port) ON DELETE CASCADE ON UPDATE CASCADE);");
-    
+
     return stringBuilder.ToString();
   }
 
   // ReSharper disable once InconsistentNaming
   /// <summary>
-  /// Method that parses .NET types to SQLite types according to https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/types
+  ///   Method that parses .NET types to SQLite types according to
+  ///   https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/types
   /// </summary>
   /// <param name="type"><c>Type</c> to be parsed</param>
   /// <returns>SQLite data type</returns>
@@ -272,9 +277,7 @@ public static class Database
         || type == typeof(decimal)
         || type == typeof(TimeOnly)
         || type == typeof(TimeSpan))
-    {
       return "TEXT";
-    }
 
     if (type == typeof(byte)
         || type == typeof(sbyte)
@@ -285,20 +288,12 @@ public static class Database
         || type == typeof(ulong)
         || type == typeof(long)
         || type == typeof(bool))
-    {
       return "INTEGER";
-    }
-    
-    if (type == typeof(byte[]))
-    {
-      return "BLOB";
-    }
-    
-    if (type == typeof(double) || type == typeof(float))
-    {
-      return "REAL";
-    }
-    
+
+    if (type == typeof(byte[])) return "BLOB";
+
+    if (type == typeof(double) || type == typeof(float)) return "REAL";
+
     throw new ArgumentException($"{type} is not supported in SQLite");
   }
 }

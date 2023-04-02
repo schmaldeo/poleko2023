@@ -11,20 +11,24 @@ namespace PolEko;
 
 public abstract class Device
 {
+  public enum Status
+  {
+    Running,
+    Stopped
+  }
+
   /// <summary>
-  /// Lazily initiated cache of the result of ToString() method
-  /// </summary>
-  private string? _toString;
-  
-  private IPAddress _ipAddress;
-  private ushort _port;
-  
-  /// <summary>
-  /// Optional friendly name for a device
+  ///   Optional friendly name for a device
   /// </summary>
   private string? _id;
-  
-  public int RefreshRate => 1;
+
+  private IPAddress _ipAddress;
+  private ushort _port;
+
+  /// <summary>
+  ///   Lazily initiated cache of the result of ToString() method
+  /// </summary>
+  private string? _toString;
 
   protected Device(IPAddress ipAddress, ushort port, string? id = null)
   {
@@ -34,6 +38,8 @@ public abstract class Device
 
     DeviceUri = new Uri($"http://{ipAddress}:{port}/");
   }
+
+  public int RefreshRate => 1;
 
   public IPAddress IpAddress
   {
@@ -67,9 +73,9 @@ public abstract class Device
       _id = value;
     }
   }
-  
+
   public Status CurrentStatus { get; set; }
-  
+
   public abstract string Type { get; }
   public abstract string Description { get; }
   protected Uri DeviceUri { get; init; }
@@ -105,18 +111,10 @@ public abstract class Device
   {
     return HashCode.Combine(IpAddress, Port, Id);
   }
-
-  public enum Status
-  {
-    Running,
-    Stopped
-  }
 }
 
 public abstract class Device<TMeasurement> : Device, INotifyPropertyChanged where TMeasurement : Measurement, new()
 {
-  public event PropertyChangedEventHandler? PropertyChanged;
-
   private TMeasurement? _lastMeasurement;
   private TMeasurement? _lastValidMeasurement;
 
@@ -144,15 +142,17 @@ public abstract class Device<TMeasurement> : Device, INotifyPropertyChanged wher
       OnPropertyChanged();
     }
   }
+
   public Buffer<TMeasurement> MeasurementBuffer { get; } = new(60);
   public DateTime TimeOfLastMeasurement { get; protected set; }
-  
+  public event PropertyChangedEventHandler? PropertyChanged;
+
   protected virtual async Task<TMeasurement> GetMeasurementFromDeviceAsync(HttpClient client)
   {
     var data = await client.GetFromJsonAsync<TMeasurement>(DeviceUri);
     return data ?? throw new HttpRequestException("No data was returned from query");
   }
-  
+
   public async Task<TMeasurement> GetMeasurementAsync(HttpClient client)
   {
     try
@@ -186,16 +186,16 @@ public abstract class Device<TMeasurement> : Device, INotifyPropertyChanged wher
   {
     await InsertMeasurementsAsync();
   }
-  
-  protected void OnPropertyChanged([CallerMemberName] string? name = null)
+
+  private void OnPropertyChanged([CallerMemberName] string? name = null)
   {
     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
   }
 }
 
 /// <summary>
-/// \~english Device that logs temperature
-/// \~polish Urządzenie mierzące temperaturę
+///   \~english Device that logs temperature
+///   \~polish Urządzenie mierzące temperaturę
 /// </summary>
 // ReSharper disable once ClassNeverInstantiated.Global
 public class SmartProDevice : Device<SmartProMeasurement>
@@ -210,8 +210,9 @@ public class SmartProDevice : Device<SmartProMeasurement>
   // Properties
   public override string Type => "POL-EKO Smart Pro";
 
-  public override string Description => "Inkubator laboratoryjny z układem chłodzenia opartym na technologii ogniw Peltiera";
-  
+  public override string Description =>
+    "Inkubator laboratoryjny z układem chłodzenia opartym na technologii ogniw Peltiera";
+
   protected override async Task<SmartProMeasurement> GetMeasurementFromDeviceAsync(HttpClient client)
   {
     var data = await client.GetStringAsync(DeviceUri);
@@ -230,7 +231,7 @@ public class SmartProDevice : Device<SmartProMeasurement>
       Temperature = temperature,
       NetworkError = error
     };
-    
+
     return measurement;
   }
 }
