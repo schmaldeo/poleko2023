@@ -19,18 +19,22 @@ public partial class IpPrompt
   {
     InitializeComponent();
     IpTextBox.Focus();
+    Loaded += delegate
+    {
+      if (Types is null) throw new ArgumentException("MainWindow must consume a Types property");
+    };
   }
 
   public Action<IPAddress, ushort, string?, Type>? Callback
   {
     get => (Action<IPAddress, ushort, string?, Type>)GetValue(CallbackProperty);
-    set => SetValue(CallbackProperty, value);
+    init => SetValue(CallbackProperty, value);
   }
 
   public Dictionary<string, Type>? Types
   {
     get => (Dictionary<string, Type>)GetValue(TypesProperty);
-    set => SetValue(TypesProperty, value);
+    init => SetValue(TypesProperty, value);
   }
 
   /// <summary>
@@ -70,7 +74,7 @@ public partial class IpPrompt
 
     var ip = IPAddress.Parse(IpTextBox.Text);
 
-    var type = Types[TypesComboBox.Text];
+    var type = Types![TypesComboBox.Text];
     Callback(ip, (ushort)port, id, type);
 
     Close();

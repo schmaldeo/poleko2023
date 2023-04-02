@@ -18,9 +18,9 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
   public static readonly DependencyProperty HttpClientProperty =
     DependencyProperty.Register(nameof(HttpClient), typeof(HttpClient), typeof(SmartProDeviceControl));
 
-  private SmartProDevice _device;
+  private SmartProDevice? _device;
   private bool _disposed;
-  private HttpClient _httpClient;
+  private HttpClient? _httpClient;
   private byte _retryCounter;
   private Status _status;
   private Timer? _timer;
@@ -29,7 +29,6 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
   {
     InitializeComponent();
     CurrentStatus = Status.Ready;
-    // TODO: check if this Loaded shit is needed
     Loaded += delegate
     {
       _httpClient = HttpClient ?? new HttpClient();
@@ -40,7 +39,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
   public SmartProDevice Device
   {
     get => (SmartProDevice)GetValue(DeviceProperty);
-    set => SetValue(DeviceProperty, value);
+    init => SetValue(DeviceProperty, value);
   }
 
   public HttpClient? HttpClient
@@ -73,26 +72,27 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
   public async ValueTask DisposeAsync()
   {
     if (_timer == null || _disposed) return;
-    await _device.InsertMeasurementsAsync();
+    await _device!.InsertMeasurementsAsync();
     _disposed = true;
     GC.SuppressFinalize(this);
     await _timer.DisposeAsync();
   }
 
+  // TODO: async void?!?!?!?!
   public async void Dispose()
   {
     if (_timer == null || _disposed) return;
-    await _device.InsertMeasurementsAsync();
+    await _device!.InsertMeasurementsAsync();
     _disposed = true;
     GC.SuppressFinalize(this);
     _timer.Dispose();
   }
 
-  public event EventHandler<RemoveDeviceEventArgs> DeviceRemoved;
+  public event EventHandler<RemoveDeviceEventArgs>? DeviceRemoved;
 
   private async void FetchTimerDelegate(object? _)
   {
-    var measurement = await _device.GetMeasurementAsync(_httpClient);
+    var measurement = await _device!.GetMeasurementAsync(_httpClient!);
 
     if (measurement.NetworkError)
     {
@@ -146,7 +146,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
   private void FetchData_OnClick(object sender, RoutedEventArgs e)
   {
     if (CurrentStatus == Status.Fetching) return;
-    _timer = new Timer(FetchTimerDelegate, null, 0, _device.RefreshRate * 1000);
+    _timer = new Timer(FetchTimerDelegate, null, 0, _device!.RefreshRate * 1000);
     CurrentStatus = Status.Fetching;
   }
 
@@ -156,12 +156,12 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     await _timer.DisposeAsync();
     CurrentStatus = Status.Ready;
     // TODO: remove this, test
-    DataGrid.ItemsSource = _device.MeasurementBuffer;
+    DataGrid.ItemsSource = _device!.MeasurementBuffer;
   }
 
   private void DeleteDevice_OnClick(object sender, RoutedEventArgs e)
   {
-    DeviceRemoved(this, new RemoveDeviceEventArgs(_device));
+    DeviceRemoved?.Invoke(this, new RemoveDeviceEventArgs(_device!));
     Dispose();
   }
 
