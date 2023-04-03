@@ -48,16 +48,9 @@ public partial class IpPrompt
     }
 
     // Check if port input can be parsed to an integer 
-    if (!int.TryParse(PortTextBox.Text, out var port))
+    if (!ushort.TryParse(PortTextBox.Text, out var port))
     {
       MessageBox.Show("Port może się składać tylko z liczb z zakresu 1-65535");
-      return;
-    }
-
-    // Check if port input is from a valid range (unsigned 16 bit)
-    if (!Enumerable.Range(1, 65535).Contains(port))
-    {
-      MessageBox.Show("Port musi być z zakresu 1-65535");
       return;
     }
 
@@ -69,7 +62,7 @@ public partial class IpPrompt
 
     var type = Types![TypesComboBox.Text];
     
-    DeviceAdded?.Invoke(this, new DeviceAddedEventArgs(ip, (ushort) port, id, type));
+    DeviceAdded?.Invoke(this, new DeviceAddedEventArgs(ip, port, id, type));
 
     Close();
   }
