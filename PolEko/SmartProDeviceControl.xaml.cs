@@ -117,6 +117,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable, INot
         TemperatureBlock.Text = "Error";
         IsRunningBlock.Text = measurement.IsRunning.ToString();
       });
+      
 
       return;
     }
@@ -230,4 +231,3 @@ public class SmartProStatusToStringConverter : IValueConverter
     };
   }
 }
-

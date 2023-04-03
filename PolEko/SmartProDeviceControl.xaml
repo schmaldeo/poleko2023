@@ -36,7 +36,7 @@
       FontSize="25"
       FontFamily="Bahnschrift Light"
       Text="{Binding Device.LastMeasurement.Temperature,
-       FallbackValue=0,
+       FallbackValue=0.00,
        Converter={StaticResource SmartProTemperatureConverter}}"
       Grid.Row="2"
       Grid.Column="1" />
@@ -87,10 +87,16 @@
       Width="70"
       Height="30"
       Click="DeleteDevice_OnClick" />
-    <xctk:DateTimePicker Grid.Row="2" Grid.Column="0" Name="StartingDatePicker" />
-    <xctk:DateTimePicker Grid.Row="2" Grid.Column="3" Name="EndingDatePicker" />
-    <DataGrid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Name="DataGrid" IsReadOnly="True" />
-    <StatusBar Grid.Row="5" Grid.Column="0" Name="StatusBar" Grid.ColumnSpan="4" Height="25" Background="#FFABABAB">
+    <!-- <xctk:DateTimePicker Grid.Row="2" Grid.Column="0" Name="StartingDatePicker" /> -->
+    <!-- <xctk:DateTimePicker Grid.Row="2" Grid.Column="3" Name="EndingDatePicker" /> -->
+    <!-- <DataGrid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Device.MeasurementBuffer}"> -->
+    <!--   <DataGrid.Columns> -->
+    <!--     <DataGridTextColumn Header="Temperature" Binding="{Binding Temperature}"/> -->
+    <!--     <DataGridTextColumn Header="Time of request" Binding="{Binding TimeStamp}"/> -->
+    <!--     <DataGridCheckBoxColumn Header="Program running?" Binding="{Binding IsRunning}"/> -->
+    <!--   </DataGrid.Columns> -->
+    <!-- </DataGrid> -->
+    <StatusBar Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Height="25" Background="#FFABABAB">
       <StatusBarItem Name="StatusItem" Content="{Binding CurrentStatus, Converter={StaticResource SmartProStatusToStringConverter}}" />
     </StatusBar>
   </Grid>
