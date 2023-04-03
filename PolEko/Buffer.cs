@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace PolEko;
 
-public class Buffer<T> : IEnumerable<T> where T : Measurement
+public class Buffer<T> : IEnumerable<T>, INotifyCollectionChanged where T : Measurement
 {
   private readonly Queue<T> _buffer = new();
   private bool _overflownOnce;
@@ -22,6 +23,11 @@ public class Buffer<T> : IEnumerable<T> where T : Measurement
 
   public int Size => _buffer.Count;
 
+  private void OnCollectionChanged(NotifyCollectionChangedAction action, object? item)
+  {
+    CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, item));
+  }
+
   public IEnumerator<T> GetEnumerator()
   {
     return _buffer.GetEnumerator();
@@ -33,12 +39,19 @@ public class Buffer<T> : IEnumerable<T> where T : Measurement
   }
 
   public event EventHandler? BufferOverflow;
+  
+  public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
   public void Add(T item)
   {
     _buffer.Enqueue(item);
-    if (_overflownOnce) _buffer.Dequeue();
+    if (_overflownOnce)
+    {
+      _buffer.Dequeue();
+      OnCollectionChanged(NotifyCollectionChangedAction.Remove, item);
+    }
     _size++;
+    OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
   }
 
   public IEnumerable<T> GetCurrentIteration()
