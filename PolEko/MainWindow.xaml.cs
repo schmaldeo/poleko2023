@@ -113,9 +113,9 @@ public partial class MainWindow
     SelectedDeviceControl = item;
   }
 
-  private async void AddNewDevice(IPAddress ipAddress, ushort port, string? id, Type type)
+  private async void AddNewDevice(object? sender, IpPrompt.DeviceAddedEventArgs args)
   {
-    var instance = Activator.CreateInstance(type, ipAddress, port, id);
+    var instance = Activator.CreateInstance(args.Type, args.IpAddress, args.Port, args.Id);
     if (instance is null) throw new Exception("Null instance returned from Activator.CreateInstance() call");
     var device = (Device)instance;
     if (Devices!.Contains(device))
@@ -124,7 +124,7 @@ public partial class MainWindow
       return;
     }
 
-    await Database.AddDeviceAsync(device, type);
+    await Database.AddDeviceAsync(device, args.Type);
     Devices.Add(device);
   }
 
@@ -138,9 +138,9 @@ public partial class MainWindow
   {
     IpPrompt prompt = new()
     {
-      Types = Types,
-      Callback = AddNewDevice
+      Types = Types
     };
+    prompt.DeviceAdded += AddNewDevice;
     prompt.Show();
   }
 }

@@ -10,10 +10,9 @@ namespace PolEko;
 
 public partial class IpPrompt
 {
-  public static readonly DependencyProperty CallbackProperty =
-    DependencyProperty.Register(nameof(Callback), typeof(Action<IPAddress, ushort, string?, Type>), typeof(IpPrompt));
-
   public static readonly DependencyProperty TypesProperty = MainWindow.TypesProperty;
+
+  public event EventHandler<DeviceAddedEventArgs>? DeviceAdded;
 
   public IpPrompt()
   {
@@ -23,12 +22,6 @@ public partial class IpPrompt
     {
       if (Types is null) throw new ArgumentException("MainWindow must consume a Types property");
     };
-  }
-
-  public Action<IPAddress, ushort, string?, Type>? Callback
-  {
-    get => (Action<IPAddress, ushort, string?, Type>)GetValue(CallbackProperty);
-    init => SetValue(CallbackProperty, value);
   }
 
   public Dictionary<string, Type>? Types
@@ -45,7 +38,7 @@ public partial class IpPrompt
   /// <param name="e"></param>
   private void OkButton_Click(object sender, RoutedEventArgs e)
   {
-    if (Callback is null) return;
+    if (DeviceAdded is null) return;
 
     // Check if IP input is a valid IPv4
     if (!Ipv4Regex().IsMatch(IpTextBox.Text))
@@ -75,7 +68,8 @@ public partial class IpPrompt
     var ip = IPAddress.Parse(IpTextBox.Text);
 
     var type = Types![TypesComboBox.Text];
-    Callback(ip, (ushort)port, id, type);
+    
+    DeviceAdded?.Invoke(this, new DeviceAddedEventArgs(ip, (ushort) port, id, type));
 
     Close();
   }
@@ -120,4 +114,20 @@ public partial class IpPrompt
   /// <returns></returns>
   [GeneratedRegex("[^0-9]+")]
   private static partial Regex NumericRegex();
+
+  public class DeviceAddedEventArgs : EventArgs
+  {
+    public DeviceAddedEventArgs(IPAddress ipAddress, ushort port, string? id, Type type)
+    {
+      IpAddress = ipAddress;
+      Port = port;
+      Id = id;
+      Type = type;
+    }
+    
+    public IPAddress IpAddress { get; }
+    public ushort Port { get; }
+    public string? Id { get; }
+    public Type Type { get; }
+  }
 }
