@@ -1,5 +1,5 @@
-var express = require("express");
-var cors = require("cors");
+const express = require("express");
+const cors = require("cors");
 
 const app = express();
 
@@ -15,7 +15,7 @@ app.get("/api/v1/school/status", (req, res) => {
   })
 });
 
-let port = 56000;
+const port = 56000;
 app.listen(port, () => {
   console.log(`listening on ${port}`);
 });
