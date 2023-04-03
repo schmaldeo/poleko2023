@@ -58,19 +58,6 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable, INot
     {
       _status = value;
       OnPropertyChanged();
-      // TODO: binding
-      switch (value)
-      {
-        case Status.Fetching:
-          Dispatcher.Invoke(() => { StatusItem.Content = "Fetching"; });
-          break;
-        case Status.Ready:
-          Dispatcher.Invoke(() => { StatusItem.Content = "Ready"; });
-          break;
-        case Status.Error:
-          Dispatcher.Invoke(() => { StatusItem.Content = $"Request timed out {_retryCounter.ToString()} times"; });
-          break;
-      }
     }
   }
 
@@ -201,7 +188,7 @@ public class SmartProTemperatureConverter : IValueConverter
 }
 
 [ValueConversion(typeof(SmartProDeviceControl.Status), typeof(bool))]
-public class SmartProStatusConverter : IValueConverter 
+public class SmartProStatusToBoolConverter : IValueConverter 
 {
   public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
   {
@@ -215,3 +202,32 @@ public class SmartProStatusConverter : IValueConverter
     return val ? SmartProDeviceControl.Status.Fetching : SmartProDeviceControl.Status.Ready;
   }
 }
+
+[ValueConversion(typeof(SmartProDeviceControl.Status), typeof(string))]
+public class SmartProStatusToStringConverter : IValueConverter 
+{
+  public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+  {
+    var status = (SmartProDeviceControl.Status)value;
+    return status switch
+    {
+      SmartProDeviceControl.Status.Error => "Error",
+      SmartProDeviceControl.Status.Fetching => "Fetching",
+      SmartProDeviceControl.Status.Ready => "Ready",
+      _ => "Unknown"
+    };
+  }
+
+  public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+  {
+    var val = (string)value;
+    return val switch
+    {
+      "Error" => SmartProDeviceControl.Status.Error,
+      "Fetching" => SmartProDeviceControl.Status.Fetching,
+      "Ready" => SmartProDeviceControl.Status.Ready,
+      _ => DependencyProperty.UnsetValue
+    };
+  }
+}
+

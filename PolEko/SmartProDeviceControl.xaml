@@ -66,7 +66,7 @@
       VerticalAlignment="Center"
       Width="70"
       Click="FetchData_OnClick"
-      IsEnabled="{Binding CurrentStatus, Converter={StaticResource SmartProStatusConverter}}"
+      IsEnabled="{Binding CurrentStatus, Converter={StaticResource SmartProStatusToBoolConverter}}"
       Grid.Column="3" />
     <Button
       Grid.Row="0"
@@ -91,7 +91,7 @@
     <xctk:DateTimePicker Grid.Row="2" Grid.Column="3" Name="EndingDatePicker" />
     <DataGrid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Name="DataGrid" IsReadOnly="True" />
     <StatusBar Grid.Row="5" Grid.Column="0" Name="StatusBar" Grid.ColumnSpan="4" Height="25" Background="#FFABABAB">
-      <StatusBarItem Name="StatusItem" />
+      <StatusBarItem Name="StatusItem" Content="{Binding CurrentStatus, Converter={StaticResource SmartProStatusToStringConverter}}" />
     </StatusBar>
   </Grid>
 </UserControl>
