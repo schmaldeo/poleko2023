@@ -123,13 +123,19 @@ public static class Database
   {
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
     await conn.OpenAsync();
-    var command = conn.CreateCommand();
-    var id = device.Id is null ? "NULL" : @$"'{device.Id}'";
+    
     var typeName = type.Name;
+    
+    var command = conn.CreateCommand();
     command.CommandText =
-      $@"
-        INSERT INTO devices (ip_address, port, familiar_name, type) VALUES ('{device.IpAddress}', {device.Port}, {id}, '{typeName}');
+      @"
+        INSERT INTO devices (ip_address, port, familiar_name, type) VALUES ($ipAddress, $port, $id, $type);
       ";
+    // Add parameters to avoid SQL injection
+    command.Parameters.AddWithValue("$id", device.Id is null ? DBNull.Value : device.Id);
+    command.Parameters.AddWithValue("$ipAddress", device.IpAddress.ToString());
+    command.Parameters.AddWithValue("$port", device.Port);
+    command.Parameters.AddWithValue("$type", typeName);
 
     try
     {
@@ -146,8 +152,15 @@ public static class Database
   {
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
     await conn.OpenAsync();
+
+    var type = device.GetType().Name;
+    
     var command = conn.CreateCommand();
-    command.CommandText = $"DELETE FROM devices WHERE ip_address = '{device.IpAddress}' AND port = {device.Port}";
+    command.CommandText = "DELETE FROM devices WHERE ip_address = $ipAddress AND port = $port AND type = $type";
+    // Add parameters to avoid SQL injection
+    command.Parameters.AddWithValue("$ipAddress", device.IpAddress.ToString());
+    command.Parameters.AddWithValue("$port", device.Port);
+    command.Parameters.AddWithValue("$type", type);
 
     try
     {
