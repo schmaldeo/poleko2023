@@ -11,12 +11,6 @@ namespace PolEko;
 
 public abstract class Device
 {
-  public enum Status
-  {
-    Running,
-    Stopped
-  }
-
   /// <summary>
   ///   Optional friendly name for a device
   /// </summary>
@@ -73,8 +67,6 @@ public abstract class Device
       _id = value;
     }
   }
-
-  public Status CurrentStatus { get; set; }
 
   public abstract string Type { get; }
   public abstract string Description { get; }
@@ -222,8 +214,6 @@ public class SmartProDevice : Device<SmartProMeasurement>
     var temperatureElement = root.GetProperty("TEMPERATURE_MAIN");
     var temperature = temperatureElement.GetProperty("value").GetInt32();
     var error = temperatureElement.GetProperty("error").GetBoolean();
-
-    CurrentStatus = isRunning ? Status.Running : Status.Stopped;
 
     var measurement = new SmartProMeasurement
     {
