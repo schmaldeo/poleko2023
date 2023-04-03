@@ -22,19 +22,20 @@ public class SmartProMeasurement : Measurement
 
   public int Temperature { get; init; }
 
+  // ReSharper disable once UnusedAutoPropertyAccessor.Global
   public bool Error { get; init; }
 
   public override string ToString()
   {
-    return $"Temperature: {Temperature}, time of request: {TimeStamp}, temperature error: {Error}";
+    return $"Temperature: {Temperature}, time of request: {TimeStamp}, temperature error: {Error}, time of request: {TimeStamp}";
   }
 }
 
 public class ExampleMeasurement : Measurement
 {
-  [JsonPropertyName("altitude")] public int Altitude { get; init; }
+  [JsonPropertyName("altitude")] public int Speed { get; init; }
 
-  [JsonPropertyName("speed")] public int Speed { get; init; }
+  [JsonPropertyName("speed")] public int Rpm { get; init; }
 
   [JsonPropertyName("distanceTravelled")]
   public int DistanceTravelled { get; init; }
@@ -43,6 +44,6 @@ public class ExampleMeasurement : Measurement
   public override string ToString()
   {
     return
-      $"Temperature: {Altitude}, humidity: {Speed}, distance travelled: {DistanceTravelled} time of request: {TimeStamp}";
+      $"Speed: {Speed}, RPM: {Rpm}, distance travelled: {DistanceTravelled} time of request: {TimeStamp}";
   }
 }
