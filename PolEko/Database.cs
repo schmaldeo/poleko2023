@@ -81,7 +81,7 @@ public static class Database
             const string errorMsg =
               "Invalid device type value in database. Check if all types are correctly added to _registeredDeviceTypes in App.xaml.cs.";
             MessageBox.Show(errorMsg);
-            throw new KeyNotFoundException(errorMsg);
+            throw;
           }
 
           var ipAddress = IPAddress.Parse((string)reader["ip_address"]);
@@ -103,7 +103,7 @@ public static class Database
           const string errorMsg =
             "Invalid cast reading devices from database. Check if values in devices table are correct";
           MessageBox.Show(errorMsg);
-          throw new InvalidCastException(errorMsg);
+          throw;
         }
         catch (Exception e)
         {
