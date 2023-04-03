@@ -63,8 +63,7 @@ public static class Database
 
     try
     {
-      await using var reader = command.ExecuteReader();
-
+      await using var reader = await command.ExecuteReaderAsync();
 
       while (await reader.ReadAsync())
         // This looks like a bunch of unsafe code, but the error handling should help in avoiding awkward errors
