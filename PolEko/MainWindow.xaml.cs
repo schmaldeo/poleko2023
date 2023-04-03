@@ -132,6 +132,7 @@ public partial class MainWindow
   {
     await Database.RemoveDeviceAsync(args.Device);
     Devices!.Remove(args.Device);
+    OpenDevices!.Remove(DeviceControls[args.Device]);
   }
 
   private void AddNewDevice_Click(object sender, RoutedEventArgs e)
