@@ -1,6 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -8,9 +10,8 @@ using System.Windows.Data;
 
 namespace PolEko;
 
-// TODO: disable fetch/stop buttons based on _status, throw some exception if Device is not specified
 // Will create own HttpClient if not provided, not recommended
-public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
+public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable, INotifyPropertyChanged
 {
   public static readonly DependencyProperty DeviceProperty =
     DependencyProperty.Register(nameof(Device), typeof(SmartProDevice), typeof(SmartProDeviceControl));
@@ -24,6 +25,8 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
   private byte _retryCounter;
   private Status _status;
   private Timer? _timer;
+  
+  public event PropertyChangedEventHandler? PropertyChanged;
 
   public SmartProDeviceControl()
   {
@@ -48,12 +51,14 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     init => SetValue(HttpClientProperty, value);
   }
 
-  private Status CurrentStatus
+  public Status CurrentStatus
   {
     get => _status;
     set
     {
       _status = value;
+      OnPropertyChanged();
+      // TODO: binding
       switch (value)
       {
         case Status.Fetching:
@@ -69,6 +74,11 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     }
   }
 
+  private void OnPropertyChanged([CallerMemberName] string? name = null)
+  {
+    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+  }
+  
   public async ValueTask DisposeAsync()
   {
     if (_timer == null || _disposed) return;
@@ -78,7 +88,6 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     await _timer.DisposeAsync();
   }
 
-  // TODO: async void?!?!?!?!
   public async void Dispose()
   {
     if (_timer == null || _disposed) return;
@@ -133,14 +142,6 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     }
 
     CurrentStatus = Status.Fetching;
-
-    // await Dispatcher.BeginInvoke(() =>
-    // {
-    //   // Parse to float with and then display as string with 2 decimal places (by default it would display x.x0 as x.x)
-    //   var parsedTemperature = (float)measurement.Temperature / 100;
-    //   TemperatureBlock.Text = parsedTemperature.ToString("N2");
-    //   IsRunningBlock.Text = measurement.IsRunning.ToString();
-    // });
   }
 
   private void FetchData_OnClick(object sender, RoutedEventArgs e)
@@ -155,8 +156,6 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     if (_timer is null) return;
     await _timer.DisposeAsync();
     CurrentStatus = Status.Ready;
-    // TODO: remove this, test
-    DataGrid.ItemsSource = _device!.MeasurementBuffer;
   }
 
   private void DeleteDevice_OnClick(object sender, RoutedEventArgs e)
@@ -165,7 +164,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable
     Dispose();
   }
 
-  private enum Status
+  public enum Status
   {
     Ready,
     Fetching,
@@ -198,5 +197,21 @@ public class SmartProTemperatureConverter : IValueConverter
     var strValue = value as string;
     if (float.TryParse(strValue, out var resultFloat)) return (int)resultFloat * 100;
     return DependencyProperty.UnsetValue;
+  }
+}
+
+[ValueConversion(typeof(SmartProDeviceControl.Status), typeof(bool))]
+public class SmartProStatusConverter : IValueConverter 
+{
+  public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+  {
+    var status = (SmartProDeviceControl.Status)value;
+    return status is not SmartProDeviceControl.Status.Fetching or SmartProDeviceControl.Status.Error;
+  }
+
+  public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+  {
+    var val = (bool)value;
+    return val ? SmartProDeviceControl.Status.Fetching : SmartProDeviceControl.Status.Ready;
   }
 }

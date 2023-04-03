@@ -5,5 +5,7 @@
              Startup="App_Startup">
   <Application.Resources>
     <local:SmartProTemperatureConverter x:Key="SmartProTemperatureConverter" />
+    <local:SmartProStatusConverter x:Key="SmartProStatusConverter" />
+    <local:BooleanInversionConverter x:Key="BooleanInversionConverter"/>
   </Application.Resources>
 </Application>
