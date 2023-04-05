@@ -4,9 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:PolEko"
              mc:Ignorable="d"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              d:DesignHeight="450" d:DesignWidth="800" Foreground="Black">
+  
+  <UserControl.Resources>
+    <local:SmartProTemperatureConverter x:Key="SmartProTemperatureConverter" />
+    <local:SmartProStatusToBoolConverter x:Key="SmartProStatusToBoolConverter" />
+    <local:SmartProStatusToStringConverter x:Key="SmartProStatusToStringConverter" />
+  </UserControl.Resources>
 
   <Grid>
     <Grid.RowDefinitions>

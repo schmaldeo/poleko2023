@@ -4,9 +4,6 @@
              xmlns:local="clr-namespace:PolEko"
              Startup="App_Startup">
   <Application.Resources>
-    <local:SmartProTemperatureConverter x:Key="SmartProTemperatureConverter" />
-    <local:SmartProStatusToBoolConverter x:Key="SmartProStatusToBoolConverter" />
     <local:BooleanInversionConverter x:Key="BooleanInversionConverter" />
-    <local:SmartProStatusToStringConverter x:Key="SmartProStatusToStringConverter" />
   </Application.Resources>
 </Application>
