@@ -254,7 +254,7 @@ public static class Database
       $"SELECT * FROM {tableName} WHERE {nameof(device.IpAddress)} = $ipAddress AND {nameof(Device.Port)} = $port AND {nameof(Measurement.TimeStamp)} BETWEEN $startingDate AND $endingDate";
     command.Parameters.AddWithValue("$startingDate", GetSQLiteDateTime(startingDate));
     command.Parameters.AddWithValue("$endingDate", GetSQLiteDateTime(endingDate));
-    command.Parameters.AddWithValue("$ipAddress", device.IpAddress);
+    command.Parameters.AddWithValue("$ipAddress", device.IpAddress.ToString());
     command.Parameters.AddWithValue("$port", device.Port);
 
     var measurements = new List<T>();
