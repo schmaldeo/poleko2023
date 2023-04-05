@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
-namespace PolEko;
+namespace PolEko.ui;
 
 // Will create own HttpClient if not provided, not recommended
 public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable, INotifyPropertyChanged

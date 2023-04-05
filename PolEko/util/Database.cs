@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Data.Sqlite;
 
-namespace PolEko;
+namespace PolEko.util;
 
 public static class Database
 {

@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 
-namespace PolEko;
+namespace PolEko.ui;
 
 public partial class IpPrompt
 {

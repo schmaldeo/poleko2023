@@ -4,8 +4,9 @@ using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
+using PolEko.util;
 
-namespace PolEko;
+namespace PolEko.ui;
 
 /// <summary>
 ///   Interaction logic for MainWindow.xaml
@@ -13,7 +14,7 @@ namespace PolEko;
 public partial class MainWindow
 {
   public static readonly DependencyProperty TypesProperty =
-    DependencyProperty.Register(nameof(Types), typeof(Dictionary<string, Type>), typeof(IpPrompt));
+    DependencyProperty.Register(nameof(Types), typeof(Dictionary<string, Type>), typeof(ui.IpPrompt));
 
   public static readonly DependencyProperty DevicesProperty =
     DependencyProperty.Register(nameof(Devices), typeof(ObservableCollection<Device>), typeof(MainWindow));
@@ -112,7 +113,7 @@ public partial class MainWindow
     SelectedDeviceControl = item;
   }
 
-  private async void AddNewDevice(object? sender, IpPrompt.DeviceAddedEventArgs args)
+  private async void AddNewDevice(object? sender, ui.IpPrompt.DeviceAddedEventArgs args)
   {
     var instance = Activator.CreateInstance(args.Type, args.IpAddress, args.Port, args.Id);
     if (instance is null) throw new Exception("Null instance returned from Activator.CreateInstance() call");
@@ -136,7 +137,7 @@ public partial class MainWindow
 
   private void AddNewDevice_Click(object sender, RoutedEventArgs e)
   {
-    IpPrompt prompt = new()
+    ui.IpPrompt prompt = new()
     {
       Types = Types
     };

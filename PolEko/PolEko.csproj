@@ -17,4 +17,22 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0-preview.2.23128.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="ui\IpPrompt.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="ui\SmartProDeviceControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="ui\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
 </Project>

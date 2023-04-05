@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
+using PolEko.ui;
+using PolEko.util;
 
 namespace PolEko;
 
