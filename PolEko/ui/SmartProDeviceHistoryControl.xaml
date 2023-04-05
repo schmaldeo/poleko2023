@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="PolEko.ui.SmartProDeviceHistoryControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:PolEko.ui"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             DataContext="{Binding RelativeSource={RelativeSource Self}}"
+             mc:Ignorable="d"
+             d:DesignHeight="400" d:DesignWidth="900">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="10*" />
+    </Grid.RowDefinitions>
+
+    <Label Content="Beginning" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" FontSize="16" />
+    <xctk:DateTimePicker Name="StartingDatePicker" Grid.Row="1" Grid.Column="0" />
+    <Label Content="End" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Center" FontSize="16" />
+    <xctk:DateTimePicker Name="EndingDatePicker" Grid.Row="1" Grid.Column="1" />
+    <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" />
+    <DataGrid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" IsReadOnly="True" AutoGenerateColumns="False" ItemsSource="{Binding Measurements}">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Temperature" Binding="{Binding Temperature}"/>
+        <DataGridTextColumn Header="Time of request" Binding="{Binding TimeStamp}"/>
+        <DataGridCheckBoxColumn Header="Program running?" Binding="{Binding IsRunning}"/>
+      </DataGrid.Columns>
+    </DataGrid>
+  </Grid>
+</UserControl>

@@ -27,6 +27,8 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable, INot
   private Timer? _timer;
   
   public event PropertyChangedEventHandler? PropertyChanged;
+  
+  public event EventHandler<RemoveDeviceEventArgs>? DeviceRemoved;
 
   public SmartProDeviceControl()
   {
@@ -84,9 +86,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable, INot
     _timer.Dispose();
   }
 
-  public event EventHandler<RemoveDeviceEventArgs>? DeviceRemoved;
-
-  private async void FetchTimerDelegate(object? _)
+  private async void TimerCallback(object? _)
   {
     var measurement = await _device!.GetMeasurementAsync(_httpClient!);
 
@@ -135,10 +135,11 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable, INot
   private void FetchData_OnClick(object sender, RoutedEventArgs e)
   {
     if (CurrentStatus == Status.Fetching) return;
-    _timer = new Timer(FetchTimerDelegate, null, 0, _device!.RefreshRate * 1000);
+    _timer = new Timer(TimerCallback, null, 0, _device!.RefreshRate * 1000);
     CurrentStatus = Status.Fetching;
   }
 
+  // TODO: stopping while theres an error throws a cannot access a disposed object exception
   private async void StopFetching_OnClick(object sender, RoutedEventArgs e)
   {
     if (_timer is null) return;

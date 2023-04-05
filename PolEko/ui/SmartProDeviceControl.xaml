@@ -4,16 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:local="clr-namespace:PolEko"
-             xmlns:ui="clr-namespace:PolEko.ui"
+             xmlns:local="clr-namespace:PolEko.ui"
              mc:Ignorable="d"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              d:DesignHeight="450" d:DesignWidth="800" Foreground="Black">
   
   <UserControl.Resources>
-    <ui:SmartProTemperatureConverter x:Key="SmartProTemperatureConverter" />
-    <ui:SmartProStatusToBoolConverter x:Key="SmartProStatusToBoolConverter" />
-    <ui:SmartProStatusToStringConverter x:Key="SmartProStatusToStringConverter" />
+    <local:SmartProTemperatureConverter x:Key="SmartProTemperatureConverter" />
+    <local:SmartProStatusToBoolConverter x:Key="SmartProStatusToBoolConverter" />
+    <local:SmartProStatusToStringConverter x:Key="SmartProStatusToStringConverter" />
   </UserControl.Resources>
 
   <Grid>
@@ -95,15 +94,9 @@
       Width="70"
       Height="30"
       Click="DeleteDevice_OnClick" />
-    <!-- <xctk:DateTimePicker Grid.Row="2" Grid.Column="0" Name="StartingDatePicker" /> -->
-    <!-- <xctk:DateTimePicker Grid.Row="2" Grid.Column="3" Name="EndingDatePicker" /> -->
-    <!-- <DataGrid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" IsReadOnly="True" ItemsSource="{Binding Device.MeasurementBuffer}"> -->
-    <!--   <DataGrid.Columns> -->
-    <!--     <DataGridTextColumn Header="Temperature" Binding="{Binding Temperature}"/> -->
-    <!--     <DataGridTextColumn Header="Time of request" Binding="{Binding TimeStamp}"/> -->
-    <!--     <DataGridCheckBoxColumn Header="Program running?" Binding="{Binding IsRunning}"/> -->
-    <!--   </DataGrid.Columns> -->
-    <!-- </DataGrid> -->
+    
+    <local:SmartProDeviceHistoryControl Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" />
+    
     <StatusBar Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Height="25" Background="#FFABABAB">
       <StatusBarItem Name="StatusItem" Content="{Binding CurrentStatus, Converter={StaticResource SmartProStatusToStringConverter}}" />
     </StatusBar>
