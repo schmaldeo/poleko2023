@@ -8,7 +8,7 @@ public abstract class Measurement
 {
   public bool NetworkError { get; init; }
 
-  public DateTime TimeStamp { get; } = DateTime.Now;
+  public DateTime TimeStamp { get; init; } = DateTime.Now;
 
   public abstract override string ToString();
 }

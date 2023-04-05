@@ -22,13 +22,13 @@ public static class Database
     await conn.OpenAsync();
     var command = conn.CreateCommand();
     command.CommandText =
-      @"
+      $@"
         CREATE TABLE IF NOT EXISTS devices(
-            ip_address TEXT NOT NULL,
-            port INTEGER NOT NULL,
-            familiar_name TEXT,
-            type TEXT,
-            PRIMARY KEY (ip_address, port)
+            {nameof(Device.IpAddress)} TEXT NOT NULL,
+            {nameof(Device.Port)} INTEGER NOT NULL,
+            FamiliarName TEXT,
+            Type TEXT,
+            PRIMARY KEY ({nameof(Device.IpAddress)}, {nameof(Device.Port)})
         );
       ";
     await command.ExecuteNonQueryAsync();
@@ -73,7 +73,7 @@ public static class Database
           Type type;
           try
           {
-            type = types[(string)reader["type"]];
+            type = types[(string)reader["Type"]];
           }
           catch (KeyNotFoundException)
           {
@@ -83,10 +83,10 @@ public static class Database
             throw;
           }
 
-          var ipAddress = IPAddress.Parse((string)reader["ip_address"]);
-          var port = (ushort)(long)reader["port"];
+          var ipAddress = IPAddress.Parse((string)reader[nameof(Device.IpAddress)]);
+          var port = (ushort)(long)reader[nameof(Device.Port)];
           var device = Activator.CreateInstance(type, ipAddress, port,
-            reader["familiar_name"] is DBNull ? null : reader["familiar_name"]);
+            reader["FamiliarName"] is DBNull ? null : reader["FamiliarName"]);
 
           if (device is null)
           {
@@ -127,8 +127,8 @@ public static class Database
     
     var command = conn.CreateCommand();
     command.CommandText =
-      @"
-        INSERT INTO devices (ip_address, port, familiar_name, type) VALUES ($ipAddress, $port, $id, $type);
+      $@"
+        INSERT INTO devices ({nameof(Device.IpAddress)}, {nameof(Device.Port)}, FamiliarName, Type) VALUES ($ipAddress, $port, $id, $type);
       ";
     // Add parameters to avoid SQL injection
     command.Parameters.AddWithValue("$id", device.Id is null ? DBNull.Value : device.Id);
@@ -155,7 +155,7 @@ public static class Database
     var type = device.GetType().Name;
     
     var command = conn.CreateCommand();
-    command.CommandText = "DELETE FROM devices WHERE ip_address = $ipAddress AND port = $port AND type = $type";
+    command.CommandText = $"DELETE FROM devices WHERE {nameof(Device.IpAddress)} = $ipAddress AND {nameof(Device.Port)} = $port AND Type = $type";
     // Add parameters to avoid SQL injection
     command.Parameters.AddWithValue("$ipAddress", device.IpAddress.ToString());
     command.Parameters.AddWithValue("$port", device.Port);
@@ -176,6 +176,7 @@ public static class Database
   {
     var type = typeof(T);
 
+    // TODO: retry if transaction fails, add dontRetry bool in params
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
     await conn.OpenAsync();
     await using var transaction = await conn.BeginTransactionAsync();
@@ -199,7 +200,7 @@ public static class Database
       valuesStringBuilder.Append($"${name},");
     }
 
-    definitionStringBuilder.Append("ip_address,port) VALUES ");
+    definitionStringBuilder.Append($"{nameof(Device.IpAddress)},{nameof(Device.Port)}) VALUES ");
     valuesStringBuilder.Append($"'{sender.IpAddress}', {sender.Port});");
     definitionStringBuilder.Append(valuesStringBuilder);
 
@@ -217,7 +218,7 @@ public static class Database
             parameter.Value = b ? 1 : 0;
             continue;
           case DateTime dateTime:
-            parameter.Value = dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff");
+            parameter.Value = GetSQLiteDateTime(dateTime);
             continue;
           default:
             parameter.Value = prop;
@@ -238,6 +239,56 @@ public static class Database
     await transaction.CommitAsync();
   }
 
+  // TODO: needs to accept Device argument to know which device's measurements to fetch
+  public static async Task<List<T>> GetMeasurementsAsync<T>(DateTime startingDate, DateTime endingDate, Device device, SqliteConnection? connection = null) where T : Measurement, new()
+  {
+    var type = typeof(T);
+    var tableName = $"{type.Name}s";
+    var properties = type.GetProperties();
+
+    await using var conn = connection ?? new SqliteConnection(ConnectionString);
+    await conn.OpenAsync();
+    
+    var command = conn.CreateCommand();
+    command.CommandText =
+      $"SELECT * FROM {tableName} WHERE {nameof(device.IpAddress)} = $ipAddress AND {nameof(Device.Port)} = $port AND {nameof(Measurement.TimeStamp)} BETWEEN $startingDate AND $endingDate";
+    command.Parameters.AddWithValue("$startingDate", GetSQLiteDateTime(startingDate));
+    command.Parameters.AddWithValue("$endingDate", GetSQLiteDateTime(endingDate));
+    command.Parameters.AddWithValue("$ipAddress", device.IpAddress);
+    command.Parameters.AddWithValue("$port", device.Port);
+
+    var measurements = new List<T>();
+    await using var reader = await command.ExecuteReaderAsync();
+    // TODO: subject for optimisation
+    while (await reader.ReadAsync())
+    {
+      var instance = Activator.CreateInstance<T>();
+      foreach (var property in properties)
+      {
+        if (property.Name is nameof(Device.IpAddress) or nameof(Device.Port)) continue;
+        var t = property.PropertyType;
+        switch (t)
+        {
+          case not null when t == typeof(bool):
+            property.SetValue(instance, (long)reader[property.Name] != 0);
+            break;
+          case not null when t == typeof(DateTime):
+            property.SetValue(instance, DateTime.Parse((string)reader[property.Name]));
+            break;
+          case not null when t == typeof(int):
+            property.SetValue(instance, (int)(long)reader[property.Name]);
+            break;
+          default:
+            property.SetValue(instance, reader[property.Name]);
+            break;
+        }
+      }
+      measurements.Add(instance);
+    }
+
+    return measurements;
+  }
+
   /// <summary>
   ///   Method that takes in a <c>Type</c> derived from <c>Measurement</c> and returns a SQLite query
   /// </summary>
@@ -255,19 +306,25 @@ public static class Database
 
     foreach (var property in type.GetProperties())
     {
-      var name = property.Name.ToLower();
-      if (name is "timestamp" or "error") continue;
+      var name = property.Name;
+      if (name is nameof(Measurement.TimeStamp) or nameof(Measurement.NetworkError)) continue;
       stringBuilder.Append($"{name} {GetSQLiteType(property.PropertyType)},{Environment.NewLine}");
     }
 
-    stringBuilder.Append(@"timestamp TEXT NOT NULL,
-      error INTEGER NOT NULL,
-      ip_address TEXT NOT NULL,
-      port INTEGER NOT NULL,
-      PRIMARY KEY (timestamp, ip_address, port),
-      FOREIGN KEY (ip_address, port) REFERENCES devices(ip_address, port) ON DELETE CASCADE ON UPDATE CASCADE);");
+    stringBuilder.Append(@$"{nameof(Measurement.TimeStamp)} TEXT NOT NULL,
+      {nameof(Measurement.NetworkError)} INTEGER NOT NULL,
+      {nameof(Device.IpAddress)} TEXT NOT NULL,
+      {nameof(Device.Port)} INTEGER NOT NULL,
+      PRIMARY KEY ({nameof(Measurement.TimeStamp)}, {nameof(Device.IpAddress)}, {nameof(Device.Port)}),
+      FOREIGN KEY ({nameof(Device.IpAddress)}, {nameof(Device.Port)}) REFERENCES devices({nameof(Device.IpAddress)}, {nameof(Device.Port)}) ON DELETE CASCADE ON UPDATE CASCADE);");
 
     return stringBuilder.ToString();
+  }
+
+  // ReSharper disable once InconsistentNaming
+  private static string GetSQLiteDateTime(DateTime dateTime)
+  {
+    return dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff");
   }
 
   // ReSharper disable once InconsistentNaming
