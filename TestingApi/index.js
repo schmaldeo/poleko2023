@@ -9,7 +9,7 @@ app.get("/api/v1/school/status", (req, res) => {
   res.json({
     IS_RUNNING: true,
     TEMPERATURE_MAIN: {
-      value: Math.round(Math.random() * 2000 + 10),
+      value: Math.round(Math.random() * 2000) + 10,
       error: false
     }
   })
