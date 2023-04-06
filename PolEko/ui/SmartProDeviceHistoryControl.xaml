@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:PolEko.ui"
+             xmlns:oxy="http://oxyplot.org/wpf"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              mc:Ignorable="d"
@@ -26,18 +27,19 @@
     <xctk:DateTimePicker Name="EndingDatePicker" Grid.Row="1" Grid.Column="1" />
     <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="Get" />
     <Button Grid.Row="2" Grid.Column="0" Click="CsvExport_Click" Content="Export to CSV" />
-    <DataGrid 
-      Grid.Row="3" 
-      Grid.Column="0"
-      Grid.ColumnSpan="2"
-      IsReadOnly="True"
-      AutoGenerateColumns="False"
-      ItemsSource="{Binding Measurements}">
-      <DataGrid.Columns>
-        <DataGridTextColumn Header="Temperature" Binding="{Binding Temperature}"/>
-        <DataGridTextColumn Header="Time of request" Binding="{Binding TimeStamp}"/>
-        <DataGridCheckBoxColumn Header="Program running?" Binding="{Binding IsRunning}"/>
-      </DataGrid.Columns>
-    </DataGrid>
+    <!-- <DataGrid  -->
+    <!--   Grid.Row="3"  -->
+    <!--   Grid.Column="0" -->
+    <!--   Grid.ColumnSpan="2" -->
+    <!--   IsReadOnly="True" -->
+    <!--   AutoGenerateColumns="False" -->
+    <!--   ItemsSource="{Binding Measurements}"> -->
+    <!--   <DataGrid.Columns> -->
+    <!--     <DataGridTextColumn Header="Temperature" Binding="{Binding Temperature}"/> -->
+    <!--     <DataGridTextColumn Header="Time of request" Binding="{Binding TimeStamp}"/> -->
+    <!--     <DataGridCheckBoxColumn Header="Program running?" Binding="{Binding IsRunning}"/> -->
+    <!--   </DataGrid.Columns> -->
+    <!-- </DataGrid> -->
+    <oxy:PlotView Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="PlotView" />
   </Grid>
 </UserControl>

@@ -8,12 +8,16 @@ using System.Windows;
 using CsvHelper;
 using Microsoft.Win32;
 using PolEko.util;
+using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 
 namespace PolEko.ui;
 
 public partial class SmartProDeviceHistoryControl : INotifyPropertyChanged
 {
   private List<SmartProMeasurement> _measurements = new();
+  private PlotModel _plotModel;
 
   public static readonly DependencyProperty DeviceProperty = DependencyProperty.Register(
     nameof(Device), typeof(SmartProDevice), typeof(SmartProDeviceHistoryControl));
@@ -31,6 +35,16 @@ public partial class SmartProDeviceHistoryControl : INotifyPropertyChanged
     {
       _measurements = value;
       OnPropertyChanged();
+    }
+  }
+
+  public PlotModel PlotModel
+  {
+    get => _plotModel;
+    private set
+    {
+      _plotModel = value;
+      PlotView.Model = value;
     }
   }
   
@@ -57,6 +71,25 @@ public partial class SmartProDeviceHistoryControl : INotifyPropertyChanged
       await Database.GetMeasurementsAsync<SmartProMeasurement>((DateTime)StartingDatePicker.Value,
         (DateTime)EndingDatePicker.Value, Device!);
     Measurements = measurements;
+    var plotModel = new PlotModel();
+
+    // Add X and Y axes to the plot
+    plotModel.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom, Title = "Time" });
+    plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Title = "Temperature" });
+
+    // Create a new LineSeries object
+    var lineSeries = new LineSeries();
+
+    // Add data points to the LineSeries from the List<DeviceMeasurement> object
+    foreach (var measurement in measurements)
+    {
+      lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(measurement.TimeStamp), Math.Round(
+        (float)measurement.Temperature / 100, 2)));
+    }
+
+    // Add the LineSeries to the PlotModel
+    plotModel.Series.Add(lineSeries);
+    PlotModel = plotModel;
   }
 
   private async void CsvExport_Click(object sender, RoutedEventArgs e)
