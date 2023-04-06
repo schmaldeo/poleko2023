@@ -95,7 +95,8 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable, INot
     {
       // Increase the timer interval to 5 seconds when there's an error
       CurrentStatus = Status.Error;
-      _timer!.Change(5000, 5000);
+      if (_timer is null) return;
+      _timer.Change(5000, 5000);
 
       if (_retryCounter < 5)
       {
@@ -103,7 +104,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable, INot
       }
       else
       {
-        await _timer!.DisposeAsync();
+        if (_timer is not null) await _timer.DisposeAsync();
         MessageBox.Show("Request timed out 5 times, aborting");
         CurrentStatus = Status.Ready;
       }
@@ -113,6 +114,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable, INot
 
     if (measurement.Error)
     {
+      // TODO: mvvm
       await Dispatcher.BeginInvoke(() =>
       {
         TemperatureBlock.Text = "Error";
@@ -126,7 +128,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable, INot
     // If connection was restored, put the previous timer params back
     if (CurrentStatus == Status.Error)
     {
-      _timer!.Change(_device.RefreshRate * 1000, _device.RefreshRate * 1000);
+      _timer?.Change(_device.RefreshRate * 1000, _device.RefreshRate * 1000);
       _retryCounter = 0;
     }
 
@@ -140,7 +142,6 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable, INot
     CurrentStatus = Status.Fetching;
   }
 
-  // TODO: stopping while theres an error throws a cannot access a disposed object exception
   private async void StopFetching_OnClick(object sender, RoutedEventArgs e)
   {
     if (_timer is null) return;
