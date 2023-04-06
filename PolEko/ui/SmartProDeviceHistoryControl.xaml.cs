@@ -11,17 +11,15 @@ public partial class SmartProDeviceHistoryControl : INotifyPropertyChanged
 {
   private List<SmartProMeasurement> _measurements = new();
 
-  
-  // TODO: make this work
-  // public static readonly DependencyProperty DeviceProperty =
-  //   DependencyProperty.Register(nameof(Device), typeof(SmartProDevice), typeof(SmartProDeviceHistoryControl));
-  //
-  // public SmartProDevice Device
-  // {
-  //   get => (SmartProDevice)GetValue(DeviceProperty);
-  //   init => SetValue(DeviceProperty, value);
-  // }
-  
+  public static readonly DependencyProperty DeviceProperty = DependencyProperty.Register(
+    nameof(Device), typeof(SmartProDevice), typeof(SmartProDeviceHistoryControl));
+
+  public SmartProDevice Device
+  {
+    get => (SmartProDevice)GetValue(DeviceProperty);
+    set => SetValue(DeviceProperty, value);
+  }
+
   public List<SmartProMeasurement> Measurements
   {
     get => _measurements;
@@ -37,10 +35,10 @@ public partial class SmartProDeviceHistoryControl : INotifyPropertyChanged
   public SmartProDeviceHistoryControl()
   {
     InitializeComponent();
-    // Loaded += delegate
-    // {
-    //   if (Device is null) throw new ArgumentException("Device property must be specified");
-    // };
+    Loaded += delegate
+    {
+      if (Device is null) throw new ArgumentException("Device property must be specified");
+    };
   }
 
   private void OnPropertyChanged([CallerMemberName] string? name = null)
@@ -53,7 +51,7 @@ public partial class SmartProDeviceHistoryControl : INotifyPropertyChanged
     if (StartingDatePicker.Value is null || EndingDatePicker.Value is null) return;
     var measurements =
       await Database.GetMeasurementsAsync<SmartProMeasurement>((DateTime)StartingDatePicker.Value,
-        (DateTime)EndingDatePicker.Value);
+        (DateTime)EndingDatePicker.Value, Device!);
     Measurements = measurements;
   }
 }

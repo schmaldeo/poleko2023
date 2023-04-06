@@ -38,6 +38,7 @@ public partial class SmartProDeviceControl : IDisposable, IAsyncDisposable, INot
     {
       _httpClient = HttpClient ?? new HttpClient();
       _device = Device;
+      HistoryControl.Device = Device;
     };
   }
 

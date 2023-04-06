@@ -25,7 +25,13 @@
     <Label Content="End" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Center" FontSize="16" />
     <xctk:DateTimePicker Name="EndingDatePicker" Grid.Row="1" Grid.Column="1" />
     <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" />
-    <DataGrid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" IsReadOnly="True" AutoGenerateColumns="False" ItemsSource="{Binding Measurements}">
+    <DataGrid 
+      Grid.Row="3" 
+      Grid.Column="0"
+      Grid.ColumnSpan="2"
+      IsReadOnly="True"
+      AutoGenerateColumns="False"
+      ItemsSource="{Binding Measurements}">
       <DataGrid.Columns>
         <DataGridTextColumn Header="Temperature" Binding="{Binding Temperature}"/>
         <DataGridTextColumn Header="Time of request" Binding="{Binding TimeStamp}"/>

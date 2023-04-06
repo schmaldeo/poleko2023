@@ -95,10 +95,10 @@
       Height="30"
       Click="DeleteDevice_OnClick" />
     
-    <local:SmartProDeviceHistoryControl Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" />
+    <local:SmartProDeviceHistoryControl Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" x:Name="HistoryControl" />
     
     <StatusBar Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Height="25" Background="#FFABABAB">
-      <StatusBarItem Name="StatusItem" Content="{Binding CurrentStatus, Converter={StaticResource SmartProStatusToStringConverter}}" />
+      <StatusBarItem Content="{Binding CurrentStatus, Converter={StaticResource SmartProStatusToStringConverter}}" />
     </StatusBar>
   </Grid>
 </UserControl>
