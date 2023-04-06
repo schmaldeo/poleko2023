@@ -6,6 +6,7 @@ using System.Windows;
 
 namespace PolEko.ui;
 
+#pragma warning disable
 public partial class ExampleDeviceControl : IDeviceControl<ExampleDevice>
 {
   public ExampleDevice Device { get; }
