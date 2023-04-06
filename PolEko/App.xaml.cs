@@ -19,6 +19,12 @@ public partial class App
   private readonly Dictionary<string, Type> _registeredDeviceTypes = new();
   private List<Type> _registeredMeasurementTypes = new();
 
+  private readonly Dictionary<Type, Type> _deviceAssociatedControls = new()
+  {
+    { typeof(SmartProDevice), typeof(SmartProDeviceControl) },
+    { typeof(ExampleDevice), typeof(SmartProDeviceControl) }
+  };
+
   private async void App_Startup(object sender, StartupEventArgs e)
   {
     // Getting types that derive from Device (except for abstract types). It does use Reflection, so while it is an idea
@@ -40,7 +46,8 @@ public partial class App
     MainWindow mainWindow = new()
     {
       Types = _registeredDeviceTypes,
-      Devices = observableDeviceCollection
+      Devices = observableDeviceCollection,
+      DeviceAssociatedControls = _deviceAssociatedControls
     };
     mainWindow.Show();
   }

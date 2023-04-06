@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,7 +27,7 @@ public partial class MainWindow
     DependencyProperty.Register(nameof(SelectedDeviceControl), typeof(TabItem), typeof(MainWindow));
 
   private Device? _currentDevice;
-  private SmartProDeviceControl? _deviceInfo;
+  private IDeviceControl<Device>? _deviceInfo;
   private HttpClient? _httpClient;
 
   public MainWindow()
@@ -60,6 +61,8 @@ public partial class MainWindow
   }
 
   private Dictionary<Device, TabItem> DeviceControls { get; } = new();
+  
+  public Dictionary<Type, Type> DeviceAssociatedControls { get; init; }
 
   private void HandleDeviceChange(object sender, RoutedEventArgs e)
   {
@@ -74,23 +77,13 @@ public partial class MainWindow
 
     _currentDevice = incomingDevice;
     var httpClient = _httpClient ??= new HttpClient();
-    // TODO: Reflection
-    if (_currentDevice is SmartProDevice device)
-    {
-      _deviceInfo = new SmartProDeviceControl
-      {
-        Device = device,
-        HttpClient = httpClient
-      };
-      _deviceInfo.DeviceRemoved += RemoveDevice;
-      Closing += async delegate { await _deviceInfo.DisposeAsync(); };
-    }
-
-    if (_currentDevice is ExampleDevice)
-    {
-      MessageBox.Show("Unimplemented");
-      return;
-    }
+    
+    var t = incomingDevice.GetType();
+    var instance = (IDeviceControl<Device>)Activator.CreateInstance(DeviceAssociatedControls[t], incomingDevice, httpClient)!;
+    instance.DeviceRemoved += RemoveDevice;
+    Closing += async delegate { await instance.DisposeAsync(); };
+    _deviceInfo = instance;
+    
 
     var formattedHeader = $"{_currentDevice.IpAddress}:{_currentDevice.Port}";
     var item = new TabItem
@@ -127,7 +120,7 @@ public partial class MainWindow
     Devices.Add(device);
   }
 
-  private async void RemoveDevice(object? sender, SmartProDeviceControl.RemoveDeviceEventArgs args)
+  private async void RemoveDevice(object? sender, RemoveDeviceEventArgs args)
   {
     await Database.RemoveDeviceAsync(args.Device);
     Devices!.Remove(args.Device);
@@ -136,11 +129,18 @@ public partial class MainWindow
 
   private void AddNewDevice_Click(object sender, RoutedEventArgs e)
   {
-    ui.IpPrompt prompt = new()
+    IpPrompt prompt = new()
     {
       Types = Types
     };
     prompt.DeviceAdded += AddNewDevice;
     prompt.Show();
   }
+}
+
+internal interface IDeviceControl<out T> : IDisposable, IAsyncDisposable, INotifyPropertyChanged where T : Device
+{
+  HttpClient HttpClient { get; }
+  T Device { get; }
+  event EventHandler<RemoveDeviceEventArgs>? DeviceRemoved;
 }
