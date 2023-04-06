@@ -5,11 +5,16 @@ const app = express();
 
 app.use(cors());
 
+let temp = 1000;
 app.get("/api/v1/school/status", (req, res) => {
+  temp += 10;
+  if (temp == 3000) {
+    temp = 1000;
+  }
   res.json({
     IS_RUNNING: true,
     TEMPERATURE_MAIN: {
-      value: Math.round(Math.random() * 2000) + 10,
+      value: temp,
       error: false
     }
   })
