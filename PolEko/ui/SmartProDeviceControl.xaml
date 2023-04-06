@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:oxy="http://oxyplot.org/wpf"
              xmlns:local="clr-namespace:PolEko.ui"
              mc:Ignorable="d"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -95,7 +96,43 @@
       Height="30"
       Click="DeleteDevice_OnClick" />
     
-    <local:SmartProDeviceHistoryControl Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" x:Name="HistoryControl" />
+    <!-- <local:SmartProDeviceHistoryControl Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" x:Name="HistoryControl" /> -->
+    <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="10*" />
+      </Grid.RowDefinitions>
+
+      <Label Content="Beginning" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" FontSize="16" />
+      <xctk:DateTimePicker Name="StartingDatePicker" Grid.Row="1" Grid.Column="0" />
+      <Label Content="End" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Center" FontSize="16" />
+      <xctk:DateTimePicker Name="EndingDatePicker" Grid.Row="1" Grid.Column="1" />
+      <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="Get" />
+      <Button Grid.Row="2" Grid.Column="0" Click="CsvExport_Click" Content="Export to CSV" />
+      <TabControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" TabStripPlacement="Bottom">
+        <TabItem Header="Table">
+          <DataGrid
+            IsReadOnly="True"
+            AutoGenerateColumns="False"
+            ItemsSource="{Binding Measurements}">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Temperature" Binding="{Binding Temperature}"/>
+              <DataGridTextColumn Header="Time of request" Binding="{Binding TimeStamp}"/>
+              <DataGridCheckBoxColumn Header="Program running?" Binding="{Binding IsRunning}"/>
+            </DataGrid.Columns>
+          </DataGrid>
+        </TabItem>
+        <TabItem Header="Chart">
+          <oxy:PlotView x:Name="PlotView" />
+        </TabItem>
+      </TabControl>
+    </Grid>
     
     <StatusBar Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Height="25" Background="#FFABABAB">
       <StatusBarItem Content="{Binding CurrentStatus, Converter={StaticResource SmartProStatusToStringConverter}}" />
