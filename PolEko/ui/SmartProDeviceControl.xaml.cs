@@ -28,6 +28,7 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
     DependencyProperty.Register(nameof(HttpClient), typeof(HttpClient), typeof(SmartProDeviceControl));
 
   private List<SmartProMeasurement> _measurements = new();
+  private SmartProDevice? _device;
   private bool _disposed;
   private HttpClient? _httpClient;
   private byte _retryCounter;
@@ -62,13 +63,16 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
     Loaded += delegate
     {
       _httpClient = HttpClient ?? new HttpClient();
+      _device = Device;
     };
   }
 
   public SmartProDeviceControl(SmartProDevice device, HttpClient httpClient)
   {
     Device = device;
+    _device = device;
     HttpClient = httpClient;
+    _httpClient = httpClient;
     InitializeComponent();
   }
 
@@ -102,7 +106,7 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
   public async ValueTask DisposeAsync()
   {
     if (_timer == null || _disposed) return;
-    await Device.InsertMeasurementsAsync();
+    await _device!.InsertMeasurementsAsync();
     _disposed = true;
     GC.SuppressFinalize(this);
     await _timer.DisposeAsync();
@@ -111,7 +115,7 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
   public async void Dispose()
   {
     if (_timer == null || _disposed) return;
-    await Device.InsertMeasurementsAsync();
+    await _device!.InsertMeasurementsAsync();
     _disposed = true;
     GC.SuppressFinalize(this);
     _timer.Dispose();
@@ -119,7 +123,7 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
 
   private async void TimerCallback(object? _)
   {
-    var measurement = await Device.GetMeasurementAsync(_httpClient!);
+    var measurement = await _device!.GetMeasurementAsync(_httpClient!);
 
     if (measurement.NetworkError)
     {
@@ -158,7 +162,7 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
     // If connection was restored, put the previous timer params back
     if (CurrentStatus == Status.Error)
     {
-      _timer?.Change(Device.RefreshRate * 1000, Device.RefreshRate * 1000);
+      _timer?.Change(_device.RefreshRate * 1000, _device.RefreshRate * 1000);
       _retryCounter = 0;
     }
 
@@ -168,7 +172,7 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
   private void FetchData_OnClick(object sender, RoutedEventArgs e)
   {
     if (CurrentStatus == Status.Fetching) return;
-    _timer = new Timer(TimerCallback, null, 0, Device.RefreshRate * 1000);
+    _timer = new Timer(TimerCallback, null, 0, _device!.RefreshRate * 1000);
     CurrentStatus = Status.Fetching;
   }
 
@@ -181,7 +185,7 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
 
   private void DeleteDevice_OnClick(object sender, RoutedEventArgs e)
   {
-    DeviceRemoved?.Invoke(this, new DeviceRemovedEventArgs(Device));
+    DeviceRemoved?.Invoke(this, new DeviceRemovedEventArgs(_device!));
     Dispose();
   }
   
@@ -191,26 +195,25 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
     if (StartingDatePicker.Value is null || EndingDatePicker.Value is null) return;
     var measurements =
       await Database.GetMeasurementsAsync<SmartProMeasurement>((DateTime)StartingDatePicker.Value,
-        (DateTime)EndingDatePicker.Value, Device);
+        (DateTime)EndingDatePicker.Value, _device!);
     Measurements = measurements;
     var plotModel = new PlotModel();
 
-    // Add X and Y axes to the plot
     plotModel.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom, Title = "Time" });
     plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Title = "Temperature" });
 
-    // Create a new LineSeries object
-    var lineSeries = new LineSeries();
+    var scatterSeries = new ScatterSeries()
+    {
+      MarkerSize=2
+    };
 
-    // Add data points to the LineSeries from the List<DeviceMeasurement> object
     foreach (var measurement in measurements)
     {
-      lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(measurement.TimeStamp), Math.Round(
+      scatterSeries.Points.Add(new ScatterPoint(DateTimeAxis.ToDouble(measurement.TimeStamp), Math.Round(
         (float)measurement.Temperature / 100, 2)));
     }
 
-    // Add the LineSeries to the PlotModel
-    plotModel.Series.Add(lineSeries);
+    plotModel.Series.Add(scatterSeries);
     PlotModel = plotModel;
   }
   
