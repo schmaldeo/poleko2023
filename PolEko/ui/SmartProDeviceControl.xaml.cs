@@ -53,7 +53,7 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
   
   public event PropertyChangedEventHandler? PropertyChanged;
   
-  public event EventHandler<RemoveDeviceEventArgs>? DeviceRemoved;
+  public event EventHandler<DeviceRemovedEventArgs>? DeviceRemoved;
 
   public SmartProDeviceControl()
   {
@@ -181,7 +181,7 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
 
   private void DeleteDevice_OnClick(object sender, RoutedEventArgs e)
   {
-    DeviceRemoved?.Invoke(this, new RemoveDeviceEventArgs(Device));
+    DeviceRemoved?.Invoke(this, new DeviceRemovedEventArgs(Device));
     Dispose();
   }
   
@@ -237,9 +237,9 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
   }
 }
 
-public class RemoveDeviceEventArgs : EventArgs
+public class DeviceRemovedEventArgs : EventArgs
 {
-  public RemoveDeviceEventArgs(Device device)
+  public DeviceRemovedEventArgs(Device device)
   {
     Device = device;
   }

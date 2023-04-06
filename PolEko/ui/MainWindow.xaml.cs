@@ -124,7 +124,7 @@ public partial class MainWindow
     Devices.Add(device);
   }
 
-  private async void RemoveDevice(object? sender, RemoveDeviceEventArgs args)
+  private async void RemoveDevice(object? sender, DeviceRemovedEventArgs args)
   {
     await Database.RemoveDeviceAsync(args.Device);
     Devices!.Remove(args.Device);
@@ -146,5 +146,5 @@ internal interface IDeviceControl<out T> : IDisposable, IAsyncDisposable, INotif
 {
   HttpClient? HttpClient { get; }
   T Device { get; }
-  event EventHandler<RemoveDeviceEventArgs>? DeviceRemoved;
+  event EventHandler<DeviceRemovedEventArgs>? DeviceRemoved;
 }
