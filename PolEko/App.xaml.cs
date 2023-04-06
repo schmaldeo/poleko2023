@@ -19,11 +19,7 @@ public partial class App
   private readonly Dictionary<string, Type> _registeredDeviceTypes = new();
   private List<Type> _registeredMeasurementTypes = new();
 
-  private readonly Dictionary<Type, Type> _deviceAssociatedControls = new()
-  {
-    { typeof(SmartProDevice), typeof(SmartProDeviceControl) },
-    { typeof(ExampleDevice), typeof(SmartProDeviceControl) }
-  };
+  private readonly Dictionary<Type, Type> _deviceAssociatedControls = new();
 
   private async void App_Startup(object sender, StartupEventArgs e)
   {
@@ -34,7 +30,11 @@ public partial class App
     // the end user (or, in case of open source software, a person that potentially makes a fork and tries to add
     // their own features) might not understand what certain features do, therefore the choice to use Reflection here.
     var deviceTypes = FindDerivedTypes(typeof(Device));
-    foreach (var t in deviceTypes) _registeredDeviceTypes[t.Name] = t;
+    foreach (var t in deviceTypes)
+    {
+      _registeredDeviceTypes[t.Name] = t;
+      _deviceAssociatedControls[t] = GetAssociatedControl(t);
+    }
 
     _registeredMeasurementTypes = FindDerivedTypes(typeof(Measurement));
 
@@ -62,7 +62,20 @@ public partial class App
         !t.IsAbstract
       ).ToList() ?? new List<Type>();
   }
+
+  private static Type GetAssociatedControl(MemberInfo type)
+  {
+    var controlName = $"PolEko.ui.{type.Name}Control";
+    var t = Type.GetType(controlName);
+    if (t is null) throw new Exception($"{type.Name} hasn't got an associated UserControl");
+    if (!t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IDeviceControl<>)))
+    {
+      throw new Exception($"{controlName} must implement IDeviceControl<>");
+    }
+    return t;
+  }
 }
+
 
 [ValueConversion(typeof(bool), typeof(bool))]
 public class BooleanInversionConverter : IValueConverter
