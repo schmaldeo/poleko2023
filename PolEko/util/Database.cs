@@ -176,7 +176,6 @@ public static class Database
   {
     var type = typeof(T);
 
-    // TODO: retry if transaction fails, add dontRetry bool in params
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
     await conn.OpenAsync();
     await using var transaction = await conn.BeginTransactionAsync();
@@ -239,7 +238,6 @@ public static class Database
     await transaction.CommitAsync();
   }
 
-  // TODO: needs to accept Device argument to know which device's measurements to fetch
   public static async Task<List<T>> GetMeasurementsAsync<T>(DateTime startingDate, DateTime endingDate, Device device, SqliteConnection? connection = null) where T : Measurement, new()
   {
     var type = typeof(T);
@@ -251,7 +249,8 @@ public static class Database
     
     var command = conn.CreateCommand();
     command.CommandText =
-      $"SELECT * FROM {tableName} WHERE {nameof(device.IpAddress)} = $ipAddress AND {nameof(Device.Port)} = $port AND {nameof(Measurement.TimeStamp)} BETWEEN $startingDate AND $endingDate";
+      $"SELECT * FROM {tableName} WHERE {nameof(device.IpAddress)} = $ipAddress AND {nameof(Device.Port)} = $port" +
+      $" AND {nameof(Measurement.TimeStamp)} BETWEEN $startingDate AND $endingDate";
     command.Parameters.AddWithValue("$startingDate", GetSQLiteDateTime(startingDate));
     command.Parameters.AddWithValue("$endingDate", GetSQLiteDateTime(endingDate));
     command.Parameters.AddWithValue("$ipAddress", device.IpAddress.ToString());
@@ -259,7 +258,6 @@ public static class Database
 
     var measurements = new List<T>();
     await using var reader = await command.ExecuteReaderAsync();
-    // TODO: subject for optimisation
     while (await reader.ReadAsync())
     {
       var instance = Activator.CreateInstance<T>();

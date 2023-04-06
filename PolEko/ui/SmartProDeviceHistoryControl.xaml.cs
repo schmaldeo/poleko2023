@@ -17,7 +17,7 @@ namespace PolEko.ui;
 public partial class SmartProDeviceHistoryControl : INotifyPropertyChanged
 {
   private List<SmartProMeasurement> _measurements = new();
-  private PlotModel _plotModel;
+  private PlotModel? _plotModel;
 
   public static readonly DependencyProperty DeviceProperty = DependencyProperty.Register(
     nameof(Device), typeof(SmartProDevice), typeof(SmartProDeviceHistoryControl));
@@ -44,6 +44,7 @@ public partial class SmartProDeviceHistoryControl : INotifyPropertyChanged
     private set
     {
       _plotModel = value;
+      // This is required by OxyPlot design: https://oxyplot.readthedocs.io/en/latest/common-tasks/refresh-plot.html
       PlotView.Model = value;
     }
   }
@@ -66,6 +67,7 @@ public partial class SmartProDeviceHistoryControl : INotifyPropertyChanged
 
   private async void Button_Click(object sender, RoutedEventArgs e)
   {
+    // TODO
     if (StartingDatePicker.Value is null || EndingDatePicker.Value is null) return;
     var measurements =
       await Database.GetMeasurementsAsync<SmartProMeasurement>((DateTime)StartingDatePicker.Value,

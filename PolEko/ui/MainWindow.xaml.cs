@@ -14,7 +14,7 @@ namespace PolEko.ui;
 public partial class MainWindow
 {
   public static readonly DependencyProperty TypesProperty =
-    DependencyProperty.Register(nameof(Types), typeof(Dictionary<string, Type>), typeof(ui.IpPrompt));
+    DependencyProperty.Register(nameof(Types), typeof(Dictionary<string, Type>), typeof(IpPrompt));
 
   public static readonly DependencyProperty DevicesProperty =
     DependencyProperty.Register(nameof(Devices), typeof(ObservableCollection<Device>), typeof(MainWindow));
@@ -98,8 +98,7 @@ public partial class MainWindow
       Content = _deviceInfo,
       Header = formattedHeader
     };
-
-
+    
     if (DeviceControls.ContainsKey(incomingDevice))
     {
       SelectedDeviceControl = DeviceControls[incomingDevice];
@@ -113,7 +112,7 @@ public partial class MainWindow
     SelectedDeviceControl = item;
   }
 
-  private async void AddNewDevice(object? sender, ui.IpPrompt.DeviceAddedEventArgs args)
+  private async void AddNewDevice(object? sender, IpPrompt.DeviceAddedEventArgs args)
   {
     var instance = Activator.CreateInstance(args.Type, args.IpAddress, args.Port, args.Id);
     if (instance is null) throw new Exception("Null instance returned from Activator.CreateInstance() call");
