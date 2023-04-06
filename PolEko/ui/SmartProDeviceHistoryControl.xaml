@@ -24,7 +24,8 @@
     <xctk:DateTimePicker Name="StartingDatePicker" Grid.Row="1" Grid.Column="0" />
     <Label Content="End" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Center" FontSize="16" />
     <xctk:DateTimePicker Name="EndingDatePicker" Grid.Row="1" Grid.Column="1" />
-    <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" />
+    <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="Get" />
+    <Button Grid.Row="2" Grid.Column="0" Click="CsvExport_Click" Content="Export to CSV" />
     <DataGrid 
       Grid.Row="3" 
       Grid.Column="0"
