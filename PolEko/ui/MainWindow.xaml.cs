@@ -33,7 +33,11 @@ public partial class MainWindow
   public MainWindow()
   {
     InitializeComponent();
-    Loaded += delegate { Devices ??= new ObservableCollection<Device>(); };
+    Loaded += delegate
+    {
+      Devices ??= new ObservableCollection<Device>();
+      if (DeviceAssociatedControls is null) throw new ArgumentException("You must pass DeviceAssociatedControls to MainWindow");
+    };
   }
 
   public Dictionary<string, Type>? Types
@@ -62,7 +66,7 @@ public partial class MainWindow
 
   private Dictionary<Device, TabItem> DeviceControls { get; } = new();
   
-  public Dictionary<Type, Type> DeviceAssociatedControls { get; init; }
+  public Dictionary<Type, Type>? DeviceAssociatedControls { get; init; }
 
   private void HandleDeviceChange(object sender, RoutedEventArgs e)
   {
@@ -79,7 +83,7 @@ public partial class MainWindow
     var httpClient = _httpClient ??= new HttpClient();
     
     var t = incomingDevice.GetType();
-    var instance = (IDeviceControl<Device>)Activator.CreateInstance(DeviceAssociatedControls[t], incomingDevice, httpClient)!;
+    var instance = (IDeviceControl<Device>)Activator.CreateInstance(DeviceAssociatedControls![t], incomingDevice, httpClient)!;
     instance.DeviceRemoved += RemoveDevice;
     Closing += async delegate { await instance.DisposeAsync(); };
     _deviceInfo = instance;
@@ -140,7 +144,7 @@ public partial class MainWindow
 
 internal interface IDeviceControl<out T> : IDisposable, IAsyncDisposable, INotifyPropertyChanged where T : Device
 {
-  HttpClient HttpClient { get; }
+  HttpClient? HttpClient { get; }
   T Device { get; }
   event EventHandler<RemoveDeviceEventArgs>? DeviceRemoved;
 }

@@ -28,8 +28,6 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
     DependencyProperty.Register(nameof(HttpClient), typeof(HttpClient), typeof(SmartProDeviceControl));
 
   private List<SmartProMeasurement> _measurements = new();
-  private PlotModel? _plotModel;
-  private SmartProDevice? _device;
   private bool _disposed;
   private HttpClient? _httpClient;
   private byte _retryCounter;
@@ -48,13 +46,9 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
 
   private PlotModel PlotModel
   {
-    get => _plotModel;
-    set
-    {
-      _plotModel = value;
+    set =>
       // This is required by OxyPlot design: https://oxyplot.readthedocs.io/en/latest/common-tasks/refresh-plot.html
       PlotView.Model = value;
-    }
   }
   
   public event PropertyChangedEventHandler? PropertyChanged;
