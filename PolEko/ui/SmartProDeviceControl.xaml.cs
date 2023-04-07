@@ -192,28 +192,43 @@ public partial class SmartProDeviceControl : IDeviceControl<SmartProDevice>
   private async void Button_Click(object sender, RoutedEventArgs e)
   {
     // TODO
-    if (StartingDatePicker.Value is null || EndingDatePicker.Value is null) return;
+    if (StartingDatePicker.Value is null || EndingDatePicker.Value is null)
+    {
+      MessageBox.Show("Specify start and end date");
+      return;
+    }
     var measurements =
       await Database.GetMeasurementsAsync<SmartProMeasurement>((DateTime)StartingDatePicker.Value,
         (DateTime)EndingDatePicker.Value, _device!);
     Measurements = measurements;
+
     var plotModel = new PlotModel();
-
+    
+    
     plotModel.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom, Title = "Time" });
-    plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Title = "Temperature" });
-
-    var scatterSeries = new ScatterSeries()
+    plotModel.Axes.Add(new LinearAxis
     {
-      MarkerSize=2
+      Position = AxisPosition.Left,
+      Title = "Temperature",
+      MinimumRange = 30
+    });
+
+    // Use LineSeries with a Decimator because the performance is tragic without it when amount of data is big. Tradeoff
+    // is that there will be a line between 2 points if there's missing data. That's something that could be solved by
+    // filling the gaps with Double.NaN.
+    var lineSeries = new LineSeries
+    {
+      Decimator=Decimator.Decimate
     };
+    
 
     foreach (var measurement in measurements)
     {
-      scatterSeries.Points.Add(new ScatterPoint(DateTimeAxis.ToDouble(measurement.TimeStamp), Math.Round(
+      lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(measurement.TimeStamp), Math.Round(
         (float)measurement.Temperature / 100, 2)));
     }
 
-    plotModel.Series.Add(scatterSeries);
+    plotModel.Series.Add(lineSeries);
     PlotModel = plotModel;
   }
   
