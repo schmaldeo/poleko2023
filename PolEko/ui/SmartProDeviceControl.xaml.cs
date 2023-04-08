@@ -73,16 +73,6 @@ public partial class SmartProDeviceControl
   }
 }
 
-public class DeviceRemovedEventArgs : EventArgs
-{
-  public DeviceRemovedEventArgs(Device device)
-  {
-    Device = device;
-  }
-
-  public Device Device { get; }
-}
-
 [ValueConversion(typeof(int), typeof(string))]
 public class SmartProTemperatureConverter : IValueConverter
 {
