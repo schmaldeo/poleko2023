@@ -1,20 +1,22 @@
-﻿<UserControl x:Class="PolEko.ui.SmartProDeviceControl"
+﻿<local:DeviceControl x:Class="PolEko.ui.SmartProDeviceControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:oxy="http://oxyplot.org/wpf"
+             xmlns:polEko="clr-namespace:PolEko"
              xmlns:local="clr-namespace:PolEko.ui"
+             x:TypeArguments="polEko:SmartProDevice, polEko:SmartProMeasurement"
              mc:Ignorable="d"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
-             d:DesignHeight="450" d:DesignWidth="800" Foreground="Black">
+             d:DesignHeight="450" d:DesignWidth="800">
   
-  <UserControl.Resources>
+  <local:DeviceControl.Resources>
     <local:SmartProTemperatureConverter x:Key="SmartProTemperatureConverter" />
     <local:SmartProStatusToBoolConverter x:Key="SmartProStatusToBoolConverter" />
     <local:SmartProStatusToStringConverter x:Key="SmartProStatusToStringConverter" />
-  </UserControl.Resources>
+  </local:DeviceControl.Resources>
 
   <Grid>
     <Grid.RowDefinitions>
@@ -95,8 +97,7 @@
       Width="70"
       Height="30"
       Click="DeleteDevice_OnClick" />
-    
-    <!-- <local:SmartProDeviceHistoryControl Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" x:Name="HistoryControl" /> -->
+
     <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
@@ -115,7 +116,7 @@
       <xctk:DateTimePicker Name="EndingDatePicker" Grid.Row="1" Grid.Column="1" />
       <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="Get" />
       <Button Grid.Row="2" Grid.Column="0" Click="CsvExport_Click" Content="Export to CSV" />
-      <TabControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" TabStripPlacement="Bottom">
+      <TabControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" TabStripPlacement="Bottom" x:Name="TabControl">
         <TabItem Header="Table">
           <DataGrid
             IsReadOnly="True"
@@ -138,4 +139,4 @@
       <StatusBarItem Content="{Binding CurrentStatus, Converter={StaticResource SmartProStatusToStringConverter}}" />
     </StatusBar>
   </Grid>
-</UserControl>
+</local:DeviceControl>

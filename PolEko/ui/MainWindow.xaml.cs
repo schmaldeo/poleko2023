@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
@@ -140,11 +139,4 @@ public partial class MainWindow
     prompt.DeviceAdded += AddNewDevice;
     prompt.Show();
   }
-}
-
-internal interface IDeviceControl<out T> : IDisposable, IAsyncDisposable, INotifyPropertyChanged where T : Device
-{
-  HttpClient? HttpClient { get; }
-  T Device { get; }
-  event EventHandler<DeviceRemovedEventArgs>? DeviceRemoved;
 }
