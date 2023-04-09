@@ -2,8 +2,10 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:PolEko"
+             xmlns:ui="clr-namespace:PolEko.ui"
              Startup="App_Startup">
   <Application.Resources>
     <local:BooleanInversionConverter x:Key="BooleanInversionConverter" />
+    <ui:DeviceStatusToStringConverter x:Key="DeviceStatusToStringConverter" />
   </Application.Resources>
 </Application>

@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using CsvHelper;
 using Microsoft.Win32;
 
@@ -216,4 +217,20 @@ public class DeviceRemovedEventArgs : EventArgs
   }
 
   public Device Device { get; }
+}
+
+[ValueConversion(typeof(DeviceControl.Status), typeof(bool))]
+public class SmartProStatusToBoolConverter : IValueConverter 
+{
+  public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+  {
+    var status = (DeviceControl.Status)value;
+    return status is not DeviceControl.Status.Fetching or DeviceControl.Status.Error;
+  }
+
+  public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+  {
+    var val = (bool)value;
+    return val ? DeviceControl.Status.Fetching : DeviceControl.Status.Ready;
+  }
 }

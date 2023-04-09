@@ -91,24 +91,8 @@ public class SmartProTemperatureConverter : IValueConverter
   }
 }
 
-[ValueConversion(typeof(DeviceControl.Status), typeof(bool))]
-public class SmartProStatusToBoolConverter : IValueConverter 
-{
-  public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-  {
-    var status = (DeviceControl.Status)value;
-    return status is not DeviceControl.Status.Fetching or DeviceControl.Status.Error;
-  }
-
-  public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-  {
-    var val = (bool)value;
-    return val ? DeviceControl.Status.Fetching : DeviceControl.Status.Ready;
-  }
-}
-
 [ValueConversion(typeof(DeviceControl.Status), typeof(string))]
-public class SmartProStatusToStringConverter : IValueConverter 
+public class DeviceStatusToStringConverter : IValueConverter 
 {
   public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
   {

@@ -15,7 +15,6 @@
   <local:DeviceControl.Resources>
     <local:SmartProTemperatureConverter x:Key="SmartProTemperatureConverter" />
     <local:SmartProStatusToBoolConverter x:Key="SmartProStatusToBoolConverter" />
-    <local:SmartProStatusToStringConverter x:Key="SmartProStatusToStringConverter" />
   </local:DeviceControl.Resources>
 
   <Grid>
@@ -136,7 +135,7 @@
     </Grid>
     
     <StatusBar Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Height="25" Background="#FFABABAB">
-      <StatusBarItem Content="{Binding CurrentStatus, Converter={StaticResource SmartProStatusToStringConverter}}" />
+      <StatusBarItem Content="{Binding CurrentStatus, Converter={StaticResource DeviceStatusToStringConverter}}" />
     </StatusBar>
   </Grid>
 </local:DeviceControl>
