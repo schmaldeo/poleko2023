@@ -50,7 +50,8 @@ public partial class SmartProDeviceControl
     {
       Position = AxisPosition.Left,
       Title = "Temperature",
-      MinimumRange = 30
+      MinimumRange = 30,
+      MaximumRange = 40
     });
 
     // Use LineSeries with a Decimator because the performance is tragic without it when amount of data is big. Tradeoff
