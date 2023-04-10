@@ -18,6 +18,11 @@
     </Grid.ColumnDefinitions>
 
     <StackPanel>
+      <StackPanel.ContextMenu>
+        <ContextMenu>
+          <MenuItem Header="Add a device" Click="AddNewDevice_Click" />
+        </ContextMenu>
+      </StackPanel.ContextMenu>
       <DockPanel>
         <TextBlock FontSize="24">
           Urządzenia
