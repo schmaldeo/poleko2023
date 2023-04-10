@@ -20,13 +20,11 @@
     <StackPanel>
       <StackPanel.ContextMenu>
         <ContextMenu>
-          <MenuItem Header="Add a device" Click="AddNewDevice_Click" />
+          <MenuItem Header="{StaticResource AddDevice}" Click="AddNewDevice_Click" />
         </ContextMenu>
       </StackPanel.ContextMenu>
       <DockPanel>
-        <TextBlock FontSize="24">
-          Urządzenia
-        </TextBlock>
+        <TextBlock FontSize="24" Text="{StaticResource Devices}" />
         <xctk:IconButton Width="35" HorizontalAlignment="Right" Click="AddNewDevice_Click">
           <xctk:IconButton.Icon>
             <Image
@@ -45,7 +43,7 @@
     </StackPanel>
 
     <GridSplitter Grid.Column="0" Grid.RowSpan="3" Width="3" />
-    <TabControl Grid.Row="0" Grid.Column="1" Name="TabControl" ItemsSource="{Binding OpenDevices}"
+    <TabControl Grid.Row="0" Grid.Column="1" ItemsSource="{Binding OpenDevices}"
                 SelectedItem="{Binding SelectedDeviceControl}" />
   </Grid>
 </Window>

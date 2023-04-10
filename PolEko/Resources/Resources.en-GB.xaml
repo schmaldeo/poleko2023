@@ -1,0 +1,24 @@
+﻿<ResourceDictionary 
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+  xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+  <system:String x:Key="Cancel">Cancel</system:String>
+  <system:String x:Key="Delete">Delete</system:String>
+  <system:String x:Key="Devices">Devices</system:String>
+  <system:String x:Key="AddDevice">Add a device</system:String>
+  <system:String x:Key="IpPromptDeviceIp">Device IP:</system:String>
+  <system:String x:Key="IpPromptPort">Port:</system:String>
+  <system:String x:Key="IpPromptId">ID (optional):</system:String>
+  <system:String x:Key="IpPromptType">Type:</system:String>
+  <system:String x:Key="Temperature">Temperature</system:String>
+  <system:String x:Key="IsRunning">Is running?</system:String>
+  <system:String x:Key="Fetch">Fetch</system:String>
+  <system:String x:Key="Stop">Stop</system:String>
+  <system:String x:Key="ExportToCsv">Export to CSV</system:String>
+  <system:String x:Key="TimeOfRequest">Time of request</system:String>
+  <system:String x:Key="Table">Table</system:String>
+  <system:String x:Key="Chart">Chart</system:String>
+  <system:String x:Key="Beginning">Beginning</system:String>
+  <system:String x:Key="End">End</system:String>
+</ResourceDictionary>

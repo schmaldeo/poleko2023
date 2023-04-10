@@ -34,12 +34,11 @@
     </Grid.ColumnDefinitions>
 
 
-    <TextBlock x:Name="DeviceString" TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Center"
+    <TextBlock TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Center"
                FontFamily="Bahnschrift Light" FontSize="32" Grid.ColumnSpan="2" Grid.Column="1" />
-    <Label x:Name="TemperatureLabel" Content="Temperature" HorizontalAlignment="Center" VerticalAlignment="Top"
+    <Label Content="{StaticResource Temperature}" HorizontalAlignment="Center" VerticalAlignment="Top"
            FontFamily="Bahnschrift Light" FontSize="23" Grid.Row="1" Grid.Column="1" />
     <TextBlock
-      x:Name="TemperatureBlock"
       HorizontalAlignment="Center"
       TextWrapping="Wrap"
       FontSize="25"
@@ -50,7 +49,7 @@
       Grid.Row="2"
       Grid.Column="1" />
     <Label
-      Content="Is Running?"
+      Content="{StaticResource IsRunning}"
       HorizontalAlignment="Center"
       VerticalAlignment="Top"
       FontFamily="Bahnschrift Light"
@@ -58,7 +57,6 @@
       Grid.Row="1"
       Grid.Column="2" />
     <TextBlock
-      x:Name="IsRunningBlock"
       HorizontalAlignment="Center"
       TextWrapping="Wrap"
       FontSize="25"
@@ -69,7 +67,7 @@
     <Button
       x:Name="FetchButton"
       Grid.Row="0"
-      Content="Fetch"
+      Content="{StaticResource Fetch}"
       HorizontalAlignment="Left"
       Height="30"
       VerticalAlignment="Center"
@@ -80,7 +78,7 @@
     <Button
       Grid.Row="0"
       Grid.Column="3"
-      Content="Stop"
+      Content="{StaticResource Stop}"
       HorizontalAlignment="Right"
       Height="30"
       VerticalAlignment="Center"
@@ -90,7 +88,7 @@
     <Button
       Grid.Row="0"
       Grid.Column="0"
-      Content="Delete"
+      Content="{StaticResource Delete}"
       HorizontalAlignment="Right"
       VerticalAlignment="Center"
       Width="70"
@@ -109,26 +107,26 @@
         <RowDefinition Height="10*" />
       </Grid.RowDefinitions>
 
-      <Label Content="Beginning" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" FontSize="16" />
+      <Label Content="{StaticResource Beginning}" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" FontSize="16" />
       <xctk:DateTimePicker Name="StartingDatePicker" Grid.Row="1" Grid.Column="0" />
-      <Label Content="End" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Center" FontSize="16" />
+      <Label Content="{StaticResource End}" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Center" FontSize="16" />
       <xctk:DateTimePicker Name="EndingDatePicker" Grid.Row="1" Grid.Column="1" />
-      <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="Get" />
-      <Button Grid.Row="2" Grid.Column="0" Click="CsvExport_Click" Content="Export to CSV" />
-      <TabControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" TabStripPlacement="Bottom" x:Name="TabControl">
-        <TabItem Header="Table">
+      <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="{StaticResource Fetch}" />
+      <Button Grid.Row="2" Grid.Column="0" Click="CsvExport_Click" Content="{StaticResource ExportToCsv}" />
+      <TabControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" TabStripPlacement="Bottom">
+        <TabItem Header="{StaticResource Table}">
           <DataGrid
             IsReadOnly="True"
             AutoGenerateColumns="False"
             ItemsSource="{Binding Measurements}">
             <DataGrid.Columns>
-              <DataGridTextColumn Header="Temperature" Binding="{Binding Temperature}"/>
-              <DataGridTextColumn Header="Time of request" Binding="{Binding TimeStamp}"/>
-              <DataGridCheckBoxColumn Header="Program running?" Binding="{Binding IsRunning}"/>
+              <DataGridTextColumn Header="{StaticResource Temperature}" Binding="{Binding Temperature}"/>
+              <DataGridTextColumn Header="{StaticResource TimeOfRequest}" Binding="{Binding TimeStamp}"/>
+              <DataGridCheckBoxColumn Header="{StaticResource IsRunning}" Binding="{Binding IsRunning}"/>
             </DataGrid.Columns>
           </DataGrid>
         </TabItem>
-        <TabItem Header="Chart">
+        <TabItem Header="{StaticResource Chart}">
           <oxy:PlotView x:Name="PlotView" />
         </TabItem>
       </TabControl>

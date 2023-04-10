@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 using PolEko.ui;
@@ -29,6 +30,7 @@ public partial class App
     // There's no need to modify many files when you add a new Device type. On top of that, it's often correct that
     // the end user (or, in case of open source software, a person that potentially makes a fork and tries to add
     // their own features) might not understand what certain features do, therefore the choice to use Reflection here.
+    SetLanguageDictionary();
     var deviceTypes = FindDerivedTypes(typeof(Device));
     foreach (var t in deviceTypes)
     {
@@ -73,6 +75,20 @@ public partial class App
       throw new Exception($"{controlName} must implement IDeviceControl<>");
     }
     return t;
+  }
+  
+  private void SetLanguageDictionary()
+  {
+    var dict = new ResourceDictionary
+    {
+      Source = Thread.CurrentThread.CurrentCulture.ToString() switch
+      {
+        "en-GB" => new Uri(@".\Resources\Resources.en-GB.xaml", UriKind.Relative),
+        "pl-PL" => new Uri(@".\Resources\Resources.pl-PL.xaml", UriKind.Relative),
+        _ => new Uri(@".\Resources\Resources.en-GB.xaml", UriKind.Relative)
+      }
+    };
+    Resources.MergedDictionaries.Add(dict);
   }
 }
 

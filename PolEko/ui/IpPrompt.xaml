@@ -10,7 +10,7 @@
         WindowStartupLocation="CenterOwner"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
-        Title="Dodaj urządzenie" Height="170" Width="800"
+        Title="{StaticResource AddDevice}" Height="170" Width="800"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
   <Grid Margin="10">
     <Grid.Resources>
@@ -41,7 +41,7 @@
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
-    <Label>IP urządzenia:</Label>
+    <Label Content="{StaticResource IpPromptDeviceIp}" />
     <TextBox Name="IpTextBox" Grid.Row="0" Grid.Column="1">
       <TextBox.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Paste"
@@ -49,7 +49,7 @@
       </TextBox.CommandBindings>
     </TextBox>
 
-    <Label Grid.Column="0" Grid.Row="1">Port:</Label>
+    <Label Grid.Column="0" Grid.Row="1" Content="{StaticResource IpPromptPort}" />
     <TextBox Name="PortTextBox" Grid.Row="1" Grid.Column="1" PreviewTextInput="NumberValidationTextBox">
       <TextBox.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Paste"
@@ -57,16 +57,16 @@
       </TextBox.CommandBindings>
     </TextBox>
 
-    <Label Grid.Column="0" Grid.Row="2">ID (opcjonalne):</Label>
+    <Label Grid.Column="0" Grid.Row="2" Content="{StaticResource IpPromptId}" />
     <TextBox Name="IdTextBox" Grid.Row="2" Grid.Column="1" />
 
-    <Label Grid.Column="0" Grid.Row="3">Typ:</Label>
+    <Label Grid.Column="0" Grid.Row="3" Content="{StaticResource IpPromptType}" />
     <ComboBox Grid.Column="1" Grid.Row="3" Height="25" Margin="0 0 0 5" Name="TypesComboBox"
               ItemsSource="{Binding Path=Types}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedIndex="0" />
 
     <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
       <Button Click="OkButton_Click" IsDefault="True">OK</Button>
-      <Button Click="CancelButton_Click" IsCancel="True">Cancel</Button>
+      <Button Click="CancelButton_Click" IsCancel="True" Content="{StaticResource Cancel}" />
     </StackPanel>
   </Grid>
 </Window>
