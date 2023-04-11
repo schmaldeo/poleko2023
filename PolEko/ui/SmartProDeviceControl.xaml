@@ -80,7 +80,7 @@
       Height="30"
       VerticalAlignment="Center"
       Width="70"
-      Click="FetchData_OnClick"
+      Click="FetchData_Click"
       IsEnabled="{Binding CurrentStatus, Converter={StaticResource SmartProStatusToBoolConverter}}"
       Grid.Column="3" />
     <Button
@@ -92,7 +92,7 @@
       VerticalAlignment="Center"
       Width="70"
       IsEnabled="{Binding ElementName=FetchButton, Path=IsEnabled, Converter={StaticResource BooleanInversionConverter}}"
-      Click="StopFetching_OnClick" />
+      Click="StopFetching_Click" />
     <Button
       Grid.Row="0"
       Grid.Column="0"
@@ -101,7 +101,7 @@
       VerticalAlignment="Center"
       Width="70"
       Height="30"
-      Click="DeleteDevice_OnClick" />
+      Click="DeleteDevice_Click" />
     
     <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" />
     

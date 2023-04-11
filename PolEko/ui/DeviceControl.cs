@@ -177,7 +177,7 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
     CurrentStatus = Status.Fetching;
   }
 
-  protected void FetchData_OnClick(object sender, RoutedEventArgs e)
+  protected void FetchData_Click(object sender, RoutedEventArgs e)
   {
     if (CurrentStatus == Status.Fetching) return;
     _timer = new Timer(TimerCallback, null, 0, Timeout.Infinite);
@@ -185,7 +185,7 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
     CurrentStatus = Status.Fetching;
   }
 
-  protected async void StopFetching_OnClick(object sender, RoutedEventArgs e)
+  protected async void StopFetching_Click(object sender, RoutedEventArgs e)
   {
     if (_timer is null) return;
     await _timer.DisposeAsync();
@@ -193,7 +193,7 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
     CurrentStatus = Status.Ready;
   }
 
-  protected void DeleteDevice_OnClick(object sender, RoutedEventArgs e)
+  protected void DeleteDevice_Click(object sender, RoutedEventArgs e)
   {
     OnDeviceRemoved();
     Dispose();

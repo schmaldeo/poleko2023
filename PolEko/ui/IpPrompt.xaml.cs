@@ -83,29 +83,11 @@ public partial class IpPrompt
   }
 
   /// <summary>
-  ///   Event handler disallowing entering anything but numbers into an input
-  /// </summary>
-  /// <param name="sender"></param>
-  /// <param name="e"></param>
-  private void NumberValidationPreview(object sender, TextCompositionEventArgs e)
-  {
-    var regex = NumericRegex();
-    e.Handled = regex.IsMatch(e.Text);
-  }
-  
-  /// <summary>
   ///   IPv4 regex
   /// </summary>
   /// <returns></returns>
   [GeneratedRegex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")]
   private static partial Regex Ipv4Regex();
-
-  /// <summary>
-  ///   Number-only regex
-  /// </summary>
-  /// <returns></returns>
-  [GeneratedRegex("[^0-9]+")]
-  private static partial Regex NumericRegex();
 
   public class DeviceAddedEventArgs : EventArgs
   {

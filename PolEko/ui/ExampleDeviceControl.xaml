@@ -10,6 +10,6 @@
              d:DesignHeight="300" d:DesignWidth="300">
   <Grid>
     <TextBlock>Example control</TextBlock>
-    <Button Click="DeleteDevice_OnClick" Content="{StaticResource Delete}" Width="80" Height="40"/>
+    <Button Click="DeleteDevice_Click" Content="{StaticResource Delete}" Width="80" Height="40"/>
   </Grid>
 </local:DeviceControl>
