@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using CsvHelper;
 using Microsoft.Win32;
+// ReSharper disable InconsistentNaming
 
 namespace PolEko.ui;
 
@@ -104,7 +105,12 @@ public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceContro
   {
     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
   }
-  
+
+  private void OnDeviceRemoved()
+  {
+    DeviceRemoved?.Invoke(this, new DeviceRemovedEventArgs(_device));
+  }
+
   public async ValueTask DisposeAsync()
   {
     if (_timer == null || _disposed) return;
@@ -187,7 +193,7 @@ public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceContro
 
   protected void DeleteDevice_OnClick(object sender, RoutedEventArgs e)
   {
-    DeviceRemoved?.Invoke(this, new DeviceRemovedEventArgs(_device));
+    OnDeviceRemoved();
     Dispose();
   }
 
@@ -210,7 +216,7 @@ public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceContro
 internal interface IDeviceControl<out T> : IDisposable, IAsyncDisposable, INotifyPropertyChanged where T : Device
 {
   T Device { get; }
-  HttpClient HttpClient { get; set; }
+  HttpClient? HttpClient { get; set; }
   
   event EventHandler<DeviceRemovedEventArgs>? DeviceRemoved;
 }
@@ -224,6 +230,11 @@ public class DeviceRemovedEventArgs : EventArgs
   }
 
   public Device Device { get; }
+}
+
+public class DeviceModifiedEventArgs : DeviceRemovedEventArgs
+{
+  public DeviceModifiedEventArgs(Device device) : base(device) { }
 }
 
 [ValueConversion(typeof(DeviceControl.Status), typeof(bool))]

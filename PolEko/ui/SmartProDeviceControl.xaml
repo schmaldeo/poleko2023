@@ -37,7 +37,7 @@
 
 
     <TextBlock TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Center"
-               FontFamily="Bahnschrift Light" FontSize="32" Grid.ColumnSpan="2" Grid.Column="1" />
+               FontFamily="Bahnschrift Light" FontSize="32" Grid.ColumnSpan="2" Grid.Column="1" Text="{Binding Device}" />
     <Label Content="{StaticResource Temperature}" HorizontalAlignment="Center" VerticalAlignment="Top"
            FontFamily="Bahnschrift Light" FontSize="23" Grid.Row="1" Grid.Column="1" />
     <TextBlock
