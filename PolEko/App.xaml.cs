@@ -67,7 +67,8 @@ public partial class App
 
   private static Type GetAssociatedControl(MemberInfo type)
   {
-    var controlName = $"PolEko.ui.{type.Name}Control";
+    // e.g. PolEko.ui.SmartProDeviceControl. The nameofs are useful in case the namespace change
+    var controlName = $"{nameof(PolEko)}.{nameof(ui)}.{type.Name}Control";
     var t = Type.GetType(controlName);
     if (t is null) throw new Exception($"{type.Name} hasn't got an associated UserControl");
     if (!t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IDeviceControl<>)))
@@ -79,6 +80,8 @@ public partial class App
   
   private void SetLanguageDictionary()
   {
+    // Default (English) MergedDictionary is specified in the markup to get Intellisense. This should be refactored
+    // if there were more languages to be added
     if (!Thread.CurrentThread.CurrentCulture.Equals(new CultureInfo("pl-PL"))) return;
     Resources.MergedDictionaries.RemoveAt(0);
     var dictionary = new ResourceDictionary
