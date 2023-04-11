@@ -7,7 +7,8 @@
              xmlns:oxy="http://oxyplot.org/wpf"
              xmlns:polEko="clr-namespace:PolEko"
              xmlns:local="clr-namespace:PolEko.ui"
-             x:TypeArguments="polEko:SmartProDevice, polEko:SmartProMeasurement"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             x:TypeArguments="polEko:SmartProDevice, polEko:SmartProMeasurement, local:SmartProDeviceControl"
              mc:Ignorable="d"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -126,9 +127,9 @@
       </Grid.RowDefinitions>
 
       <Label Content="{StaticResource Beginning}" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" FontSize="16" />
-      <xctk:DateTimePicker Name="StartingDatePicker" Grid.Row="1" Grid.Column="0" />
-      <Label Content="{StaticResource End}" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Center" FontSize="16" />
-      <xctk:DateTimePicker Name="EndingDatePicker" Grid.Row="1" Grid.Column="1" />
+      <xctk:DateTimePicker Name="StartingDatePicker" Grid.Row="1" Grid.Column="0" DefaultValue="{Binding Source={x:Static sys:DateTime.Now}}" DisplayDefaultValueOnEmptyText="True" />
+      <Label Content="{StaticResource End}" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" FontSize="16" />
+      <xctk:DateTimePicker Name="EndingDatePicker" Grid.Row="1" Grid.Column="1" DefaultValue="{Binding Source={x:Static sys:DateTime.Now}}" DisplayDefaultValueOnEmptyText="True" />
       <Button Grid.Row="2" Grid.Column="0" Click="CsvExport_Click" Content="{StaticResource ExportToCsv}" HorizontalAlignment="Center" />
       <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="{StaticResource Fetch}" HorizontalAlignment="Center" />
       <TabControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">

@@ -26,17 +26,17 @@ public class DeviceControl : UserControl
   }
 }
 
-public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceControl<TDevice> 
+public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDeviceControl<TDevice> 
   where TDevice : Device
   where TMeasurement : Measurement
+  where TOwner : DeviceControl<TDevice, TMeasurement, TOwner>
 {
   public static readonly DependencyProperty DeviceProperty =
-    DependencyProperty.Register(nameof(Device), typeof(TDevice), typeof(DeviceControl));
+    DependencyProperty.Register(nameof(Device), typeof(TDevice), typeof(TOwner));
 
   public static readonly DependencyProperty HttpClientProperty =
-    DependencyProperty.Register(nameof(HttpClient), typeof(HttpClient), typeof(DeviceControl));
+    DependencyProperty.Register(nameof(HttpClient), typeof(HttpClient), typeof(TOwner));
 
-  
   private bool _disposed;
   private Timer? _timer;
   private bool _timerDisposed;
