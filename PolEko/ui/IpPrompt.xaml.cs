@@ -87,12 +87,12 @@ public partial class IpPrompt
   /// </summary>
   /// <param name="sender"></param>
   /// <param name="e"></param>
-  private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+  private void NumberValidationPreview(object sender, TextCompositionEventArgs e)
   {
     var regex = NumericRegex();
     e.Handled = regex.IsMatch(e.Text);
   }
-
+  
   /// <summary>
   ///   IPv4 regex
   /// </summary>

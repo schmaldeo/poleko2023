@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
         MinHeight="100"
         MinWidth="300"
@@ -17,6 +18,7 @@
       <Style TargetType="{x:Type Label}">
         <Setter Property="Margin" Value="0,3,5,5" />
         <Setter Property="Padding" Value="0,0,0,5" />
+        <Setter Property="VerticalAlignment" Value="Center" />
       </Style>
       <Style TargetType="{x:Type TextBox}">
         <Setter Property="Margin" Value="0,0,0,5" />
@@ -42,31 +44,31 @@
     </Grid.RowDefinitions>
 
     <Label Content="{StaticResource IpPromptDeviceIp}" />
-    <TextBox Name="IpTextBox" Grid.Row="0" Grid.Column="1">
+    <ui:TextBox Name="IpTextBox" Grid.Row="0" Grid.Column="1">
       <TextBox.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Paste"
                         CanExecute="CommandBinding_CanExecutePaste" />
       </TextBox.CommandBindings>
-    </TextBox>
+    </ui:TextBox>
 
     <Label Grid.Column="0" Grid.Row="1" Content="{StaticResource IpPromptPort}" />
-    <TextBox Name="PortTextBox" Grid.Row="1" Grid.Column="1" PreviewTextInput="NumberValidationTextBox">
+    <ui:NumberBox Name="PortTextBox" Grid.Row="1" Grid.Column="1">
       <TextBox.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Paste"
                         CanExecute="CommandBinding_CanExecutePaste" />
       </TextBox.CommandBindings>
-    </TextBox>
+    </ui:NumberBox>
 
     <Label Grid.Column="0" Grid.Row="2" Content="{StaticResource IpPromptId}" />
-    <TextBox Name="IdTextBox" Grid.Row="2" Grid.Column="1" />
+    <ui:TextBox Name="IdTextBox" Grid.Row="2" Grid.Column="1" />
 
     <Label Grid.Column="0" Grid.Row="3" Content="{StaticResource IpPromptType}" />
-    <ComboBox Grid.Column="1" Grid.Row="3" Height="25" Margin="0 0 0 5" Name="TypesComboBox"
+    <ComboBox Grid.Column="1" Grid.Row="3" Margin="0 0 0 5" Name="TypesComboBox"
               ItemsSource="{Binding Path=Types}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedIndex="0" />
 
     <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-      <Button Click="OkButton_Click" IsDefault="True">OK</Button>
-      <Button Click="CancelButton_Click" IsCancel="True" Content="{StaticResource Cancel}" />
+      <ui:Button Click="OkButton_Click" IsDefault="True">OK</ui:Button>
+      <ui:Button Click="CancelButton_Click" IsCancel="True" Content="{StaticResource Cancel}" />
     </StackPanel>
   </Grid>
 </Window>

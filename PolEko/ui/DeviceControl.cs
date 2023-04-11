@@ -134,6 +134,8 @@ public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceContro
   // took. This avoids a behaviour where if it's initialised with 1s (or whatever low value) and it's changed if the
   // request timed out, the first 2 or 3 Tasks are still executed in the 1s interval. Doing it this way just provides
   // better control over the Timer. Also see https://stackoverflow.com/a/12797382/16579633
+  
+  // TODO: remove some !s
   private async void TimerCallback(object? _)
   {
     var measurement = await _device.GetMeasurementAsync(_httpClient);

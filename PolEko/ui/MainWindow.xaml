@@ -5,6 +5,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        Background="{ui:ThemeResource ApplicationBackgroundBrush}"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
         Title="Poleko">
@@ -20,7 +22,7 @@
     <StackPanel Margin="5">
       <StackPanel.ContextMenu>
         <ContextMenu>
-          <MenuItem Header="{StaticResource AddDevice}" Click="AddNewDevice_Click" />
+          <ui:MenuItem Header="{StaticResource AddDevice}" Click="AddNewDevice_Click" />
         </ContextMenu>
       </StackPanel.ContextMenu>
       <DockPanel>

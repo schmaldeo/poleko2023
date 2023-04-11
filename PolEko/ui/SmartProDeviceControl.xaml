@@ -113,8 +113,8 @@
       <xctk:DateTimePicker Name="StartingDatePicker" Grid.Row="1" Grid.Column="0" />
       <Label Content="{StaticResource End}" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Center" FontSize="16" />
       <xctk:DateTimePicker Name="EndingDatePicker" Grid.Row="1" Grid.Column="1" />
-      <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="{StaticResource Fetch}" />
-      <Button Grid.Row="2" Grid.Column="0" Click="CsvExport_Click" Content="{StaticResource ExportToCsv}" />
+      <Button Grid.Row="2" Grid.Column="0" Click="CsvExport_Click" Content="{StaticResource ExportToCsv}" HorizontalAlignment="Center" />
+      <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="{StaticResource Fetch}" HorizontalAlignment="Center" />
       <TabControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" TabStripPlacement="Bottom">
         <TabItem Header="{StaticResource Table}">
           <DataGrid
@@ -122,9 +122,9 @@
             AutoGenerateColumns="False"
             ItemsSource="{Binding Measurements}">
             <DataGrid.Columns>
-              <DataGridTextColumn Header="{StaticResource Temperature}" Binding="{Binding Temperature}"/>
-              <DataGridTextColumn Header="{StaticResource TimeOfRequest}" Binding="{Binding TimeStamp}"/>
-              <DataGridCheckBoxColumn Header="{StaticResource IsRunning}" Binding="{Binding IsRunning}"/>
+              <DataGridTextColumn Header="{StaticResource Temperature}" Binding="{Binding Temperature}" />
+              <DataGridTextColumn Header="{StaticResource TimeOfRequest}" Binding="{Binding TimeStamp}" />
+              <DataGridCheckBoxColumn Header="{StaticResource IsRunning}" Binding="{Binding IsRunning}" />
             </DataGrid.Columns>
           </DataGrid>
         </TabItem>
@@ -134,7 +134,7 @@
       </TabControl>
     </Grid>
     
-    <StatusBar Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Height="25" Background="#FFABABAB">
+    <StatusBar Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4">
       <StatusBarItem Content="{Binding CurrentStatus, Converter={StaticResource DeviceStatusToStringConverter}}" />
     </StatusBar>
   </Grid>
