@@ -232,7 +232,7 @@ public class SmartProStatusToBoolConverter : IValueConverter
   public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
   {
     var status = (DeviceControl.Status)value;
-    return status is not DeviceControl.Status.Fetching or DeviceControl.Status.Error;
+    return status != DeviceControl.Status.Fetching && status != DeviceControl.Status.Error;
   }
 
   public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
