@@ -34,7 +34,7 @@ public abstract class Device
     DeviceUri = new Uri($"http://{ipAddress}:{port}/");
   }
 
-  public int RefreshRate => 1;
+  public virtual int RefreshRate => 1;
 
   public IPAddress IpAddress
   {
