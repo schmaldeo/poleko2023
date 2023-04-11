@@ -79,16 +79,13 @@ public partial class App
   
   private void SetLanguageDictionary()
   {
-    var dict = new ResourceDictionary
+    if (!Thread.CurrentThread.CurrentCulture.Equals(new CultureInfo("pl-PL"))) return;
+    Resources.MergedDictionaries.RemoveAt(0);
+    var dictionary = new ResourceDictionary
     {
-      Source = Thread.CurrentThread.CurrentCulture.ToString() switch
-      {
-        "en-GB" => new Uri(@".\Resources\Resources.en-GB.xaml", UriKind.Relative),
-        "pl-PL" => new Uri(@".\Resources\Resources.pl-PL.xaml", UriKind.Relative),
-        _ => new Uri(@".\Resources\Resources.en-GB.xaml", UriKind.Relative)
-      }
+      Source = new Uri(@".\Resources\Resources.pl-PL.xaml", UriKind.Relative)
     };
-    Resources.MergedDictionaries.Add(dict);
+    Resources.MergedDictionaries.Add(dictionary);
   }
 }
 

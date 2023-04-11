@@ -38,11 +38,11 @@ public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceContro
   
   private bool _disposed;
   private Timer? _timer;
-  protected HttpClient _httpClient;
+  protected HttpClient _httpClient = null!;
   private Status _status;
   private byte _retryCounter;
   // TODO: type safety
-  protected dynamic _device;
+  protected dynamic _device = null!;
   private List<TMeasurement> _measurements = new();
   
   public TDevice Device
@@ -78,7 +78,7 @@ public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceContro
     }
   }
 
-  public DeviceControl()
+  protected DeviceControl()
   {
     CurrentStatus = Status.Ready;
     Loaded += delegate
@@ -88,7 +88,7 @@ public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceContro
     };
   }
 
-  public DeviceControl(TDevice device, HttpClient client)
+  protected DeviceControl(TDevice device, HttpClient client)
   {
     Device = device;
     _device = device;
@@ -123,51 +123,58 @@ public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceContro
     _timer.Dispose();
   }
   
+  // By initialising the timer with period of Timeout.Infinite and then changing the timer after each request we're
+  // basically making it so that the timeout is whatever is set in the callback + time that the GetMeasurementAsync task
+  // took. This avoids a behaviour where if it's initialised with 1s (or whatever low value) and it's changed if the
+  // request timed out, the first 2 or 3 Tasks are still executed in the 1s interval. Doing it this way just provides
+  // better control over the Timer. Also see https://stackoverflow.com/a/12797382/16579633
   private async void TimerCallback(object? _)
   {
     var measurement = await _device.GetMeasurementAsync(_httpClient);
 
     if (measurement.NetworkError)
     {
-      // Increase the timer interval to 5 seconds when there's an error
       CurrentStatus = Status.Error;
+      
+      // Increase the timer interval to 5 seconds when there's an error
       if (_timer is null) return;
-      _timer.Change(5000, 5000);
+      _timer.Change(5000, Timeout.Infinite);
 
       if (_retryCounter < 5)
       {
+        if (_retryCounter == 0) MessageBox.Show("Request timed out. Retrying 5 more times in 5 seconds intervals");
         _retryCounter++;
       }
       else
       {
-        if (_timer is not null) await _timer.DisposeAsync();
         MessageBox.Show("Request timed out 5 times, aborting");
+        if (_timer is not null) await _timer.DisposeAsync();
+        _retryCounter = 0;
         CurrentStatus = Status.Ready;
       }
 
       return;
     }
 
+    // TODO: move this to device-specific code, make this method virtual
     if (measurement.Error)
     {
       CurrentStatus = Status.Error;
+      MessageBox.Show("Device error");
       return;
     }
 
     // If connection was restored, put the previous timer params back
-    if (CurrentStatus == Status.Error)
-    {
-      _timer?.Change(_device.RefreshRate * 1000, _device.RefreshRate * 1000);
-      _retryCounter = 0;
-    }
+    if (CurrentStatus == Status.Error) _retryCounter = 0;
 
+    _timer!.Change(_device.RefreshRate * 1000, Timeout.Infinite);
     CurrentStatus = Status.Fetching;
   }
 
   protected void FetchData_OnClick(object sender, RoutedEventArgs e)
   {
     if (CurrentStatus == Status.Fetching) return;
-    _timer = new Timer((TimerCallback)TimerCallback, null, 0, _device.RefreshRate * 1000);
+    _timer = new Timer(TimerCallback, null, 0, Timeout.Infinite);
     CurrentStatus = Status.Fetching;
   }
 
