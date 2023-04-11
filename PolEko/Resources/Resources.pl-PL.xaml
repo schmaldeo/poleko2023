@@ -21,4 +21,5 @@
   <system:String x:Key="Chart">Wykres</system:String>
   <system:String x:Key="Beginning">Początek</system:String>
   <system:String x:Key="End">Koniec</system:String>
+  <system:String x:Key="HistoricalData">Dane historyczne</system:String>
 </ResourceDictionary>

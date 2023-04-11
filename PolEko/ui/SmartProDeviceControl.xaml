@@ -24,9 +24,9 @@
       <RowDefinition Height="*" />
       <RowDefinition Height="*" />
       <RowDefinition Height="*" />
-      <RowDefinition Height="10*" />
       <RowDefinition Height="*" />
-      <RowDefinition Height="20" />
+      <RowDefinition Height="10*" />
+      <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="2*" />
@@ -34,17 +34,25 @@
       <ColumnDefinition Width="4*" />
       <ColumnDefinition Width="2*" />
     </Grid.ColumnDefinitions>
+    <Grid.Resources>
+      <Style TargetType="{x:Type TextBlock}">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="FontFamily" Value="Bahnschrift Light" />
+      </Style>
+    </Grid.Resources>
 
 
-    <TextBlock TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Center"
-               FontFamily="Bahnschrift Light" FontSize="32" Grid.ColumnSpan="2" Grid.Column="1" Text="{Binding Device}" />
-    <Label Content="{StaticResource Temperature}" HorizontalAlignment="Center" VerticalAlignment="Top"
-           FontFamily="Bahnschrift Light" FontSize="23" Grid.Row="1" Grid.Column="1" />
+    <TextBlock TextWrapping="Wrap" VerticalAlignment="Center"
+                FontSize="32" Grid.ColumnSpan="2" Grid.Column="1" Text="{Binding Device}" />
+    <Label Content="{StaticResource Temperature}" 
+           HorizontalAlignment="Center"
+           VerticalAlignment="Bottom"
+           FontSize="23" 
+           Grid.Row="1" 
+           Grid.Column="1" />
     <TextBlock
-      HorizontalAlignment="Center"
       TextWrapping="Wrap"
       FontSize="25"
-      FontFamily="Bahnschrift Light"
       Text="{Binding Device.LastMeasurement.Temperature,
        FallbackValue=0.00,
        Converter={StaticResource SmartProTemperatureConverter}}"
@@ -52,17 +60,14 @@
       Grid.Column="1" />
     <Label
       Content="{StaticResource IsRunning}"
-      HorizontalAlignment="Center"
-      VerticalAlignment="Top"
-      FontFamily="Bahnschrift Light"
       FontSize="23"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Bottom"
       Grid.Row="1"
       Grid.Column="2" />
     <TextBlock
-      HorizontalAlignment="Center"
       TextWrapping="Wrap"
       FontSize="25"
-      FontFamily="Bahnschrift Light"
       Text="{Binding Device.LastMeasurement.IsRunning, FallbackValue=False}"
       Grid.Row="2"
       Grid.Column="2" />
@@ -96,8 +101,19 @@
       Width="70"
       Height="30"
       Click="DeleteDevice_OnClick" />
+    
+    <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" />
+    
+    <Label 
+      Grid.Row="3"
+      Grid.Column="1"
+      Grid.ColumnSpan="2"
+      Content="{StaticResource HistoricalData}"
+      FontSize="24"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Bottom"/>
 
-    <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2">
+    <Grid Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="5">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="*" />
@@ -115,7 +131,7 @@
       <xctk:DateTimePicker Name="EndingDatePicker" Grid.Row="1" Grid.Column="1" />
       <Button Grid.Row="2" Grid.Column="0" Click="CsvExport_Click" Content="{StaticResource ExportToCsv}" HorizontalAlignment="Center" />
       <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="{StaticResource Fetch}" HorizontalAlignment="Center" />
-      <TabControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" TabStripPlacement="Bottom">
+      <TabControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
         <TabItem Header="{StaticResource Table}">
           <DataGrid
             IsReadOnly="True"

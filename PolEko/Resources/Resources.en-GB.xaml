@@ -21,4 +21,5 @@
   <system:String x:Key="Chart">Chart</system:String>
   <system:String x:Key="Beginning">Beginning</system:String>
   <system:String x:Key="End">End</system:String>
+  <system:String x:Key="HistoricalData">Historical data</system:String>
 </ResourceDictionary>
