@@ -39,6 +39,7 @@ public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceContro
   
   private bool _disposed;
   private Timer? _timer;
+  private bool _timerDisposed;
   protected HttpClient _httpClient = null!;
   private Status _status;
   private byte _retryCounter;
@@ -134,19 +135,16 @@ public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceContro
   // took. This avoids a behaviour where if it's initialised with 1s (or whatever low value) and it's changed if the
   // request timed out, the first 2 or 3 Tasks are still executed in the 1s interval. Doing it this way just provides
   // better control over the Timer. Also see https://stackoverflow.com/a/12797382/16579633
-  
-  // TODO: remove some !s
   private async void TimerCallback(object? _)
   {
     var measurement = await _device.GetMeasurementAsync(_httpClient);
-
+    
     if (measurement.NetworkError)
     {
       CurrentStatus = Status.Error;
       
       // Increase the timer interval to 5 seconds when there's an error
-      if (_timer is null) return;
-      _timer.Change(5000, Timeout.Infinite);
+      if (!_timerDisposed) _timer?.Change(5000, Timeout.Infinite);
 
       if (_retryCounter < 5)
       {
@@ -156,7 +154,7 @@ public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceContro
       else
       {
         MessageBox.Show("Request timed out 5 times, aborting");
-        if (_timer is not null) await _timer.DisposeAsync();
+        if (_timer is not null && !_timerDisposed) await _timer.DisposeAsync();
         _retryCounter = 0;
         CurrentStatus = Status.Ready;
       }
@@ -175,7 +173,7 @@ public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceContro
     // If connection was restored, put the previous timer params back
     if (CurrentStatus == Status.Error) _retryCounter = 0;
 
-    _timer!.Change(_device.RefreshRate * 1000, Timeout.Infinite);
+    if (!_timerDisposed) _timer?.Change(_device.RefreshRate * 1000, Timeout.Infinite);
     CurrentStatus = Status.Fetching;
   }
 
@@ -183,6 +181,7 @@ public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceContro
   {
     if (CurrentStatus == Status.Fetching) return;
     _timer = new Timer(TimerCallback, null, 0, Timeout.Infinite);
+    _timerDisposed = false;
     CurrentStatus = Status.Fetching;
   }
 
@@ -190,6 +189,7 @@ public class DeviceControl<TDevice, TMeasurement> : DeviceControl, IDeviceContro
   {
     if (_timer is null) return;
     await _timer.DisposeAsync();
+    _timerDisposed = true;
     CurrentStatus = Status.Ready;
   }
 
