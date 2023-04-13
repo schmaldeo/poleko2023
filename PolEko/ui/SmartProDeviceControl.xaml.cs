@@ -13,11 +13,29 @@ namespace PolEko.ui;
 // Will create own HttpClient if not provided, not recommended
 public partial class SmartProDeviceControl
 {
-  private PlotModel PlotModel
+  private HistoricalDataStatus _dataStatus = HistoricalDataStatus.Waiting;
+
+  public HistoricalDataStatus DataStatus
   {
-    set =>
+    get => _dataStatus;
+    set
+    {
+      _dataStatus = value;
+      OnPropertyChanged();
+    }
+  }
+
+  private PlotModel? _plotModel;
+  
+  public PlotModel PlotModel
+  {
+    get => _plotModel ?? new PlotModel();
+    set
+    {
       // This is required by OxyPlot design: https://oxyplot.readthedocs.io/en/latest/common-tasks/refresh-plot.html
-      PlotView.Model = value;
+      _plotModel?.InvalidatePlot(true);
+      _plotModel = value;
+    }
   }
 
   public SmartProDeviceControl()
@@ -37,9 +55,11 @@ public partial class SmartProDeviceControl
       MessageBox.Show("Specify start and end date");
       return;
     }
+    DataStatus = HistoricalDataStatus.Fetching;
     var measurements =
       await Database.GetMeasurementsAsync<SmartProMeasurement>((DateTime)StartingDatePicker.Value,
         (DateTime)EndingDatePicker.Value, _device);
+    DataStatus = HistoricalDataStatus.Showing;
     Measurements = measurements;
 
     var plotModel = new PlotModel();
@@ -72,6 +92,13 @@ public partial class SmartProDeviceControl
     plotModel.Series.Add(lineSeries);
     PlotModel = plotModel;
   }
+
+}
+public enum HistoricalDataStatus
+{
+  Waiting,
+  Fetching,
+  Showing
 }
 
 [ValueConversion(typeof(int), typeof(string))]
@@ -119,3 +146,27 @@ public class DeviceStatusToStringConverter : IValueConverter
     };
   }
 }
+
+[ValueConversion(typeof(HistoricalDataStatus), typeof(bool))]
+public class FetchingStatusToBoolConverter : IValueConverter 
+{
+  public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+  {
+    var status = (HistoricalDataStatus)value;
+    if (status is HistoricalDataStatus.Fetching)
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
+  }
+
+  public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+  {
+    var val = (bool)value;
+    return val ? HistoricalDataStatus.Waiting : HistoricalDataStatus.Fetching;
+  }
+}
+

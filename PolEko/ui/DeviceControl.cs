@@ -26,7 +26,7 @@ public class DeviceControl : UserControl
   }
 }
 
-public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDeviceControl<TDevice> 
+public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDeviceControl<TDevice>
   where TDevice : Device
   where TMeasurement : Measurement
   where TOwner : DeviceControl<TDevice, TMeasurement, TOwner>
@@ -45,7 +45,7 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
   private byte _retryCounter;
   // TODO: type safety
   protected dynamic _device = null!;
-  private List<TMeasurement> _measurements = new();
+  private IEnumerable<TMeasurement> _measurements;
   
   public TDevice Device
   {
@@ -60,7 +60,7 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
   }
 
 
-  public List<TMeasurement> Measurements
+  public IEnumerable<TMeasurement> Measurements
   {
     get => _measurements;
     protected set
@@ -102,12 +102,12 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
   
   public event PropertyChangedEventHandler? PropertyChanged;
   
-  private void OnPropertyChanged([CallerMemberName] string? name = null)
+  protected void OnPropertyChanged([CallerMemberName] string? name = null)
   {
     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
   }
 
-  private void OnDeviceRemoved()
+  protected void OnDeviceRemoved()
   {
     DeviceRemoved?.Invoke(this, new DeviceRemovedEventArgs(_device));
   }

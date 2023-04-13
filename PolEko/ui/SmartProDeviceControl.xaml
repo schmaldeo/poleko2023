@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:oxy="http://oxyplot.org/wpf"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:polEko="clr-namespace:PolEko"
              xmlns:local="clr-namespace:PolEko.ui"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -18,6 +19,27 @@
     <local:SmartProStatusToBoolConverter x:Key="SmartProStatusToBoolConverter" />
     <polEko:BooleanInversionConverter x:Key="BooleanInversionConverter" />
     <local:DeviceStatusToStringConverter x:Key="DeviceStatusToStringConverter" />
+    <local:FetchingStatusToBoolConverter x:Key="FetchingStatusToBoolConverter" />
+    
+    <ui:LoadingScreen x:Key="FetchingTemplate" HorizontalAlignment="Center" Background="White" />
+    <TextBlock Text="Press fetch to fetch" x:Key="WaitingTemplate" />
+    <TabControl x:Key="TabTemplate">
+      <TabItem Header="{StaticResource Table}">
+        <DataGrid
+          IsReadOnly="True"
+          AutoGenerateColumns="False"
+          ItemsSource="{Binding Measurements}">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="{StaticResource Temperature}" Binding="{Binding Temperature}" />
+            <DataGridTextColumn Header="{StaticResource TimeOfRequest}" Binding="{Binding TimeStamp}" />
+            <DataGridCheckBoxColumn Header="{StaticResource IsRunning}" Binding="{Binding IsRunning}" />
+          </DataGrid.Columns>
+        </DataGrid>
+      </TabItem>
+      <TabItem Header="{StaticResource Chart}">
+        <oxy:PlotView Model="{Binding PlotModel}" />
+      </TabItem>
+    </TabControl>
   </local:DeviceControl.Resources>
 
   <Grid>
@@ -131,24 +153,29 @@
       <Label Content="{StaticResource End}" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" FontSize="16" />
       <xctk:DateTimePicker Name="EndingDatePicker" Grid.Row="1" Grid.Column="1" DefaultValue="{Binding Source={x:Static sys:DateTime.Now}}" DisplayDefaultValueOnEmptyText="True" />
       <Button Grid.Row="2" Grid.Column="0" Click="CsvExport_Click" Content="{StaticResource ExportToCsv}" HorizontalAlignment="Center" />
-      <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="{StaticResource Fetch}" HorizontalAlignment="Center" />
-      <TabControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
-        <TabItem Header="{StaticResource Table}">
-          <DataGrid
-            IsReadOnly="True"
-            AutoGenerateColumns="False"
-            ItemsSource="{Binding Measurements}">
-            <DataGrid.Columns>
-              <DataGridTextColumn Header="{StaticResource Temperature}" Binding="{Binding Temperature}" />
-              <DataGridTextColumn Header="{StaticResource TimeOfRequest}" Binding="{Binding TimeStamp}" />
-              <DataGridCheckBoxColumn Header="{StaticResource IsRunning}" Binding="{Binding IsRunning}" />
-            </DataGrid.Columns>
-          </DataGrid>
-        </TabItem>
-        <TabItem Header="{StaticResource Chart}">
-          <oxy:PlotView x:Name="PlotView" />
-        </TabItem>
-      </TabControl>
+      <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="{StaticResource Fetch}" IsEnabled="{Binding DataStatus, Converter={StaticResource FetchingStatusToBoolConverter}}" HorizontalAlignment="Center" />
+      
+      <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+        <ContentControl.Style>
+          <Style TargetType="ContentControl">
+            <Setter Property="Content"
+                    Value="{StaticResource WaitingTemplate}" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding DataStatus}"
+                           Value="Fetching">
+                <Setter Property="Content"
+                        Value="{StaticResource FetchingTemplate}" />
+              </DataTrigger>
+              <DataTrigger Binding="{Binding DataStatus}"
+                           Value="Showing">
+                <Setter Property="Content"
+                        Value="{DynamicResource TabTemplate}" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </ContentControl.Style>
+      </ContentControl>
+      
     </Grid>
     
     <StatusBar Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4">
