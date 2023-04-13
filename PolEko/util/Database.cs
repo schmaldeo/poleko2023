@@ -256,35 +256,42 @@ public static class Database
     command.Parameters.AddWithValue("$ipAddress", device.IpAddress.ToString());
     command.Parameters.AddWithValue("$port", device.Port);
 
-    var measurements = new List<T>();
     await using var reader = await command.ExecuteReaderAsync();
+
+    List<T> measurements = new();
     while (await reader.ReadAsync())
     {
-      var instance = Activator.CreateInstance<T>();
-      foreach (var property in properties)
+      var measurement = await Task.Run(() =>
       {
-        if (property.Name is nameof(Device.IpAddress) or nameof(Device.Port)) continue;
-        var t = property.PropertyType;
-        switch (t)
+        var instance = Activator.CreateInstance<T>();
+        foreach (var property in properties)
         {
-          case not null when t == typeof(bool):
-            property.SetValue(instance, (long)reader[property.Name] != 0);
-            break;
-          case not null when t == typeof(DateTime):
-            property.SetValue(instance, DateTime.Parse((string)reader[property.Name]));
-            break;
-          case not null when t == typeof(int):
-            property.SetValue(instance, (int)(long)reader[property.Name]);
-            break;
-          default:
-            property.SetValue(instance, reader[property.Name]);
-            break;
+          if (property.Name is nameof(Device.IpAddress) or nameof(Device.Port)) continue;
+          var t = property.PropertyType;
+          switch (t)
+          {
+            case not null when t == typeof(bool):
+              property.SetValue(instance, (long)reader[property.Name] != 0);
+              break;
+            case not null when t == typeof(DateTime):
+              property.SetValue(instance, DateTime.Parse((string)reader[property.Name]));
+              break;
+            case not null when t == typeof(int):
+              property.SetValue(instance, (int)(long)reader[property.Name]);
+              break;
+            default:
+              property.SetValue(instance, reader[property.Name]);
+              break;
+          }
         }
-      }
-      measurements.Add(instance);
-    }
 
-    return measurements;
+        return instance;
+      });
+        
+      measurements.Add(measurement);
+    }
+    
+    return measurements.ToList();
   }
 
   /// <summary>
