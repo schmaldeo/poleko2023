@@ -21,18 +21,20 @@
     <local:DeviceStatusToStringConverter x:Key="DeviceStatusToStringConverter" />
     <local:FetchingStatusToBoolConverter x:Key="FetchingStatusToBoolConverter" />
     
-    <ui:LoadingScreen x:Key="FetchingTemplate" HorizontalAlignment="Center" Background="White" />
-    <TextBlock Text="Press fetch to fetch" x:Key="WaitingTemplate" />
-    <TabControl x:Key="TabTemplate">
+    <TextBlock Text="Press fetch after selecting beginning and end dates" x:Key="WaitingText" />
+    <ui:LoadingScreen x:Key="LoadingScreen" HorizontalAlignment="Center" Background="White" />
+    <TabControl x:Key="DataTabControl">
       <TabItem Header="{StaticResource Table}">
         <DataGrid
           IsReadOnly="True"
           AutoGenerateColumns="False"
           ItemsSource="{Binding Measurements}">
           <DataGrid.Columns>
-            <DataGridTextColumn Header="{StaticResource Temperature}" Binding="{Binding Temperature}" />
+            <DataGridTextColumn Header="{StaticResource Temperature}" Binding="{Binding Temperature, Converter={StaticResource SmartProTemperatureConverter}}" />
             <DataGridTextColumn Header="{StaticResource TimeOfRequest}" Binding="{Binding TimeStamp}" />
             <DataGridCheckBoxColumn Header="{StaticResource IsRunning}" Binding="{Binding IsRunning}" />
+            <DataGridCheckBoxColumn Header="Error" Binding="{Binding Error}" />
+            <DataGridCheckBoxColumn Header="Network error" Binding="{Binding NetworkError}" />
           </DataGrid.Columns>
         </DataGrid>
       </TabItem>
@@ -119,7 +121,7 @@
       Grid.Row="0"
       Grid.Column="0"
       Content="{StaticResource Delete}"
-      HorizontalAlignment="Right"
+      HorizontalAlignment="Center"
       VerticalAlignment="Center"
       Width="70"
       Height="30"
@@ -149,27 +151,27 @@
       </Grid.RowDefinitions>
 
       <Label Content="{StaticResource Beginning}" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" FontSize="16" />
-      <xctk:DateTimePicker Name="StartingDatePicker" Grid.Row="1" Grid.Column="0" DefaultValue="{Binding Source={x:Static sys:DateTime.Now}}" DisplayDefaultValueOnEmptyText="True" />
+      <xctk:DateTimePicker Name="StartingDatePicker" Grid.Row="1" Grid.Column="0" DefaultValue="{Binding Source={x:Static sys:DateTime.Now}}" DisplayDefaultValueOnEmptyText="True" Margin="5 0" />
       <Label Content="{StaticResource End}" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" FontSize="16" />
-      <xctk:DateTimePicker Name="EndingDatePicker" Grid.Row="1" Grid.Column="1" DefaultValue="{Binding Source={x:Static sys:DateTime.Now}}" DisplayDefaultValueOnEmptyText="True" />
-      <Button Grid.Row="2" Grid.Column="0" Click="CsvExport_Click" Content="{StaticResource ExportToCsv}" HorizontalAlignment="Center" />
-      <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="{StaticResource Fetch}" IsEnabled="{Binding DataStatus, Converter={StaticResource FetchingStatusToBoolConverter}}" HorizontalAlignment="Center" />
+      <xctk:DateTimePicker Name="EndingDatePicker" Grid.Row="1" Grid.Column="1" DefaultValue="{Binding Source={x:Static sys:DateTime.Now}}" DisplayDefaultValueOnEmptyText="True" Margin="5 0" />
+      <Button Grid.Row="2" Grid.Column="0" Click="CsvExport_Click" Content="{StaticResource ExportToCsv}" HorizontalAlignment="Right" Margin="5 0"/>
+      <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="{StaticResource Fetch}" IsEnabled="{Binding DataStatus, Converter={StaticResource FetchingStatusToBoolConverter}}" HorizontalAlignment="Left" Margin="5 0" />
       
       <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
         <ContentControl.Style>
           <Style TargetType="ContentControl">
             <Setter Property="Content"
-                    Value="{StaticResource WaitingTemplate}" />
+                    Value="{StaticResource WaitingText}" />
             <Style.Triggers>
               <DataTrigger Binding="{Binding DataStatus}"
                            Value="Fetching">
                 <Setter Property="Content"
-                        Value="{StaticResource FetchingTemplate}" />
+                        Value="{StaticResource LoadingScreen}" />
               </DataTrigger>
               <DataTrigger Binding="{Binding DataStatus}"
                            Value="Showing">
                 <Setter Property="Content"
-                        Value="{DynamicResource TabTemplate}" />
+                        Value="{DynamicResource DataTabControl}" />
               </DataTrigger>
             </Style.Triggers>
           </Style>

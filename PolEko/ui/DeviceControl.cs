@@ -22,7 +22,8 @@ public class DeviceControl : UserControl
   {
     Ready,
     Fetching,
-    Error
+    Error,
+    NetworkError
   }
 }
 
@@ -45,7 +46,7 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
   private byte _retryCounter;
   // TODO: type safety
   protected dynamic _device = null!;
-  private IEnumerable<TMeasurement> _measurements;
+  private IEnumerable<TMeasurement> _measurements = new List<TMeasurement>();
   
   public TDevice Device
   {
@@ -141,23 +142,14 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
     
     if (measurement.NetworkError)
     {
-      CurrentStatus = Status.Error;
+      CurrentStatus = Status.NetworkError;
       
       // Increase the timer interval to 5 seconds when there's an error
       if (!_timerDisposed) _timer?.Change(5000, Timeout.Infinite);
 
-      if (_retryCounter < 5)
-      {
-        if (_retryCounter == 0) MessageBox.Show("Request timed out. Retrying 5 more times in 5 seconds intervals");
-        _retryCounter++;
-      }
-      else
-      {
-        MessageBox.Show("Request timed out 5 times, aborting");
-        if (_timer is not null && !_timerDisposed) await _timer.DisposeAsync();
-        _retryCounter = 0;
-        CurrentStatus = Status.Ready;
-      }
+      // TODO: translation
+      if (_retryCounter == 0) MessageBox.Show("Request timed out. Retrying in 5 seconds intervals");
+      _retryCounter++;
 
       return;
     }
@@ -165,13 +157,14 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
     // TODO: move this to device-specific code, make this method virtual
     if (measurement.Error)
     {
+      if (!_timerDisposed) _timer?.Change(5000, Timeout.Infinite);
       CurrentStatus = Status.Error;
-      MessageBox.Show("Device error");
+      MessageBox.Show("Device error. Changing fetching interval to 5 seconds.");
       return;
     }
 
     // If connection was restored, put the previous timer params back
-    if (CurrentStatus == Status.Error) _retryCounter = 0;
+    if (CurrentStatus == Status.NetworkError) _retryCounter = 0;
 
     if (!_timerDisposed) _timer?.Change(_device.RefreshRate * 1000, Timeout.Infinite);
     CurrentStatus = Status.Fetching;

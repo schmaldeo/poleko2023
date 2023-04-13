@@ -127,7 +127,8 @@ public class DeviceStatusToStringConverter : IValueConverter
     var status = (DeviceControl.Status)value;
     return status switch
     {
-      DeviceControl.Status.Error => "Error",
+      DeviceControl.Status.Error => "Device error",
+      DeviceControl.Status.NetworkError => "Network error",
       DeviceControl.Status.Fetching => "Fetching",
       DeviceControl.Status.Ready => "Ready",
       _ => "Unknown"
