@@ -35,7 +35,8 @@ public partial class MainWindow
     Loaded += delegate
     {
       Devices ??= new ObservableCollection<Device>();
-      if (DeviceAssociatedControls is null) throw new ArgumentException("You must pass DeviceAssociatedControls to MainWindow");
+      if (DeviceAssociatedControls is null)
+        throw new ArgumentException("You must pass DeviceAssociatedControls to MainWindow");
     };
   }
 
@@ -64,7 +65,7 @@ public partial class MainWindow
   }
 
   private Dictionary<Device, TabItem> DeviceControls { get; } = new();
-  
+
   public Dictionary<Type, Type>? DeviceAssociatedControls { get; init; }
 
   private void HandleDeviceChange(object sender, RoutedEventArgs e)
@@ -80,13 +81,14 @@ public partial class MainWindow
 
     _currentDevice = incomingDevice;
     var httpClient = _httpClient ??= new HttpClient();
-    
+
     var t = incomingDevice.GetType();
-    var instance = (IDeviceControl<Device>)Activator.CreateInstance(DeviceAssociatedControls![t], incomingDevice, httpClient)!;
+    var instance =
+      (IDeviceControl<Device>)Activator.CreateInstance(DeviceAssociatedControls![t], incomingDevice, httpClient)!;
     instance.DeviceRemoved += RemoveDevice;
     Closing += async delegate { await instance.DisposeAsync(); };
     _deviceInfo = instance;
-    
+
 
     var formattedHeader = $"{_currentDevice.IpAddress}:{_currentDevice.Port}";
     var item = new TabItem
@@ -94,7 +96,7 @@ public partial class MainWindow
       Content = _deviceInfo,
       Header = formattedHeader
     };
-    
+
     if (DeviceControls.ContainsKey(incomingDevice))
     {
       SelectedDeviceControl = DeviceControls[incomingDevice];

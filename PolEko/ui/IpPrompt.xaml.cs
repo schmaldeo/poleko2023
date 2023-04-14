@@ -11,8 +11,6 @@ public partial class IpPrompt
 {
   public static readonly DependencyProperty TypesProperty = MainWindow.TypesProperty;
 
-  public event EventHandler<DeviceAddedEventArgs>? DeviceAdded;
-
   public IpPrompt()
   {
     InitializeComponent();
@@ -28,6 +26,8 @@ public partial class IpPrompt
     get => (Dictionary<string, Type>)GetValue(TypesProperty);
     init => SetValue(TypesProperty, value);
   }
+
+  public event EventHandler<DeviceAddedEventArgs>? DeviceAdded;
 
   /// <summary>
   ///   Method that tries to parse the IP address entered in the prompt and either return it to the caller through the
@@ -60,7 +60,7 @@ public partial class IpPrompt
     var ip = IPAddress.Parse(IpTextBox.Text);
 
     var type = Types![TypesComboBox.Text];
-    
+
     DeviceAdded?.Invoke(this, new DeviceAddedEventArgs(ip, port, id, type));
 
     Close();
@@ -98,7 +98,7 @@ public partial class IpPrompt
       Id = id;
       Type = type;
     }
-    
+
     public IPAddress IpAddress { get; }
     public ushort Port { get; }
     public string? Id { get; }

@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using CsvHelper;
 using Microsoft.Win32;
+
 // ReSharper disable InconsistentNaming
 
 namespace PolEko.ui;
@@ -38,26 +39,33 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
   public static readonly DependencyProperty HttpClientProperty =
     DependencyProperty.Register(nameof(HttpClient), typeof(HttpClient), typeof(TOwner));
 
-  private bool _disposed;
-  private Timer? _timer;
-  private bool _timerDisposed;
-  protected HttpClient _httpClient = null!;
-  private Status _status;
-  private byte _retryCounter;
   // TODO: type safety
   protected dynamic _device = null!;
+
+  private bool _disposed;
+  protected HttpClient _httpClient = null!;
   private IEnumerable<TMeasurement> _measurements = new List<TMeasurement>();
-  
-  public TDevice Device
+  private byte _retryCounter;
+  private Status _status;
+  private Timer? _timer;
+  private bool _timerDisposed;
+
+  protected DeviceControl()
   {
-    get => (TDevice)GetValue(DeviceProperty);
-    init => SetValue(DeviceProperty, value);
+    CurrentStatus = Status.Ready;
+    Loaded += delegate
+    {
+      _httpClient = HttpClient ?? new HttpClient();
+      _device = Device;
+    };
   }
 
-  public HttpClient? HttpClient
+  protected DeviceControl(TDevice device, HttpClient client)
   {
-    get => (HttpClient)GetValue(HttpClientProperty);
-    set => SetValue(HttpClientProperty, value);
+    Device = device;
+    _device = device;
+    HttpClient = client;
+    _httpClient = client;
   }
 
 
@@ -81,37 +89,21 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
     }
   }
 
-  protected DeviceControl()
+  public TDevice Device
   {
-    CurrentStatus = Status.Ready;
-    Loaded += delegate
-    {
-      _httpClient = HttpClient ?? new HttpClient();
-      _device = Device;
-    };
+    get => (TDevice)GetValue(DeviceProperty);
+    init => SetValue(DeviceProperty, value);
   }
 
-  protected DeviceControl(TDevice device, HttpClient client)
+  public HttpClient? HttpClient
   {
-    Device = device;
-    _device = device;
-    HttpClient = client;
-    _httpClient = client;
+    get => (HttpClient)GetValue(HttpClientProperty);
+    set => SetValue(HttpClientProperty, value);
   }
-  
+
   public event EventHandler<DeviceRemovedEventArgs>? DeviceRemoved;
-  
-  public event PropertyChangedEventHandler? PropertyChanged;
-  
-  protected void OnPropertyChanged([CallerMemberName] string? name = null)
-  {
-    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-  }
 
-  protected void OnDeviceRemoved()
-  {
-    DeviceRemoved?.Invoke(this, new DeviceRemovedEventArgs(_device));
-  }
+  public event PropertyChangedEventHandler? PropertyChanged;
 
   public async ValueTask DisposeAsync()
   {
@@ -130,7 +122,17 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
     GC.SuppressFinalize(this);
     _timer.Dispose();
   }
-  
+
+  protected void OnPropertyChanged([CallerMemberName] string? name = null)
+  {
+    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+  }
+
+  protected void OnDeviceRemoved()
+  {
+    DeviceRemoved?.Invoke(this, new DeviceRemovedEventArgs(_device));
+  }
+
   // By initialising the timer with period of Timeout.Infinite and then changing the timer after each request we're
   // basically making it so that the timeout is whatever is set in the callback + time that the GetMeasurementAsync task
   // took. This avoids a behaviour where if it's initialised with 1s (or whatever low value) and it's changed if the
@@ -139,11 +141,11 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
   private async void TimerCallback(object? _)
   {
     var measurement = await _device.GetMeasurementAsync(_httpClient);
-    
+
     if (measurement.NetworkError)
     {
       CurrentStatus = Status.NetworkError;
-      
+
       // Increase the timer interval to 5 seconds when there's an error
       if (!_timerDisposed) _timer?.Change(5000, Timeout.Infinite);
 
@@ -212,10 +214,9 @@ internal interface IDeviceControl<out T> : IDisposable, IAsyncDisposable, INotif
 {
   T Device { get; }
   HttpClient? HttpClient { get; set; }
-  
+
   event EventHandler<DeviceRemovedEventArgs>? DeviceRemoved;
 }
-
 
 public class DeviceRemovedEventArgs : EventArgs
 {
@@ -229,11 +230,13 @@ public class DeviceRemovedEventArgs : EventArgs
 
 public class DeviceModifiedEventArgs : DeviceRemovedEventArgs
 {
-  public DeviceModifiedEventArgs(Device device) : base(device) { }
+  public DeviceModifiedEventArgs(Device device) : base(device)
+  {
+  }
 }
 
 [ValueConversion(typeof(DeviceControl.Status), typeof(bool))]
-public class SmartProStatusToBoolConverter : IValueConverter 
+public class SmartProStatusToBoolConverter : IValueConverter
 {
   public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
   {

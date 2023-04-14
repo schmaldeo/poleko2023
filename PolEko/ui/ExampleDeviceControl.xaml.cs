@@ -3,7 +3,7 @@
 namespace PolEko.ui;
 
 public partial class ExampleDeviceControl
-{ 
+{
   public ExampleDeviceControl()
   {
     InitializeComponent();

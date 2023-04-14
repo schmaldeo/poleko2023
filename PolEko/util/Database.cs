@@ -122,9 +122,9 @@ public static class Database
   {
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
     await conn.OpenAsync();
-    
+
     var typeName = type.Name;
-    
+
     var command = conn.CreateCommand();
     command.CommandText =
       $@"
@@ -153,9 +153,10 @@ public static class Database
     await conn.OpenAsync();
 
     var type = device.GetType().Name;
-    
+
     var command = conn.CreateCommand();
-    command.CommandText = $"DELETE FROM devices WHERE {nameof(Device.IpAddress)} = $ipAddress AND {nameof(Device.Port)} = $port AND Type = $type";
+    command.CommandText =
+      $"DELETE FROM devices WHERE {nameof(Device.IpAddress)} = $ipAddress AND {nameof(Device.Port)} = $port AND Type = $type";
     // Add parameters to avoid SQL injection
     command.Parameters.AddWithValue("$ipAddress", device.IpAddress.ToString());
     command.Parameters.AddWithValue("$port", device.Port);
@@ -238,7 +239,8 @@ public static class Database
     await transaction.CommitAsync();
   }
 
-  public static async Task<List<T>> GetMeasurementsAsync<T>(DateTime startingDate, DateTime endingDate, Device device, SqliteConnection? connection = null) where T : Measurement, new()
+  public static async Task<List<T>> GetMeasurementsAsync<T>(DateTime startingDate, DateTime endingDate, Device device,
+    SqliteConnection? connection = null) where T : Measurement, new()
   {
     var type = typeof(T);
     var tableName = $"{type.Name}s";
@@ -246,7 +248,7 @@ public static class Database
 
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
     await conn.OpenAsync();
-    
+
     var command = conn.CreateCommand();
     command.CommandText =
       $"SELECT * FROM {tableName} WHERE {nameof(device.IpAddress)} = $ipAddress AND {nameof(Device.Port)} = $port" +
@@ -287,10 +289,10 @@ public static class Database
 
         return instance;
       });
-        
+
       measurements.Add(measurement);
     }
-    
+
     return measurements.ToList();
   }
 

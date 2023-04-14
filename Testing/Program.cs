@@ -1,9 +1,9 @@
 ﻿using Microsoft.Data.Sqlite;
 
-class Program
+internal class Program
 {
   private const string ConnectionString = "Data Source=Measurements.db";
-  
+
   // Program that spawns 172800 measurements in SmartProMeasurements table with random temperatures from the range of 
   // 2000-3000 and dates starting from now, each a second apart from each other, effectively giving 2 days of measurements
   public static async Task Main()
@@ -30,7 +30,7 @@ class Program
     await command.ExecuteNonQueryAsync();
 
     command.CommandText = "INSERT INTO devices VALUES ('127.0.0.1', 56000, NULL, 'SmartProDevice')";
-    
+
     await command.ExecuteNonQueryAsync();
 
     command.CommandText = @"CREATE TABLE IF NOT EXISTS SmartProMeasurements(
@@ -43,7 +43,7 @@ class Program
         Port INTEGER NOT NULL,
         PRIMARY KEY (TimeStamp, IpAddress, Port),
         FOREIGN KEY (IpAddress, Port) REFERENCES devices(IpAddress, Port) ON DELETE CASCADE ON UPDATE CASCADE);";
-    
+
     await command.ExecuteNonQueryAsync();
   }
 
@@ -53,7 +53,7 @@ class Program
     var command = connection.CreateCommand();
     command.CommandText =
       @"INSERT INTO SmartProMeasurements VALUES (1, $temperature, 0, $timestamp, 0, '127.0.0.1', 56000)";
-    
+
     var timestampParameter = command.CreateParameter();
     timestampParameter.ParameterName = "$timestamp";
     command.Parameters.Add(timestampParameter);

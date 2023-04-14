@@ -23,11 +23,6 @@ public class Buffer<T> : IEnumerable<T>, INotifyCollectionChanged where T : Meas
 
   public int Size => _buffer.Count;
 
-  private void OnCollectionChanged(NotifyCollectionChangedAction action, object? item)
-  {
-    CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, item));
-  }
-
   public IEnumerator<T> GetEnumerator()
   {
     return _buffer.GetEnumerator();
@@ -38,9 +33,14 @@ public class Buffer<T> : IEnumerable<T>, INotifyCollectionChanged where T : Meas
     return GetEnumerator();
   }
 
-  public event EventHandler? BufferOverflow;
-  
   public event NotifyCollectionChangedEventHandler? CollectionChanged;
+
+  private void OnCollectionChanged(NotifyCollectionChangedAction action, object? item)
+  {
+    CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action, item));
+  }
+
+  public event EventHandler? BufferOverflow;
 
   public void Add(T item)
   {
@@ -50,6 +50,7 @@ public class Buffer<T> : IEnumerable<T>, INotifyCollectionChanged where T : Meas
       _buffer.Dequeue();
       OnCollectionChanged(NotifyCollectionChangedAction.Remove, item);
     }
+
     _size++;
     OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
   }

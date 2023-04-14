@@ -27,7 +27,8 @@ public class SmartProMeasurement : Measurement
 
   public override string ToString()
   {
-    return $"Temperature: {Temperature}, time of request: {TimeStamp}, temperature error: {Error}, time of request: {TimeStamp}";
+    return
+      $"Temperature: {Temperature}, time of request: {TimeStamp}, temperature error: {Error}, time of request: {TimeStamp}";
   }
 }
 

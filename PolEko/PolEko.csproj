@@ -9,15 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Resource Include="images/plus_sign.png" />
+    <Resource Include="images/plus_sign.png"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="30.0.1" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0-preview.2.23128.3" />
-    <PackageReference Include="OxyPlot.Wpf" Version="2.1.2" />
-    <PackageReference Include="WPF-UI" Version="3.0.0-preview.1" />
+    <PackageReference Include="CsvHelper" Version="30.0.1"/>
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0"/>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0-preview.2.23128.3"/>
+    <PackageReference Include="OxyPlot.Wpf" Version="2.1.2"/>
+    <PackageReference Include="WPF-UI" Version="3.0.0-preview.1"/>
   </ItemGroup>
 
   <ItemGroup>

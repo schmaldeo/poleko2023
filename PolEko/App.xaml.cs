@@ -17,10 +17,9 @@ namespace PolEko;
 /// </summary>
 public partial class App
 {
+  private readonly Dictionary<Type, Type> _deviceAssociatedControls = new();
   private readonly Dictionary<string, Type> _registeredDeviceTypes = new();
   private List<Type> _registeredMeasurementTypes = new();
-
-  private readonly Dictionary<Type, Type> _deviceAssociatedControls = new();
 
   private async void App_Startup(object sender, StartupEventArgs e)
   {
@@ -72,12 +71,10 @@ public partial class App
     var t = Type.GetType(controlName);
     if (t is null) throw new Exception($"{type.Name} hasn't got an associated UserControl");
     if (!t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IDeviceControl<>)))
-    {
       throw new Exception($"{controlName} must implement IDeviceControl<>");
-    }
     return t;
   }
-  
+
   private void SetLanguageDictionary()
   {
     // Default (English) MergedDictionary is specified in the markup to get Intellisense. This should be refactored
@@ -91,7 +88,6 @@ public partial class App
     Resources.MergedDictionaries.Add(dictionary);
   }
 }
-
 
 [ValueConversion(typeof(bool), typeof(bool))]
 public class BooleanInversionConverter : IValueConverter

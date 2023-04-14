@@ -15,28 +15,7 @@ public partial class SmartProDeviceControl
 {
   private HistoricalDataStatus _dataStatus = HistoricalDataStatus.Waiting;
 
-  public HistoricalDataStatus DataStatus
-  {
-    get => _dataStatus;
-    set
-    {
-      _dataStatus = value;
-      OnPropertyChanged();
-    }
-  }
-
   private PlotModel? _plotModel;
-  
-  public PlotModel PlotModel
-  {
-    get => _plotModel ?? new PlotModel();
-    set
-    {
-      // This is required by OxyPlot design: https://oxyplot.readthedocs.io/en/latest/common-tasks/refresh-plot.html
-      _plotModel?.InvalidatePlot(true);
-      _plotModel = value;
-    }
-  }
 
   public SmartProDeviceControl()
   {
@@ -48,6 +27,27 @@ public partial class SmartProDeviceControl
     InitializeComponent();
   }
 
+  public HistoricalDataStatus DataStatus
+  {
+    get => _dataStatus;
+    set
+    {
+      _dataStatus = value;
+      OnPropertyChanged();
+    }
+  }
+
+  public PlotModel PlotModel
+  {
+    get => _plotModel ?? new PlotModel();
+    set
+    {
+      // This is required by OxyPlot design: https://oxyplot.readthedocs.io/en/latest/common-tasks/refresh-plot.html
+      _plotModel?.InvalidatePlot(true);
+      _plotModel = value;
+    }
+  }
+
   private async void Button_Click(object sender, RoutedEventArgs e)
   {
     if (StartingDatePicker.Value is null || EndingDatePicker.Value is null)
@@ -55,6 +55,7 @@ public partial class SmartProDeviceControl
       MessageBox.Show("Specify start and end date");
       return;
     }
+
     DataStatus = HistoricalDataStatus.Fetching;
     var measurements =
       await Database.GetMeasurementsAsync<SmartProMeasurement>((DateTime)StartingDatePicker.Value,
@@ -63,8 +64,8 @@ public partial class SmartProDeviceControl
     Measurements = measurements;
 
     var plotModel = new PlotModel();
-    
-    
+
+
     plotModel.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom, Title = "Time" });
     plotModel.Axes.Add(new LinearAxis
     {
@@ -79,21 +80,19 @@ public partial class SmartProDeviceControl
     // filling the gaps with Double.NaN.
     var lineSeries = new LineSeries
     {
-      Decimator=Decimator.Decimate
+      Decimator = Decimator.Decimate
     };
-    
+
 
     foreach (var measurement in measurements)
-    {
       lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(measurement.TimeStamp), Math.Round(
         (float)measurement.Temperature / 100, 2)));
-    }
 
     plotModel.Series.Add(lineSeries);
     PlotModel = plotModel;
   }
-
 }
+
 public enum HistoricalDataStatus
 {
   Waiting,
@@ -120,7 +119,7 @@ public class SmartProTemperatureConverter : IValueConverter
 }
 
 [ValueConversion(typeof(DeviceControl.Status), typeof(string))]
-public class DeviceStatusToStringConverter : IValueConverter 
+public class DeviceStatusToStringConverter : IValueConverter
 {
   public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
   {
@@ -149,19 +148,12 @@ public class DeviceStatusToStringConverter : IValueConverter
 }
 
 [ValueConversion(typeof(HistoricalDataStatus), typeof(bool))]
-public class FetchingStatusToBoolConverter : IValueConverter 
+public class FetchingStatusToBoolConverter : IValueConverter
 {
   public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
   {
     var status = (HistoricalDataStatus)value;
-    if (status is HistoricalDataStatus.Fetching)
-    {
-      return false;
-    }
-    else
-    {
-      return true;
-    }
+    return status is not HistoricalDataStatus.Fetching;
   }
 
   public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -170,4 +162,3 @@ public class FetchingStatusToBoolConverter : IValueConverter
     return val ? HistoricalDataStatus.Waiting : HistoricalDataStatus.Fetching;
   }
 }
-
