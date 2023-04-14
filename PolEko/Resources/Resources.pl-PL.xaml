@@ -22,4 +22,15 @@
   <system:String x:Key="Beginning">Początek</system:String>
   <system:String x:Key="End">Koniec</system:String>
   <system:String x:Key="HistoricalData">Dane historyczne</system:String>
+  <system:String x:Key="DeviceTimedOut">Request timed out. Retrying in 5 seconds intervals</system:String>
+  <system:String x:Key="DeviceError">Device error. Retrying in 5 seconds intervals</system:String>
+  <system:String x:Key="SpecifyStartEndDate">Specify start and end date</system:String>
+  <system:String x:Key="ErrorInsertingIntoDb">Error inserting into the database</system:String>
+  <system:String x:Key="ErrorRemovingFromDb">Error removing device from the database</system:String>
+  <system:String x:Key="ErrorGettingDevice">Error removing device from the database</system:String>
+  <system:String x:Key="ErrorCreatingDevice">Error creating an instance of Device</system:String>
+  <system:String x:Key="ErrorCreatingTableFor">Error creating a table for</system:String>
+  <system:String x:Key="DeviceAlreadyExists">Device already exists</system:String>
+  <system:String x:Key="InvalidIp">Invalid IP address</system:String>
+  <system:String x:Key="PortFromRange">Port can only be in 1-65535 range</system:String>
 </ResourceDictionary>

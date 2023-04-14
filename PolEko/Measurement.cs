@@ -7,6 +7,8 @@ namespace PolEko;
 public abstract class Measurement
 {
   public bool NetworkError { get; init; }
+  
+  public bool Error { get; init; }
 
   public DateTime TimeStamp { get; init; } = DateTime.Now;
 
@@ -22,13 +24,10 @@ public class SmartProMeasurement : Measurement
 
   public int Temperature { get; init; }
 
-  // ReSharper disable once UnusedAutoPropertyAccessor.Global
-  public bool Error { get; init; }
-
   public override string ToString()
   {
     return
-      $"Temperature: {Temperature}, time of request: {TimeStamp}, temperature error: {Error}, time of request: {TimeStamp}";
+      $"Temperature: {Temperature}, time of request: {TimeStamp}, device error: {Error}, network error: {NetworkError}";
   }
 }
 

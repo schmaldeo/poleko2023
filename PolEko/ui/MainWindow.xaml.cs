@@ -117,7 +117,8 @@ public partial class MainWindow
     var device = (Device)instance;
     if (Devices!.Contains(device))
     {
-      MessageBox.Show("Urządzenie już istnieje");
+      var str = (string)Application.Current.FindResource("DeviceAlreadyExists")!;
+      MessageBox.Show(str);
       return;
     }
 

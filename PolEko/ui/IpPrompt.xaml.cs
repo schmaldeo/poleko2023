@@ -42,14 +42,16 @@ public partial class IpPrompt
     // Check if IP input is a valid IPv4
     if (!Ipv4Regex().IsMatch(IpTextBox.Text))
     {
-      MessageBox.Show("Nieprawidłowy adres IP");
+      var str = (string)Application.Current.FindResource("InvalidIp")!;
+      MessageBox.Show(str);
       return;
     }
 
     // Check if port input can be parsed to an integer 
     if (!ushort.TryParse(PortTextBox.Text, out var port))
     {
-      MessageBox.Show("Port może się składać tylko z liczb z zakresu 1-65535");
+      var str = (string)Application.Current.FindResource("PortFromRange")!;
+      MessageBox.Show(str);
       return;
     }
 

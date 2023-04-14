@@ -43,7 +43,8 @@ public static class Database
       }
       catch (DbException e)
       {
-        MessageBox.Show($"Error creating a table for {type.Name} \n {e.Message}");
+        var str = (string)Application.Current.FindResource("ErrorCreatingTableFor")!;
+        MessageBox.Show($"{str} {type.Name} \n {e.Message}");
       }
     }
   }
@@ -90,7 +91,8 @@ public static class Database
 
           if (device is null)
           {
-            MessageBox.Show($"Error creating an instance of Device {ipAddress}:{port}");
+            var str = (string)Application.Current.FindResource("ErrorCreatingDevice")!;
+            MessageBox.Show($"{str} {ipAddress}:{port}");
             continue;
           }
 
@@ -112,7 +114,8 @@ public static class Database
     }
     catch (DbException e)
     {
-      MessageBox.Show($"Error getting devices from database \n {e.Message}");
+      var str = (string)Application.Current.FindResource("ErrorGettingDevice")!;
+      MessageBox.Show($"{str} \n {e.Message}");
     }
 
     return deviceList;
@@ -168,7 +171,8 @@ public static class Database
     }
     catch (DbException e)
     {
-      MessageBox.Show($"Error removing a device from database \n {e.Message}");
+      var str = (string)Application.Current.FindResource("ErrorRemovingFromDb")!;
+      MessageBox.Show($"{str} \n {e.Message}");
     }
   }
 
@@ -232,7 +236,8 @@ public static class Database
       }
       catch (DbException e)
       {
-        MessageBox.Show($"Error inserting measurements into database \n {e.Message}");
+        var str = (string)Application.Current.FindResource("ErrorInsertingIntoDb")!;
+        MessageBox.Show($"{str} \n {e.Message}");
       }
     }
 

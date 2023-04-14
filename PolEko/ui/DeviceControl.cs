@@ -149,19 +149,19 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
       // Increase the timer interval to 5 seconds when there's an error
       if (!_timerDisposed) _timer?.Change(5000, Timeout.Infinite);
 
-      // TODO: translation
-      if (_retryCounter == 0) MessageBox.Show("Request timed out. Retrying in 5 seconds intervals");
+      var str = (string)Application.Current.FindResource("DeviceTimedOut")!;
+      if (_retryCounter == 0) MessageBox.Show(str);
       _retryCounter++;
 
       return;
     }
 
-    // TODO: move this to device-specific code, make this method virtual
     if (measurement.Error)
     {
       if (!_timerDisposed) _timer?.Change(5000, Timeout.Infinite);
       CurrentStatus = Status.Error;
-      MessageBox.Show("Device error. Changing fetching interval to 5 seconds.");
+      var str = (string)Application.Current.FindResource("DeviceError")!;
+      MessageBox.Show(str);
       return;
     }
 

@@ -52,7 +52,8 @@ public partial class SmartProDeviceControl
   {
     if (StartingDatePicker.Value is null || EndingDatePicker.Value is null)
     {
-      MessageBox.Show("Specify start and end date");
+      var str = (string)Application.Current.FindResource("SpecifyStartEndDate")!;
+      MessageBox.Show(str);
       return;
     }
 
