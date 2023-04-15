@@ -11,6 +11,7 @@ app.get("/api/v1/school/status", (req, res) => {
   if (temp == 3000) {
     temp = 1000;
   }
+  console.log(temp);
   res.json({
     IS_RUNNING: true,
     TEMPERATURE_MAIN: {

@@ -37,4 +37,5 @@
   <system:String x:Key="Ready">Ready</system:String>
   <system:String x:Key="Error">Error</system:String>
   <system:String x:Key="NetworkError">Network error</system:String>
+  <system:String x:Key="FetchAfterSelecting">Press fetch after selecting beginning and end dates</system:String>
 </ResourceDictionary>

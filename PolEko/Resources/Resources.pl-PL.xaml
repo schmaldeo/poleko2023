@@ -35,6 +35,7 @@
   <system:String x:Key="PortFromRange">Port może być tylko z zakresu 1-65535</system:String>
   <system:String x:Key="Fetching">Pobieranie</system:String>
   <system:String x:Key="Ready">Gotowy</system:String>
-  <system:String x:Key="DevError">Błąd urządzenia</system:String>
+  <system:String x:Key="Error">Błąd urządzenia</system:String>
   <system:String x:Key="NetworkError">Błąd sieci</system:String>
+  <system:String x:Key="FetchAfterSelecting">Wciśnij pobierz po wybraniu daty początkowej i końcowej</system:String>
 </ResourceDictionary>

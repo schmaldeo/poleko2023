@@ -21,7 +21,7 @@
     <local:DeviceStatusToStringConverter x:Key="DeviceStatusToStringConverter" />
     <local:FetchingStatusToBoolConverter x:Key="FetchingStatusToBoolConverter" />
 
-    <TextBlock Text="Press fetch after selecting beginning and end dates" x:Key="WaitingText" />
+    <TextBlock Text="{StaticResource FetchAfterSelecting}" x:Key="WaitingText" />
     <ui:LoadingScreen x:Key="LoadingScreen" HorizontalAlignment="Center" Background="White" />
     <TabControl x:Key="DataTabControl">
       <TabItem Header="{StaticResource Table}">
@@ -34,8 +34,8 @@
                                 Binding="{Binding Temperature, Converter={StaticResource SmartProTemperatureConverter}}" />
             <DataGridTextColumn Header="{StaticResource TimeOfRequest}" Binding="{Binding TimeStamp}" />
             <DataGridCheckBoxColumn Header="{StaticResource IsRunning}" Binding="{Binding IsRunning}" />
-            <DataGridCheckBoxColumn Header="Error" Binding="{Binding Error}" />
-            <DataGridCheckBoxColumn Header="Network error" Binding="{Binding NetworkError}" />
+            <DataGridCheckBoxColumn Header="{StaticResource Error}" Binding="{Binding Error}" />
+            <DataGridCheckBoxColumn Header="{StaticResource NetworkError}" Binding="{Binding NetworkError}" />
           </DataGrid.Columns>
         </DataGrid>
       </TabItem>
@@ -102,9 +102,7 @@
       Grid.Row="0"
       Content="{StaticResource Fetch}"
       HorizontalAlignment="Left"
-      Height="30"
       VerticalAlignment="Center"
-      Width="70"
       Click="FetchData_Click"
       IsEnabled="{Binding CurrentStatus, Converter={StaticResource SmartProStatusToBoolConverter}}"
       Grid.Column="3" />
@@ -113,9 +111,7 @@
       Grid.Column="3"
       Content="{StaticResource Stop}"
       HorizontalAlignment="Right"
-      Height="30"
       VerticalAlignment="Center"
-      Width="70"
       IsEnabled="{Binding ElementName=FetchButton, Path=IsEnabled, Converter={StaticResource BooleanInversionConverter}}"
       Click="StopFetching_Click" />
     <Button
@@ -124,8 +120,6 @@
       Content="{StaticResource Delete}"
       HorizontalAlignment="Center"
       VerticalAlignment="Center"
-      Width="70"
-      Height="30"
       Click="DeleteDevice_Click" />
 
     <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" />
