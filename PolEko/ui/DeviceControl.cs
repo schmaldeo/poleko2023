@@ -210,7 +210,7 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
   }
 }
 
-internal interface IDeviceControl<out T> : IDisposable, IAsyncDisposable, INotifyPropertyChanged where T : Device
+public interface IDeviceControl<out T> : IDisposable, IAsyncDisposable, INotifyPropertyChanged where T : Device
 {
   T Device { get; }
   HttpClient? HttpClient { get; set; }
