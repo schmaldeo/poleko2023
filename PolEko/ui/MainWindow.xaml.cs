@@ -8,11 +8,10 @@ using PolEko.util;
 
 namespace PolEko.ui;
 
-/// <summary>
-///   Interaction logic for MainWindow.xaml
-/// </summary>
 public partial class MainWindow
 {
+  #region DependencyProperties 
+  
   public static readonly DependencyProperty TypesProperty =
     DependencyProperty.Register(nameof(Types), typeof(Dictionary<string, Type>), typeof(IpPrompt));
 
@@ -24,11 +23,19 @@ public partial class MainWindow
 
   public static readonly DependencyProperty SelectedDeviceControlProperty =
     DependencyProperty.Register(nameof(SelectedDeviceControl), typeof(TabItem), typeof(MainWindow));
+  
+  #endregion
 
+  #region Fields
+  
   private Device? _currentDevice;
   private IDeviceControl<Device>? _deviceInfo;
   private HttpClient? _httpClient;
+  
+  #endregion
 
+  #region Constructors
+  
   public MainWindow()
   {
     InitializeComponent();
@@ -39,7 +46,11 @@ public partial class MainWindow
         throw new ArgumentException("You must pass DeviceAssociatedControls to MainWindow");
     };
   }
+  
+  #endregion
 
+  #region Properties
+  
   public Dictionary<string, Type>? Types
   {
     get => (Dictionary<string, Type>)GetValue(TypesProperty);
@@ -67,6 +78,10 @@ public partial class MainWindow
   private Dictionary<Device, TabItem> DeviceControls { get; } = new();
 
   public Dictionary<Type, Type>? DeviceAssociatedControls { get; init; }
+  
+  #endregion
+  
+  #region Event handlers
 
   private void HandleDeviceChange(object sender, RoutedEventArgs e)
   {
@@ -142,4 +157,6 @@ public partial class MainWindow
     prompt.DeviceAdded += AddNewDevice;
     prompt.Show();
   }
+  
+  #endregion
 }

@@ -10,13 +10,18 @@ using PolEko.util;
 
 namespace PolEko.ui;
 
-// Will create own HttpClient if not provided, not recommended
 public partial class SmartProDeviceControl
 {
+  #region Fields
+  
   private HistoricalDataStatus _dataStatus = HistoricalDataStatus.Waiting;
 
   private PlotModel? _plotModel;
+  
+  #endregion
 
+  #region Constructors
+  
   public SmartProDeviceControl()
   {
     InitializeComponent();
@@ -26,6 +31,10 @@ public partial class SmartProDeviceControl
   {
     InitializeComponent();
   }
+  
+  #endregion
+  
+  #region Properties
 
   public HistoricalDataStatus DataStatus
   {
@@ -47,6 +56,10 @@ public partial class SmartProDeviceControl
       _plotModel = value;
     }
   }
+  
+  #endregion
+  
+  #region Methods
 
   private async void Button_Click(object sender, RoutedEventArgs e)
   {
@@ -92,15 +105,13 @@ public partial class SmartProDeviceControl
     plotModel.Series.Add(lineSeries);
     PlotModel = plotModel;
   }
+  
+  #endregion
 }
 
-public enum HistoricalDataStatus
-{
-  Waiting,
-  Fetching,
-  Showing
-}
-
+/// <summary>
+/// Divides an integer by 100 and converts it to a string with 2 decimal places 
+/// </summary>
 [ValueConversion(typeof(int), typeof(string))]
 public class SmartProTemperatureConverter : IValueConverter
 {
@@ -119,6 +130,9 @@ public class SmartProTemperatureConverter : IValueConverter
   }
 }
 
+/// <summary>
+/// Converts status of <see cref="DeviceControl{TDevice,TMeasurement,TOwner}"/> to a string
+/// </summary>
 [ValueConversion(typeof(DeviceControl.Status), typeof(string))]
 public class DeviceStatusToStringConverter : IValueConverter
 {
@@ -127,10 +141,10 @@ public class DeviceStatusToStringConverter : IValueConverter
     var status = (DeviceControl.Status)value;
     return status switch
     {
-      DeviceControl.Status.Error => "Device error",
-      DeviceControl.Status.NetworkError => "Network error",
-      DeviceControl.Status.Fetching => "Fetching",
-      DeviceControl.Status.Ready => "Ready",
+      DeviceControl.Status.Error => (string)Application.Current.FindResource("Error")!,
+      DeviceControl.Status.NetworkError => (string)Application.Current.FindResource("NetworkError")!,
+      DeviceControl.Status.Fetching => (string)Application.Current.FindResource("Fetching")!,
+      DeviceControl.Status.Ready => (string)Application.Current.FindResource("Ready")!,
       _ => "Unknown"
     };
   }
@@ -148,6 +162,9 @@ public class DeviceStatusToStringConverter : IValueConverter
   }
 }
 
+/// <summary>
+/// Converts <see cref="HistoricalDataStatus"/> to a boolean
+/// </summary>
 [ValueConversion(typeof(HistoricalDataStatus), typeof(bool))]
 public class FetchingStatusToBoolConverter : IValueConverter
 {

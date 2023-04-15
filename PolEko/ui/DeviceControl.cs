@@ -17,7 +17,7 @@ using Microsoft.Win32;
 
 namespace PolEko.ui;
 
-public class DeviceControl : UserControl
+public abstract class DeviceControl : UserControl
 {
   public enum Status
   {
@@ -33,23 +33,33 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
   where TMeasurement : Measurement
   where TOwner : DeviceControl<TDevice, TMeasurement, TOwner>
 {
+  #region DependencyProperties
+  
   public static readonly DependencyProperty DeviceProperty =
     DependencyProperty.Register(nameof(Device), typeof(TDevice), typeof(TOwner));
 
   public static readonly DependencyProperty HttpClientProperty =
     DependencyProperty.Register(nameof(HttpClient), typeof(HttpClient), typeof(TOwner));
+  
+  #endregion
 
+  #region Fields
+  
   // TODO: type safety
   protected dynamic _device = null!;
 
-  private bool _disposed;
   protected HttpClient _httpClient = null!;
   private IEnumerable<TMeasurement> _measurements = new List<TMeasurement>();
   private byte _retryCounter;
   private Status _status;
   private Timer? _timer;
+  private bool _disposed;
   private bool _timerDisposed;
+  
+  #endregion
 
+  #region Constructors
+  
   protected DeviceControl()
   {
     CurrentStatus = Status.Ready;
@@ -68,7 +78,10 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
     _httpClient = client;
   }
 
+  #endregion
 
+  #region Properties
+  
   public IEnumerable<TMeasurement> Measurements
   {
     get => _measurements;
@@ -100,11 +113,29 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
     get => (HttpClient)GetValue(HttpClientProperty);
     set => SetValue(HttpClientProperty, value);
   }
+  
+  #endregion
+  
+  #region Events
 
   public event EventHandler<DeviceRemovedEventArgs>? DeviceRemoved;
+  
+  protected void OnDeviceRemoved()
+  {
+    DeviceRemoved?.Invoke(this, new DeviceRemovedEventArgs(_device));
+  }
 
   public event PropertyChangedEventHandler? PropertyChanged;
+  
+  protected void OnPropertyChanged([CallerMemberName] string? name = null)
+  {
+    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+  }
+  
+  #endregion
 
+  #region Methods
+  
   public async ValueTask DisposeAsync()
   {
     if (_timer == null || _disposed) return;
@@ -121,16 +152,6 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
     _disposed = true;
     GC.SuppressFinalize(this);
     _timer.Dispose();
-  }
-
-  protected void OnPropertyChanged([CallerMemberName] string? name = null)
-  {
-    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-  }
-
-  protected void OnDeviceRemoved()
-  {
-    DeviceRemoved?.Invoke(this, new DeviceRemovedEventArgs(_device));
   }
 
   // By initialising the timer with period of Timeout.Infinite and then changing the timer after each request we're
@@ -208,8 +229,18 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
     await using var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture);
     await csvWriter.WriteRecordsAsync(_measurements);
   }
+  
+  #endregion
 }
 
+public enum HistoricalDataStatus
+{
+  Waiting,
+  Fetching,
+  Showing
+}
+
+// Purpose behind this interface was mainly to be able to cast DeviceControl to something in MainWindow.
 public interface IDeviceControl<out T> : IDisposable, IAsyncDisposable, INotifyPropertyChanged where T : Device
 {
   T Device { get; }
@@ -228,20 +259,17 @@ public class DeviceRemovedEventArgs : EventArgs
   public Device Device { get; }
 }
 
-public class DeviceModifiedEventArgs : DeviceRemovedEventArgs
-{
-  public DeviceModifiedEventArgs(Device device) : base(device)
-  {
-  }
-}
-
+/// <summary>
+/// Converts status to boolean that can be used for IsEnabled property of a button.
+/// Returns true if status is Fetching, Error or Network error
+/// </summary>
 [ValueConversion(typeof(DeviceControl.Status), typeof(bool))]
 public class SmartProStatusToBoolConverter : IValueConverter
 {
   public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
   {
     var status = (DeviceControl.Status)value;
-    return status != DeviceControl.Status.Fetching && status != DeviceControl.Status.Error;
+    return status != DeviceControl.Status.Fetching && status != DeviceControl.Status.Error && status != DeviceControl.Status.NetworkError;
   }
 
   public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

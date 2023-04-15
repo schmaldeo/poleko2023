@@ -33,4 +33,8 @@
   <system:String x:Key="DeviceAlreadyExists">Device already exists</system:String>
   <system:String x:Key="InvalidIp">Invalid IP address</system:String>
   <system:String x:Key="PortFromRange">Port can only be in 1-65535 range</system:String>
+  <system:String x:Key="Fetching">Fetching</system:String>
+  <system:String x:Key="Ready">Ready</system:String>
+  <system:String x:Key="Error">Error</system:String>
+  <system:String x:Key="NetworkError">Network error</system:String>
 </ResourceDictionary>

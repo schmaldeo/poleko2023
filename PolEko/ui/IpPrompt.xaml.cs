@@ -9,7 +9,13 @@ namespace PolEko.ui;
 
 public partial class IpPrompt
 {
+  #region DependencyProperties
+  
   public static readonly DependencyProperty TypesProperty = MainWindow.TypesProperty;
+  
+  #endregion
+  
+  #region Constructors
 
   public IpPrompt()
   {
@@ -20,14 +26,26 @@ public partial class IpPrompt
       if (Types is null) throw new ArgumentException("MainWindow must consume a Types property");
     };
   }
+  
+  #endregion
+  
+  #region Properties
 
   public Dictionary<string, Type>? Types
   {
     get => (Dictionary<string, Type>)GetValue(TypesProperty);
     init => SetValue(TypesProperty, value);
   }
+  
+  #endregion
+  
+  #region Events
 
   public event EventHandler<DeviceAddedEventArgs>? DeviceAdded;
+  
+  #endregion
+  
+  #region Event handlers
 
   /// <summary>
   ///   Method that tries to parse the IP address entered in the prompt and either return it to the caller through the
@@ -83,13 +101,19 @@ public partial class IpPrompt
     e.CanExecute = false;
     e.Handled = true;
   }
+  
+  #endregion
 
+  #region Regex
+  
   /// <summary>
   ///   IPv4 regex
   /// </summary>
   /// <returns></returns>
   [GeneratedRegex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")]
   private static partial Regex Ipv4Regex();
+  
+  #endregion
 
   public class DeviceAddedEventArgs : EventArgs
   {

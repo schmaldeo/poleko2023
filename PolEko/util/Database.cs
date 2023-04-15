@@ -10,12 +10,20 @@ using Microsoft.Data.Sqlite;
 
 namespace PolEko.util;
 
+/// <summary>
+/// Util class consisting of database-related methods
+/// </summary>
 public static class Database
 {
   // Connections to SQLite are very cheap as they don't utilise network, so it's OK to just open new connection in each
   // of these methods, especially as they are not called all that frequently 
   private const string ConnectionString = "Data Source=Measurements.db";
 
+  /// <summary>
+  /// Creates table that stores all devices and tables for each device type's measurements
+  /// </summary>
+  /// <param name="types">Types of <see cref="Measurement"/>s</param>
+  /// <param name="connection">(optional) SQLite connection</param>
   public static async Task CreateTablesAsync(IEnumerable<Type> types, SqliteConnection? connection = null)
   {
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
@@ -49,6 +57,12 @@ public static class Database
     }
   }
 
+  /// <summary>
+  /// Retrieves devices from the database
+  /// </summary>
+  /// <param name="types"><see cref="Dictionary{TKey,TValue}"/> where TKey is nameof(TValue) and TValue is typeof(<see cref="Device{TMeasurement,TControl}"/>)</param>
+  /// <param name="connection">(optional) SQLite connection</param>
+  /// <returns><see cref="List{T}"/> of <see cref="Device{TMeasurement,TControl}"/></returns>
   public static async Task<List<Device>> ExtractDevicesAsync(Dictionary<string, Type> types,
     SqliteConnection? connection = null)
   {
@@ -121,6 +135,12 @@ public static class Database
     return deviceList;
   }
 
+  /// <summary>
+  /// Adds a device to the database
+  /// </summary>
+  /// <param name="device"><see cref="Device{TMeasurement,TControl}"/> to be added</param>
+  /// <param name="type">typeof(<paramref name="device"/>)</param>
+  /// <param name="connection">(optional) SQLite connection</param>
   public static async Task AddDeviceAsync(Device device, Type type, SqliteConnection? connection = null)
   {
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
@@ -150,6 +170,11 @@ public static class Database
     }
   }
 
+  /// <summary>
+  /// Removes a device from the database
+  /// </summary>
+  /// <param name="device"><see cref="Device{TMeasurement,TControl}"/> to be removed</param>
+  /// <param name="connection">(optional) SQLite connection</param>
   public static async Task RemoveDeviceAsync(Device device, SqliteConnection? connection = null)
   {
     await using var conn = connection ?? new SqliteConnection(ConnectionString);
@@ -176,6 +201,13 @@ public static class Database
     }
   }
 
+  /// <summary>
+  /// Inserts <see cref="Measurement"/>s into the database
+  /// </summary>
+  /// <param name="measurements"><see cref="IEnumerable{T}"/> of <see cref="Measurement"/>s</param>
+  /// <param name="sender"><see cref="Device"/> which owns these <paramref name="measurements"/></param>
+  /// <param name="connection">(optional) SQLite connection</param>
+  /// <typeparam name="T">Type of <see cref="Measurement"/>s</typeparam>
   public static async Task InsertMeasurementsAsync<T>(IEnumerable<Measurement> measurements, Device sender,
     SqliteConnection? connection = null)
   {
@@ -244,6 +276,15 @@ public static class Database
     await transaction.CommitAsync();
   }
 
+  /// <summary>
+  /// Gets measurements from given time interval
+  /// </summary>
+  /// <param name="startingDate"><see cref="DateTime"/>of the beginning of the interval</param>
+  /// <param name="endingDate"><see cref="DateTime"/>of the end of the interval</param>
+  /// <param name="device"><see cref="Device"/>whose measurements to get</param>
+  /// <param name="connection">(optional) SQLite connection</param>
+  /// <typeparam name="T">Type of <see cref="Measurement"/>s to be retrieved</typeparam>
+  /// <returns><see cref="List{T}"/> of <see cref="Measurement"/>s</returns>
   public static async Task<List<T>> GetMeasurementsAsync<T>(DateTime startingDate, DateTime endingDate, Device device,
     SqliteConnection? connection = null) where T : Measurement, new()
   {
@@ -334,6 +375,11 @@ public static class Database
   }
 
   // ReSharper disable once InconsistentNaming
+  /// <summary>
+  /// Parses a string for use with SQLite
+  /// </summary>
+  /// <param name="dateTime"><see cref="DateTime"/> to parse</param>
+  /// <returns>String that can be used in a query</returns>
   private static string GetSQLiteDateTime(DateTime dateTime)
   {
     return dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff");
@@ -346,7 +392,7 @@ public static class Database
   /// </summary>
   /// <param name="type"><c>Type</c> to be parsed</param>
   /// <returns>SQLite data type</returns>
-  /// <exception cref="ArgumentException">Thrown if <c>Type</c> passed in is unsupported by SQLite</exception>
+  /// <exception cref="ArgumentException">Thrown if <see cref="Type"/> passed in is unsupported by SQLite</exception>
   private static string GetSQLiteType(Type type)
   {
     if (type == typeof(string)

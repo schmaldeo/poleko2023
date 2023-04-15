@@ -6,22 +6,33 @@ namespace PolEko;
 
 public abstract class Measurement
 {
+  /// <summary>
+  /// Indicates a network error
+  /// </summary>
   public bool NetworkError { get; init; }
   
+  /// <summary>
+  /// Indicates a device-side error
+  /// </summary>
   public bool Error { get; init; }
 
+  /// <summary>
+  /// Indicates when the request was sent to the device
+  /// </summary>
   public DateTime TimeStamp { get; init; } = DateTime.Now;
 
   public abstract override string ToString();
 }
 
+/// <summary>
+/// Provides support for POL-EKO Smart Pro's measurements 
+/// </summary>
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
 public class SmartProMeasurement : Measurement
 {
-  // Properties
   public bool IsRunning { get; init; }
-
+  
   public int Temperature { get; init; }
 
   public override string ToString()
@@ -31,6 +42,9 @@ public class SmartProMeasurement : Measurement
   }
 }
 
+/// <summary>
+/// Presentation example
+/// </summary>
 public class ExampleMeasurement : Measurement
 {
   [JsonPropertyName("altitude")] public int Speed { get; init; }
