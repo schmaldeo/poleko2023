@@ -317,7 +317,7 @@ public class SmartProDevice : Device<SmartProMeasurement, SmartProDeviceControl>
     {
       IsRunning = isRunning,
       Temperature = temperature,
-      NetworkError = error
+      Error = error
     };
 
     return measurement;

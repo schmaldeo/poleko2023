@@ -146,14 +146,7 @@ public class DeviceStatusToStringConverter : IValueConverter
 
   public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
   {
-    var val = (string)value;
-    return val switch
-    {
-      "Error" => DeviceControl.Status.Error,
-      "Fetching" => DeviceControl.Status.Fetching,
-      "Ready" => DeviceControl.Status.Ready,
-      _ => DependencyProperty.UnsetValue
-    };
+    throw new NotImplementedException();
   }
 }
 

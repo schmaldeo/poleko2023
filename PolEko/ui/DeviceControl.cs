@@ -50,11 +50,15 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
 
   protected HttpClient _httpClient = null!;
   private IEnumerable<TMeasurement> _measurements = new List<TMeasurement>();
-  private byte _retryCounter;
   private Status _status;
   private Timer? _timer;
   private bool _disposed;
   private bool _timerDisposed;
+  
+  /// <summary>
+  /// Indicates that an error StatusBox was shown already
+  /// </summary>
+  private bool _errorBoxShown;
   
   #endregion
 
@@ -162,32 +166,42 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
   private async void TimerCallback(object? _)
   {
     var measurement = await _device.GetMeasurementAsync(_httpClient);
-
-    if (measurement.NetworkError)
+    
+    if (measurement.Error || measurement.NetworkError)
     {
-      CurrentStatus = Status.NetworkError;
+      if (measurement.Error && CurrentStatus != Status.Error)
+      {
+        CurrentStatus = Status.Error;
+        _errorBoxShown = false;
+      }
 
-      // Increase the timer interval to 5 seconds when there's an error
+      if (measurement.NetworkError && CurrentStatus != Status.NetworkError)
+      {
+        CurrentStatus = Status.NetworkError;
+        _errorBoxShown = false;
+      }
+      
       if (!_timerDisposed) _timer?.Change(5000, Timeout.Infinite);
-
-      var str = (string)Application.Current.FindResource("DeviceTimedOut")!;
-      if (_retryCounter == 0) MessageBox.Show(str);
-      _retryCounter++;
-
-      return;
-    }
-
-    if (measurement.Error)
-    {
-      if (!_timerDisposed) _timer?.Change(5000, Timeout.Infinite);
-      CurrentStatus = Status.Error;
-      var str = (string)Application.Current.FindResource("DeviceError")!;
+      
+      if (_errorBoxShown) return;
+      
+      string str;
+      if (measurement.Error)
+      {
+        str = (string)Application.Current.FindResource("DeviceError")!;
+      }
+      else
+      {
+        str = (string)Application.Current.FindResource("DeviceTimedOut")!;
+      }
       MessageBox.Show(str);
+      _errorBoxShown = true;
+      
       return;
     }
 
     // If connection was restored, put the previous timer params back
-    if (CurrentStatus == Status.NetworkError) _retryCounter = 0;
+    if (CurrentStatus is Status.NetworkError or Status.Error) _errorBoxShown = false;
 
     if (!_timerDisposed) _timer?.Change(_device.RefreshRate * 1000, Timeout.Infinite);
     CurrentStatus = Status.Fetching;
