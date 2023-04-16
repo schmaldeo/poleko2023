@@ -93,12 +93,13 @@
       VerticalAlignment="Bottom"
       Grid.Row="1"
       Grid.Column="2" />
-    <TextBlock
-      TextWrapping="Wrap"
-      FontSize="25"
-      Text="{Binding Device.LastMeasurement.IsRunning, FallbackValue=False}"
-      Grid.Row="2"
-      Grid.Column="2" />
+    <CheckBox 
+      Grid.Row="2" 
+      Grid.Column="2" 
+      HorizontalAlignment="Center"
+      IsChecked="{Binding Device.LastMeasurement.IsRunning, FallbackValue=False}" 
+      IsHitTestVisible="False"
+      Focusable="False" />
     <Button
       x:Name="FetchButton"
       Grid.Row="0"
