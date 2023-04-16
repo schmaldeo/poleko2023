@@ -22,7 +22,9 @@
     <local:FetchingStatusToBoolConverter x:Key="FetchingStatusToBoolConverter" />
 
     <TextBlock Text="{StaticResource FetchAfterSelecting}" x:Key="WaitingText" />
+    
     <ui:LoadingScreen x:Key="LoadingScreen" HorizontalAlignment="Center" Background="White" />
+    
     <TabControl x:Key="DataTabControl">
       <TabItem Header="{StaticResource Table}">
         <DataGrid

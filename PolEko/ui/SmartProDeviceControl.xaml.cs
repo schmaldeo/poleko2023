@@ -16,8 +16,6 @@ public partial class SmartProDeviceControl
   
   private HistoricalDataStatus _dataStatus = HistoricalDataStatus.Waiting;
 
-  private PlotModel? _plotModel;
-  
   #endregion
 
   #region Constructors
@@ -46,20 +44,11 @@ public partial class SmartProDeviceControl
     }
   }
 
-  public PlotModel PlotModel
-  {
-    get => _plotModel ?? new PlotModel();
-    set
-    {
-      // This is required by OxyPlot design: https://oxyplot.readthedocs.io/en/latest/common-tasks/refresh-plot.html
-      _plotModel?.InvalidatePlot(true);
-      _plotModel = value;
-    }
-  }
-  
+  public PlotModel? PlotModel { get; set; }
+
   #endregion
   
-  #region Methods
+  #region Event handlers
 
   private async void Button_Click(object sender, RoutedEventArgs e)
   {
@@ -76,19 +65,7 @@ public partial class SmartProDeviceControl
         (DateTime)EndingDatePicker.Value, _device);
     DataStatus = HistoricalDataStatus.Showing;
     Measurements = measurements;
-
-    var plotModel = new PlotModel();
-
-
-    plotModel.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom, Title = "Time" });
-    plotModel.Axes.Add(new LinearAxis
-    {
-      Position = AxisPosition.Left,
-      Title = "Temperature",
-      MinimumRange = 30,
-      MaximumRange = 40
-    });
-
+    
     // Use LineSeries with a Decimator because the performance is tragic without it when amount of data is big. Tradeoff
     // is that there will be a line between 2 points if there's missing data. That's something that could be solved by
     // filling the gaps with Double.NaN.
@@ -96,14 +73,32 @@ public partial class SmartProDeviceControl
     {
       Decimator = Decimator.Decimate
     };
-
-
     foreach (var measurement in measurements)
       lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(measurement.TimeStamp), Math.Round(
         (float)measurement.Temperature / 100, 2)));
+    
 
-    plotModel.Series.Add(lineSeries);
-    PlotModel = plotModel;
+    if (PlotModel is null)
+    {
+      PlotModel = new PlotModel();
+      PlotModel.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom, Title = "Time" });
+      PlotModel.Axes.Add(new LinearAxis
+      {
+        Position = AxisPosition.Left,
+        Title = "Temperature",
+        MinimumRange = 30,
+        MaximumRange = 40
+      });
+      
+      PlotModel.Series.Add(lineSeries);
+    }
+    else
+    {
+      PlotModel.Series.RemoveAt(0);
+      PlotModel.Series.Add(lineSeries);
+      
+      PlotModel.InvalidatePlot(true);
+    }
   }
   
   #endregion
