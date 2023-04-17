@@ -328,26 +328,27 @@ public class SmartProDevice : Device<SmartProMeasurement, SmartProDeviceControl>
 }
 
 // ReSharper disable once ClassNeverInstantiated.Global
-public class ExampleDevice : Device<ExampleMeasurement, ExampleDeviceControl>
-{
-  #region Constructor
-  
-  public ExampleDevice(IPAddress ipAddress, ushort port, string? id = null)
-    : base(ipAddress, port, id)
-  {
-  }
-  
-  #endregion
+// public class ExampleDevice : Device<ExampleMeasurement, ExampleDeviceControl>
+// {
+//   #region Constructor
+//   
+//   public ExampleDevice(IPAddress ipAddress, ushort port, string? id = null)
+//     : base(ipAddress, port, id)
+//   {
+//   }
+//   
+//   #endregion
+//
+//   #region Overrides
+//   
+//   public override string Model => "Example Device";
+//
+//   public override string Description => "Device used for presentation";
+//   
+//   #endregion
+// }
 
-  #region Overrides
-  
-  public override string Model => "Example Device";
-
-  public override string Description => "Device used for presentation";
-  
-  #endregion
-}
-
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public class DeviceModelAttribute : Attribute
 {
   public string Model { get; }
