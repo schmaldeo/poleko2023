@@ -92,10 +92,12 @@ public static class Database
           }
           catch (KeyNotFoundException)
           {
-            const string errorMsg =
-              "Invalid device type value in database. Check if all types are correctly added to _registeredDeviceTypes in App.xaml.cs.";
+            var errorMsg =
+              $"Invalid device type '{reader["Type"]}' in the database. Not initialising {reader[nameof(Device.IpAddress)]}:{reader[nameof(Device.Port)]}";
             MessageBox.Show(errorMsg);
-            throw;
+            // Not rethrowing the exception but rather continuing without the device makes it so that the database file
+            // is portable between different versions
+            continue;
           }
 
           var ipAddress = IPAddress.Parse((string)reader[nameof(Device.IpAddress)]);
