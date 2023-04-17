@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -28,23 +29,8 @@ public partial class MainWindow : INotifyPropertyChanged
   
   #endregion
 
-  #region Properties
-
-  public bool IsDeviceOpen
-  {
-    get => _isDeviceOpen;
-    set
-    {
-      _isDeviceOpen = value;
-      OnPropertyChanged();
-    }
-  }
-
-  #endregion
-
   #region Fields
   
-  private Device? _currentDevice;
   private IDeviceControl<Device>? _deviceInfo;
   private HttpClient? _httpClient;
   private bool _isDeviceOpen;
@@ -74,33 +60,61 @@ public partial class MainWindow : INotifyPropertyChanged
   
   #region Properties
   
+  /// <summary>
+  /// Describes what types of Devices exist together with their string representation
+  /// </summary>
   public Dictionary<string, Type>? Types
   {
     get => (Dictionary<string, Type>)GetValue(TypesProperty);
     init => SetValue(TypesProperty, value);
   }
 
+  /// <summary>
+  /// Describes what devices exist in the database and are therefore going to be displayed on the side panel
+  /// </summary>
   public ObservableCollection<Device>? Devices
   {
     get => (ObservableCollection<Device>)GetValue(DevicesProperty);
     set => SetValue(DevicesProperty, value);
   }
 
+  /// <summary>
+  /// Describes what devices are currently open
+  /// </summary>
   public ObservableCollection<TabItem>? OpenDevices
   {
     get => (ObservableCollection<TabItem>)GetValue(OpenDevicesProperty);
     set => SetValue(OpenDevicesProperty, value);
   }
 
+  /// <summary>
+  /// Describes a currently selected DeviceControl
+  /// </summary>
   public TabItem? SelectedDeviceControl
   {
     get => (TabItem)GetValue(SelectedDeviceControlProperty);
     set => SetValue(SelectedDeviceControlProperty, value);
   }
 
+  /// <summary>
+  /// Describes a Device and a TabItem associated with it
+  /// </summary>
   private Dictionary<Device, TabItem> DeviceControls { get; } = new();
 
+  /// <summary>
+  /// Describes Type of UserControl associated with a Type of device
+  /// </summary>
   public Dictionary<Type, Type>? DeviceAssociatedControls { get; init; }
+  
+  public bool IsDeviceOpen
+  {
+    get => _isDeviceOpen;
+    set
+    {
+      _isDeviceOpen = value;
+      OnPropertyChanged();
+    }
+  }
   
   #endregion
   
@@ -111,8 +125,9 @@ public partial class MainWindow : INotifyPropertyChanged
     // Check for potential invalid args
     if (sender is not ListBoxItem value)
       throw new ArgumentException("You can only use this method to handle ListBoxItem Click event");
+    value.IsSelected = false;
     if (value.Content is not Device incomingDevice)
-      throw new ArgumentException("Button's content can only be of type Device");
+      throw new ArgumentException("ListBoxItem's content can only be of type Device");
     
     // Switch to device's tab if its control was already initialised
     if (DeviceControls.ContainsKey(incomingDevice))
@@ -121,15 +136,29 @@ public partial class MainWindow : INotifyPropertyChanged
       return;
     }
 
-    // Disallow reopening a device that's currently open
-    if (_currentDevice is not null && _currentDevice.Equals(incomingDevice)) return;
-    
     var httpClient = _httpClient ??= new HttpClient();
 
     var t = incomingDevice.GetType();
     var instance =
       (IDeviceControl<Device>)Activator.CreateInstance(DeviceAssociatedControls![t], incomingDevice, httpClient)!;
     instance.DeviceRemoved += RemoveDevice;
+    instance.DeviceClosed += delegate(object? _, DeviceRemovedEventArgs args)
+    {
+      // Find TabItem with Content property of control which wants to close
+      var control = OpenDevices!.Where(x => x == DeviceControls[args.Device]).Select(x => x).FirstOrDefault();
+      if (control is null) return;
+      OpenDevices!.Remove(control);
+      DeviceControls.Remove(args.Device);
+      
+      // If the closed device was the only one open, show the waiting screen, otherwise open the window which was opened
+      // the latest
+      if (OpenDevices.Count == 0)
+      {
+        IsDeviceOpen = false;
+        return;
+      }
+      SelectedDeviceControl = OpenDevices[^1];
+    };
     Closing += async delegate { await instance.DisposeAsync(); };
     _deviceInfo = instance;
 
@@ -142,8 +171,7 @@ public partial class MainWindow : INotifyPropertyChanged
     };
 
     DeviceControls[incomingDevice] = item;
-
-    _currentDevice = incomingDevice;
+    
     OpenDevices ??= new ObservableCollection<TabItem>();
     OpenDevices.Add(item);
     IsDeviceOpen = true;

@@ -136,6 +136,13 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
   {
     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
   }
+
+  public event EventHandler<DeviceRemovedEventArgs>? DeviceClosed;
+
+  protected void OnDeviceClosed()
+  {
+    DeviceClosed?.Invoke(this, new DeviceRemovedEventArgs(_device));
+  }
   
   #endregion
 
@@ -224,12 +231,18 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
     CurrentStatus = Status.Ready;
   }
 
-  protected void DeleteDevice_Click(object sender, RoutedEventArgs e)
+  protected async void DeleteDevice_Click(object sender, RoutedEventArgs e)
   {
     var DeleteBoxText = (string)Application.Current.FindResource("DeleteBoxText")!;
     var messageBoxResult = MessageBox.Show(DeleteBoxText, "", MessageBoxButton.YesNo);
     if (messageBoxResult != MessageBoxResult.Yes) return;
     OnDeviceRemoved();
+    await DisposeAsync();
+  }
+
+  protected void CloseDevice_Click(object sender, RoutedEventArgs e)
+  {
+    OnDeviceClosed();
     Dispose();
   }
 
@@ -265,6 +278,7 @@ public interface IDeviceControl<out T> : IDisposable, IAsyncDisposable, INotifyP
   HttpClient? HttpClient { get; set; }
 
   event EventHandler<DeviceRemovedEventArgs>? DeviceRemoved;
+  event EventHandler<DeviceRemovedEventArgs>? DeviceClosed;
 }
 
 public class DeviceRemovedEventArgs : EventArgs

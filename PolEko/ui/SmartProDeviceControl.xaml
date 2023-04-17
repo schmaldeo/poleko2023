@@ -103,12 +103,12 @@
     <Button
       x:Name="FetchButton"
       Grid.Row="0"
+      Grid.Column="3"
       Content="{StaticResource Fetch}"
       HorizontalAlignment="Left"
       VerticalAlignment="Center"
       Click="FetchData_Click"
-      IsEnabled="{Binding CurrentStatus, Converter={StaticResource SmartProStatusToBoolConverter}}"
-      Grid.Column="3" />
+      IsEnabled="{Binding CurrentStatus, Converter={StaticResource SmartProStatusToBoolConverter}}" />
     <Button
       Grid.Row="0"
       Grid.Column="3"
@@ -121,9 +121,17 @@
       Grid.Row="0"
       Grid.Column="0"
       Content="{StaticResource Delete}"
-      HorizontalAlignment="Center"
+      HorizontalAlignment="Right"
       VerticalAlignment="Center"
       Click="DeleteDevice_Click" />
+    <!-- TODO: translation -->
+    <Button
+      Grid.Row="0"
+      Grid.Column="0"
+      Content="Close"
+      HorizontalAlignment="Left"
+      VerticalAlignment="Center"
+      Click="CloseDevice_Click" />
 
     <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" />
 
