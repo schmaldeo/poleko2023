@@ -177,10 +177,11 @@ public partial class MainWindow : INotifyPropertyChanged
   {
     IpPrompt prompt = new()
     {
-      Types = Types
+      Types = Types,
+      Owner = this
     };
     prompt.DeviceAdded += AddNewDevice;
-    prompt.Show();
+    prompt.ShowDialog();
   }
   
   private void OnPropertyChanged([CallerMemberName] string? name = null)
