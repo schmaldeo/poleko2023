@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -81,7 +82,9 @@ public partial class IpPrompt
 
     var ip = IPAddress.Parse(IpTextBox.Text);
 
-    var type = Types![TypesComboBox.Text];
+    // Selects the type from dictionary matching it with SelectedValue property on the ComboBox
+    var type = Types!.Where(x => x.Value
+      .Equals(TypesComboBox.SelectedValue)).Select(x => x.Value).First();
 
     DeviceAdded?.Invoke(this, new DeviceAddedEventArgs(ip, port, id, type));
 
