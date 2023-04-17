@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:local="clr-namespace:PolEko.ui"
         mc:Ignorable="d"
         MinHeight="100"
         MinWidth="300"
@@ -13,6 +14,9 @@
         ResizeMode="NoResize"
         Title="{StaticResource AddDevice}" Height="170" Width="800"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
+  <Window.Resources>
+    <local:DeviceClassToModelConverter x:Key="DeviceClassToModelConverter" />
+  </Window.Resources>
   <Grid Margin="10">
     <Grid.Resources>
       <Style TargetType="{x:Type Label}">
@@ -64,7 +68,7 @@
 
     <Label Grid.Column="0" Grid.Row="3" Content="{StaticResource IpPromptType}" />
     <ComboBox Grid.Column="1" Grid.Row="3" Margin="0 0 0 5" Name="TypesComboBox"
-              ItemsSource="{Binding Path=Types}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedIndex="0" />
+              ItemsSource="{Binding Path=Types, Converter={StaticResource DeviceClassToModelConverter}}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedIndex="0" />
 
     <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
       <ui:Button Click="OkButton_Click" IsDefault="True">OK</ui:Button>

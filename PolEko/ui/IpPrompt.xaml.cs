@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace PolEko.ui;
@@ -129,5 +131,40 @@ public partial class IpPrompt
     public ushort Port { get; }
     public string? Id { get; }
     public Type Type { get; }
+  }
+}
+
+[ValueConversion(typeof(Dictionary<string, Type>), typeof(Dictionary<string, Type>))]
+public class DeviceClassToModelConverter : IValueConverter
+{
+  public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+  {
+    if (value is not Dictionary<string, Type> dict)
+    {
+      return new Dictionary<string, Type>();
+    }
+    var newDict = new Dictionary<string, Type>();
+    foreach (var (_, type) in dict)
+    {
+      // If a device doesn't specify the DeviceModelAttribute, use type's name
+      string name;
+      try
+      {
+        var model = (DeviceModelAttribute)type.GetCustomAttributes(typeof(DeviceModelAttribute), false)[0];
+        name = model.Model;
+      }
+      catch (IndexOutOfRangeException)
+      {
+        name = type.Name;
+      }
+      newDict[name] = type;
+    }
+
+    return newDict;
+  }
+
+  public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+  {
+    throw new NotImplementedException();
   }
 }

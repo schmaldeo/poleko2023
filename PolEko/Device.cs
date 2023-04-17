@@ -284,6 +284,7 @@ public abstract class Device<TMeasurement, TControl> : Device, INotifyPropertyCh
 ///   \~polish Urządzenie mierzące temperaturę
 /// </summary>
 // ReSharper disable once ClassNeverInstantiated.Global
+[DeviceModel("POL-EKO Smart Pro")]
 public class SmartProDevice : Device<SmartProMeasurement, SmartProDeviceControl>
 {
   #region Constructor
@@ -345,4 +346,14 @@ public class ExampleDevice : Device<ExampleMeasurement, ExampleDeviceControl>
   public override string Description => "Device used for presentation";
   
   #endregion
+}
+
+public class DeviceModelAttribute : Attribute
+{
+  public string Model { get; }
+
+  public DeviceModelAttribute(string model)
+  {
+    Model = model;
+  }
 }
