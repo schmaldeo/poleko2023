@@ -10,6 +10,16 @@
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
         Title="Poleko">
+  <Window.Resources>
+    <TabControl x:Key="DeviceControls" ItemsSource="{Binding OpenDevices}"
+                SelectedItem="{Binding SelectedDeviceControl}" />
+    
+    <TextBlock x:Key="WaitingBlock" 
+               VerticalAlignment="Center" 
+               HorizontalAlignment="Center" 
+               FontSize="24" 
+               Text="{StaticResource MainWindowWaiting}" />
+  </Window.Resources>
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="*" />
@@ -45,7 +55,21 @@
     </StackPanel>
 
     <GridSplitter Grid.Column="0" Grid.RowSpan="3" Width="3" />
-    <TabControl Grid.Row="0" Grid.Column="1" ItemsSource="{Binding OpenDevices}"
-                SelectedItem="{Binding SelectedDeviceControl}" />
+    
+    <ContentControl Grid.Row="0" Grid.Column="1">
+      <ContentControl.Style>
+        <Style TargetType="ContentControl">
+          <Setter Property="Content"
+                  Value="{StaticResource WaitingBlock}" />
+          <Style.Triggers>
+            <DataTrigger Binding="{Binding IsDeviceOpen}"
+                         Value="True">
+              <Setter Property="Content"
+                      Value="{DynamicResource DeviceControls}" />
+            </DataTrigger>
+          </Style.Triggers>
+        </Style>
+      </ContentControl.Style>
+    </ContentControl>
   </Grid>
 </Window>

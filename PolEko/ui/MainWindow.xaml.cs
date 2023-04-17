@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using PolEko.util;
 
 namespace PolEko.ui;
 
-public partial class MainWindow
+public partial class MainWindow : INotifyPropertyChanged
 {
   #region DependencyProperties 
   
@@ -26,12 +28,27 @@ public partial class MainWindow
   
   #endregion
 
+  #region Properties
+
+  public bool IsDeviceOpen
+  {
+    get => _isDeviceOpen;
+    set
+    {
+      _isDeviceOpen = value;
+      OnPropertyChanged();
+    }
+  }
+
+  #endregion
+
   #region Fields
   
   private Device? _currentDevice;
   private IDeviceControl<Device>? _deviceInfo;
   private HttpClient? _httpClient;
-  
+  private bool _isDeviceOpen;
+
   #endregion
 
   #region Constructors
@@ -49,6 +66,12 @@ public partial class MainWindow
   
   #endregion
 
+  #region Events
+  
+  public event PropertyChangedEventHandler? PropertyChanged;
+  
+  #endregion
+  
   #region Properties
   
   public Dictionary<string, Type>? Types
@@ -123,6 +146,7 @@ public partial class MainWindow
     _currentDevice = incomingDevice;
     OpenDevices ??= new ObservableCollection<TabItem>();
     OpenDevices.Add(item);
+    IsDeviceOpen = true;
     SelectedDeviceControl = item;
   }
 
@@ -157,6 +181,11 @@ public partial class MainWindow
     };
     prompt.DeviceAdded += AddNewDevice;
     prompt.Show();
+  }
+  
+  private void OnPropertyChanged([CallerMemberName] string? name = null)
+  {
+    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
   }
   
   #endregion

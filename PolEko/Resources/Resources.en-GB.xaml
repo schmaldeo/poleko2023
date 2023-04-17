@@ -38,4 +38,5 @@
   <system:String x:Key="Error">Error</system:String>
   <system:String x:Key="NetworkError">Network error</system:String>
   <system:String x:Key="FetchAfterSelecting">Press fetch after selecting beginning and end dates</system:String>
+  <system:String x:Key="MainWindowWaiting">Otwórz urządzenie lub dodaj nowe klikając przycisk + na bocznym panelu</system:String>
 </ResourceDictionary>
