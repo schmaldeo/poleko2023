@@ -45,7 +45,8 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
 
   #region Fields
   
-  // TODO: type safety
+  // Even though it is of dynamic type, it cannot be assigned to something that isn't of type Device, as it's 
+  // assigned from the Device DependencyProperty that's of type Device itself
   protected dynamic _device = null!;
 
   protected HttpClient _httpClient = null!;
@@ -70,7 +71,7 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
     Loaded += delegate
     {
       _httpClient = HttpClient ?? new HttpClient();
-      _device = Device;
+      _device = Device ?? throw new NullReferenceException($"Device cannot be null in DeviceControl`3");
     };
   }
 
@@ -106,7 +107,7 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
     }
   }
 
-  public TDevice Device
+  public TDevice? Device
   {
     get => (TDevice)GetValue(DeviceProperty);
     init => SetValue(DeviceProperty, value);
@@ -260,7 +261,7 @@ public enum HistoricalDataStatus
 // Purpose behind this interface was mainly to be able to cast DeviceControl to something in MainWindow.
 public interface IDeviceControl<out T> : IDisposable, IAsyncDisposable, INotifyPropertyChanged where T : Device
 {
-  T Device { get; }
+  T? Device { get; }
   HttpClient? HttpClient { get; set; }
 
   event EventHandler<DeviceRemovedEventArgs>? DeviceRemoved;
