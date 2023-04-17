@@ -39,4 +39,5 @@
   <system:String x:Key="NetworkError">Błąd sieci</system:String>
   <system:String x:Key="FetchAfterSelecting">Wciśnij pobierz po wybraniu daty początkowej i końcowej</system:String>
   <system:String x:Key="MainWindowWaiting">Otwórz urządzenie lub dodaj nowe klikając przycisk + na bocznym panelu</system:String>
+  <system:String x:Key="DeleteBoxText">Czy na pewno chcesz usunąć to urządzenie?</system:String>
 </ResourceDictionary>

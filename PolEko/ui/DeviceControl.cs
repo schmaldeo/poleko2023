@@ -138,7 +138,7 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
   
   #endregion
 
-  #region Methods
+  #region Methods, Event handlers
   
   public async ValueTask DisposeAsync()
   {
@@ -225,6 +225,9 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
 
   protected void DeleteDevice_Click(object sender, RoutedEventArgs e)
   {
+    var DeleteBoxText = (string)Application.Current.FindResource("DeleteBoxText")!;
+    var messageBoxResult = MessageBox.Show(DeleteBoxText, "", MessageBoxButton.YesNo);
+    if (messageBoxResult != MessageBoxResult.Yes) return;
     OnDeviceRemoved();
     Dispose();
   }
