@@ -124,11 +124,10 @@
       HorizontalAlignment="Right"
       VerticalAlignment="Center"
       Click="DeleteDevice_Click" />
-    <!-- TODO: translation -->
     <Button
       Grid.Row="0"
       Grid.Column="0"
-      Content="Close"
+      Content="{StaticResource Close}"
       HorizontalAlignment="Left"
       VerticalAlignment="Center"
       Click="CloseDevice_Click" />

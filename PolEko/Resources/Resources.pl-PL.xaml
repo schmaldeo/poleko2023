@@ -5,6 +5,7 @@
 
   <system:String x:Key="Cancel">Anuluj</system:String>
   <system:String x:Key="Delete">Usuń</system:String>
+  <system:String x:Key="Close">Zamknij</system:String>
   <system:String x:Key="Devices">Urządzenia</system:String>
   <system:String x:Key="AddDevice">Dodaj urządzenie</system:String>
   <system:String x:Key="IpPromptDeviceIp">IP urządzenia:</system:String>
