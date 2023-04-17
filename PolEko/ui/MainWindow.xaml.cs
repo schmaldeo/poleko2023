@@ -171,6 +171,10 @@ public partial class MainWindow : INotifyPropertyChanged
     await Database.RemoveDeviceAsync(args.Device);
     Devices!.Remove(args.Device);
     OpenDevices!.Remove(DeviceControls[args.Device]);
+    if (OpenDevices!.Count == 0)
+    {
+      IsDeviceOpen = false;
+    }
   }
 
   private void AddNewDevice_Click(object sender, RoutedEventArgs e)
