@@ -38,7 +38,7 @@
       <ListBox ItemsSource="{Binding Devices}">
         <ListBox.ItemContainerStyle>
           <Style TargetType="ListBoxItem">
-            <EventSetter Event="Selected" Handler="HandleDeviceChange" />
+            <EventSetter Event="Selected" Handler="HandleDisplayedDeviceChange" />
           </Style>
         </ListBox.ItemContainerStyle>
       </ListBox>

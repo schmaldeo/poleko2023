@@ -83,18 +83,24 @@ public partial class MainWindow
   
   #region Event handlers
 
-  private void HandleDeviceChange(object sender, RoutedEventArgs e)
+  private void HandleDisplayedDeviceChange(object sender, RoutedEventArgs e)
   {
     // Check for potential invalid args
     if (sender is not ListBoxItem value)
       throw new ArgumentException("You can only use this method to handle ListBoxItem Click event");
     if (value.Content is not Device incomingDevice)
       throw new ArgumentException("Button's content can only be of type Device");
+    
+    // Switch to device's tab if its control was already initialised
+    if (DeviceControls.ContainsKey(incomingDevice))
+    {
+      SelectedDeviceControl = DeviceControls[incomingDevice];
+      return;
+    }
 
     // Disallow reopening a device that's currently open
     if (_currentDevice is not null && _currentDevice.Equals(incomingDevice)) return;
-
-    _currentDevice = incomingDevice;
+    
     var httpClient = _httpClient ??= new HttpClient();
 
     var t = incomingDevice.GetType();
@@ -105,21 +111,16 @@ public partial class MainWindow
     _deviceInfo = instance;
 
 
-    var formattedHeader = $"{_currentDevice.IpAddress}:{_currentDevice.Port}";
+    var formattedHeader = $"{incomingDevice.IpAddress}:{incomingDevice.Port}";
     var item = new TabItem
     {
       Content = _deviceInfo,
       Header = formattedHeader
     };
 
-    if (DeviceControls.ContainsKey(incomingDevice))
-    {
-      SelectedDeviceControl = DeviceControls[incomingDevice];
-      return;
-    }
-
     DeviceControls[incomingDevice] = item;
 
+    _currentDevice = incomingDevice;
     OpenDevices ??= new ObservableCollection<TabItem>();
     OpenDevices.Add(item);
     SelectedDeviceControl = item;
