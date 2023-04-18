@@ -165,7 +165,7 @@ public abstract class Device<TMeasurement, TControl> : Device, INotifyPropertyCh
   
   #endregion
 
-  #region Fields
+  #region Properties
   
   /// <summary>
   /// Last <typeparamref name="TMeasurement"/> in which <c>Error</c> and <c>NetworkError</c> properties are <c>false</c>
@@ -260,6 +260,7 @@ public abstract class Device<TMeasurement, TControl> : Device, INotifyPropertyCh
   {
     if (MeasurementBuffer.Size == 0) return;
     await Database.InsertMeasurementsAsync<TMeasurement>(MeasurementBuffer.GetCurrentIteration(), this);
+    MeasurementBuffer.Clear();
   }
   
   #endregion

@@ -268,10 +268,10 @@ public static class Database
       {
         await command.ExecuteNonQueryAsync();
       }
-      catch (DbException e)
+      catch (DbException)
       {
         var str = (string)Application.Current.FindResource("ErrorInsertingIntoDb")!;
-        MessageBox.Show($"{str} \n {e.Message}");
+        MessageBox.Show($"{str}");
       }
     }
 

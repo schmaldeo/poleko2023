@@ -82,6 +82,13 @@ public class Buffer<T> : IEnumerable<T>, INotifyCollectionChanged where T : Meas
     OnCollectionChanged(NotifyCollectionChangedAction.Add, item);
   }
 
+  public void Clear()
+  {
+    _buffer.Clear();
+    _size.Reset();
+    if (_overflownOnce) _overflownOnce = false;
+  }
+
   public IEnumerable<T> GetCurrentIteration()
   {
     if (!_overflownOnce) return _buffer;
@@ -96,13 +103,6 @@ public class Buffer<T> : IEnumerable<T>, INotifyCollectionChanged where T : Meas
 
   private class BufferSize
   {
-    #region Fields
-    
-    public readonly uint Limit;
-    public uint Count;
-    
-    #endregion
-
     #region Constructors
 
     public BufferSize(uint limit)
@@ -110,6 +110,14 @@ public class Buffer<T> : IEnumerable<T>, INotifyCollectionChanged where T : Meas
       Limit = limit;
     }
     
+    #endregion
+    
+    #region Properties
+    
+    public uint Limit { get; }
+
+    public uint Count { get; private set; }
+
     #endregion
 
     #region Events
@@ -125,6 +133,11 @@ public class Buffer<T> : IEnumerable<T>, INotifyCollectionChanged where T : Meas
       Count++;
       if (Count < Limit) return;
       BufferOverflow?.Invoke(this, EventArgs.Empty);
+      Count = 0;
+    }
+
+    public void Reset()
+    {
       Count = 0;
     }
     
