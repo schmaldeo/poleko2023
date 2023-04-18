@@ -14,6 +14,11 @@ public class Buffer<T> : IEnumerable<T>, INotifyCollectionChanged where T : Meas
   #region Fields
 
   private readonly Queue<T> _buffer = new();
+  
+  /// <summary>
+  /// Indicates that buffer <see cref="Queue{T}"/> is full and now when you add an item the first item in the <see cref="Queue{T}"/>
+  /// will be dequeued on top of the added item being enqueued
+  /// </summary>
   private bool _overflownOnce;
   private BufferSize _size;
 

@@ -20,6 +20,7 @@
                FontSize="24" 
                Text="{StaticResource MainWindowWaiting}" />
   </Window.Resources>
+  
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="*" />

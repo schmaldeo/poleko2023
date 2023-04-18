@@ -281,8 +281,7 @@ public abstract class Device<TMeasurement, TControl> : Device, INotifyPropertyCh
 }
 
 /// <summary>
-///   \~english Device that logs temperature
-///   \~polish Urządzenie mierzące temperaturę
+///   Device that logs temperature
 /// </summary>
 // ReSharper disable once ClassNeverInstantiated.Global
 [DeviceModel("POL-EKO Smart Pro")]
