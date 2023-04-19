@@ -21,18 +21,14 @@ public partial class MainWindow : INotifyPropertyChanged
   public static readonly DependencyProperty DevicesProperty =
     DependencyProperty.Register(nameof(Devices), typeof(ObservableCollection<Device>), typeof(MainWindow));
 
-  public static readonly DependencyProperty OpenDevicesProperty =
-    DependencyProperty.Register(nameof(OpenDevices), typeof(ObservableCollection<TabItem>), typeof(MainWindow));
-
-  public static readonly DependencyProperty SelectedDeviceControlProperty =
-    DependencyProperty.Register(nameof(SelectedDeviceControl), typeof(TabItem), typeof(MainWindow));
-  
   #endregion
 
   #region Fields
   
   private IDeviceControl<Device>? _deviceInfo;
   private HttpClient? _httpClient;
+  private TabItem? _selectedDeviceControl;
+  private ObservableCollection<TabItem>? _openDevices;
   private bool _isDeviceOpen;
 
   #endregion
@@ -49,12 +45,6 @@ public partial class MainWindow : INotifyPropertyChanged
         throw new ArgumentException("You must pass DeviceAssociatedControls to MainWindow");
     };
   }
-  
-  #endregion
-
-  #region Events
-  
-  public event PropertyChangedEventHandler? PropertyChanged;
   
   #endregion
   
@@ -83,8 +73,12 @@ public partial class MainWindow : INotifyPropertyChanged
   /// </summary>
   public ObservableCollection<TabItem>? OpenDevices
   {
-    get => (ObservableCollection<TabItem>)GetValue(OpenDevicesProperty);
-    set => SetValue(OpenDevicesProperty, value);
+    get => _openDevices;
+    private set
+    {
+      _openDevices = value;
+      OnPropertyChanged();
+    }
   }
 
   /// <summary>
@@ -92,8 +86,12 @@ public partial class MainWindow : INotifyPropertyChanged
   /// </summary>
   public TabItem? SelectedDeviceControl
   {
-    get => (TabItem)GetValue(SelectedDeviceControlProperty);
-    set => SetValue(SelectedDeviceControlProperty, value);
+    get => _selectedDeviceControl;
+    set
+    {
+      _selectedDeviceControl = value;
+      OnPropertyChanged();
+    }
   }
 
   /// <summary>
@@ -117,7 +115,13 @@ public partial class MainWindow : INotifyPropertyChanged
   }
   
   #endregion
+
+  #region Events
   
+  public event PropertyChangedEventHandler? PropertyChanged;
+  
+  #endregion
+
   #region Event handlers
 
   private void HandleDisplayedDeviceChange(object sender, RoutedEventArgs e)
