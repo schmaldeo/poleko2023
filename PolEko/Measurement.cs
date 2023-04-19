@@ -7,20 +7,20 @@ namespace PolEko;
 public abstract class Measurement
 {
   /// <summary>
-  /// ~english Indicates a network error
-  /// ~polish Oznacza błąd sieci
+  /// \~english Indicates a network error
+  /// \~polish Oznacza błąd sieci
   /// </summary>
   public bool NetworkError { get; init; }
   
   /// <summary>
-  /// ~english Indicates a device-side error
-  /// ~polish Oznacza błąd urządzenia
+  /// \~english Indicates a device-side error
+  /// \~polish Oznacza błąd urządzenia
   /// </summary>
   public bool Error { get; init; }
 
   /// <summary>
-  /// ~english Indicates when the request was sent to the device
-  /// ~polish Oznacza, kiedy zapytanie zostało wysłane do urządzenia
+  /// \~english Indicates when the request was sent to the device
+  /// \~polish Oznacza, kiedy zapytanie zostało wysłane do urządzenia
   /// </summary>
   public DateTime TimeStamp { get; init; } = DateTime.Now;
 

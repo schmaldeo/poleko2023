@@ -105,8 +105,8 @@ public partial class SmartProDeviceControl
 }
 
 /// <summary>
-/// ~english Divides an integer by 100 and converts it to a string with 2 decimal places
-/// ~polish Dzieli liczbę przez 100 i konwertuje ją na ciąg znaków z dwoma miejscami po przecinku
+/// \~english Divides an integer by 100 and converts it to a string with 2 decimal places
+/// \~polish Dzieli liczbę przez 100 i konwertuje ją na ciąg znaków z dwoma miejscami po przecinku
 /// </summary>
 [ValueConversion(typeof(int), typeof(string))]
 public class SmartProTemperatureConverter : IValueConverter
@@ -127,8 +127,8 @@ public class SmartProTemperatureConverter : IValueConverter
 }
 
 /// <summary>
-/// ~english Converts status of <see cref="DeviceControl"/> to a string
-/// ~polish Konwertuje status <see cref="DeviceControl"/> na ciąg znaków
+/// \~english Converts status of <see cref="DeviceControl"/> to a string
+/// \~polish Konwertuje status <see cref="DeviceControl"/> na ciąg znaków
 /// </summary>
 [ValueConversion(typeof(DeviceControl.Status), typeof(string))]
 public class DeviceStatusToStringConverter : IValueConverter
@@ -153,8 +153,8 @@ public class DeviceStatusToStringConverter : IValueConverter
 }
 
 /// <summary>
-/// ~english Converts <see cref="HistoricalDataStatus"/> to a boolean
-/// ~polish Konwertuje status <see cref="HistoricalDataStatus"/> do typu logicznego
+/// \~english Converts <see cref="HistoricalDataStatus"/> to a boolean
+/// \~polish Konwertuje status <see cref="HistoricalDataStatus"/> do typu logicznego
 /// </summary>
 [ValueConversion(typeof(HistoricalDataStatus), typeof(bool))]
 public class FetchingStatusToBoolConverter : IValueConverter

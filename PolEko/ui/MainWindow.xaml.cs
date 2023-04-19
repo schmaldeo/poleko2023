@@ -51,9 +51,9 @@ public partial class MainWindow : INotifyPropertyChanged
   #region Properties
   
   /// <summary>
-  /// ~english <see cref="Dictionary{TKey,TValue}"/> of <see cref="Type"/>s of <see cref="Device{TMeasurement,TControl}"/> and the
+  /// \~english <see cref="Dictionary{TKey,TValue}"/> of <see cref="Type"/>s of <see cref="Device{TMeasurement,TControl}"/> and the
   /// <c>Name</c> property of that Type as <c>TKey</c>
-  /// ~polish Słownik typów urządzeń jako <c>TKey</c> i ich reprezentacja typu string
+  /// \~polish Słownik typów urządzeń jako <c>TKey</c> i ich reprezentacja typu string
   /// </summary>
   public Dictionary<string, Type>? Types
   {
@@ -62,8 +62,8 @@ public partial class MainWindow : INotifyPropertyChanged
   }
 
   /// <summary>
-  /// ~english Describes what devices exist in the database and are therefore going to be displayed on the side panel
-  /// ~polish Określa, jakie typy urządzeń istnieją w bazie danych. Te będą wyświetlone na bocznym panelu
+  /// \~english Describes what devices exist in the database and are therefore going to be displayed on the side panel
+  /// \~polish Określa, jakie typy urządzeń istnieją w bazie danych. Te będą wyświetlone na bocznym panelu
   /// </summary>
   public ObservableCollection<Device>? Devices
   {
@@ -72,8 +72,8 @@ public partial class MainWindow : INotifyPropertyChanged
   }
 
   /// <summary>
-  /// ~english Describes what devices are currently open
-  /// ~polish Określa, jakie urządzenia są obecnie otwarte
+  /// \~english Describes what devices are currently open
+  /// \~polish Określa, jakie urządzenia są obecnie otwarte
   /// </summary>
   public ObservableCollection<TabItem>? OpenDevices
   {
@@ -86,8 +86,8 @@ public partial class MainWindow : INotifyPropertyChanged
   }
 
   /// <summary>
-  /// ~english Describes a currently selected DeviceControl
-  /// ~polish Określa obecnie otwarte urządzenie
+  /// \~english Describes a currently selected DeviceControl
+  /// \~polish Określa obecnie otwarte urządzenie
   /// </summary>
   public TabItem? SelectedDeviceControl
   {
@@ -100,20 +100,20 @@ public partial class MainWindow : INotifyPropertyChanged
   }
 
   /// <summary>
-  /// ~english Describes a Device and a TabItem associated with it
-  /// ~polish Określa urządzenie <see cref="Device"/> i <see cref="TabItem"/> powiązany z nim
+  /// \~english Describes a Device and a TabItem associated with it
+  /// \~polish Określa urządzenie <see cref="Device"/> i <see cref="TabItem"/> powiązany z nim
   /// </summary>
   private Dictionary<Device, TabItem> DeviceControls { get; } = new();
 
   /// <summary>
-  /// ~english Describes Type of UserControl associated with a Type of device
-  /// ~polish Określa typ UserControl powiązany z typem urządzenia
+  /// \~english Describes Type of UserControl associated with a Type of device
+  /// \~polish Określa typ UserControl powiązany z typem urządzenia
   /// </summary>
   public Dictionary<Type, Type>? DeviceAssociatedControls { get; init; }
   
   /// <summary>
-  /// ~english Indicates whether any device is currently open
-  /// ~polish Określa, czy jakiekolwiek urządzenie jest obecnie otwarte
+  /// \~english Indicates whether any device is currently open
+  /// \~polish Określa, czy jakiekolwiek urządzenie jest obecnie otwarte
   /// </summary>
   public bool DeviceOpen
   {

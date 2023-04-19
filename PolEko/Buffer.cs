@@ -6,8 +6,8 @@ using System.Collections.Specialized;
 namespace PolEko;
 
 /// <summary>
-/// ~english Buffer of <see cref="Measurement"/>s
-/// ~polish Bufor typów <see cref="Measurement"/>
+/// \~english Buffer of <see cref="Measurement"/>s
+/// \~polish Bufor typów <see cref="Measurement"/>
 /// </summary>
 /// <typeparam name="T"><see cref="Measurement"/> type</typeparam>
 public class Buffer<T> : IEnumerable<T>, INotifyCollectionChanged where T : Measurement
@@ -17,9 +17,9 @@ public class Buffer<T> : IEnumerable<T>, INotifyCollectionChanged where T : Meas
   private readonly Queue<T> _buffer = new();
   
   /// <summary>
-  /// ~english Indicates that buffer <see cref="Queue{T}"/> is full and now when you add an item the first item in the <see cref="Queue{T}"/>
+  /// \~english Indicates that buffer <see cref="Queue{T}"/> is full and now when you add an item the first item in the <see cref="Queue{T}"/>
   /// will be dequeued on top of the added item being enqueued
-  /// ~polish Oznacza, że bufor jest pełny i zamiast po prostu dodawać elementy do kolejki, elementy będą również usuwane
+  /// \~polish Oznacza, że bufor jest pełny i zamiast po prostu dodawać elementy do kolejki, elementy będą również usuwane
   /// z jej początku
   /// </summary>
   private bool _overflownOnce;
