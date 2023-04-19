@@ -29,7 +29,7 @@ public partial class MainWindow : INotifyPropertyChanged
   private HttpClient? _httpClient;
   private TabItem? _selectedDeviceControl;
   private ObservableCollection<TabItem>? _openDevices;
-  private bool _isDeviceOpen;
+  private bool _deviceOpen;
 
   #endregion
 
@@ -51,7 +51,9 @@ public partial class MainWindow : INotifyPropertyChanged
   #region Properties
   
   /// <summary>
-  /// Describes what types of Devices exist together with their string representation
+  /// ~english <see cref="Dictionary{TKey,TValue}"/> of <see cref="Type"/>s of <see cref="Device{TMeasurement,TControl}"/> and the
+  /// <c>Name</c> property of that Type as <c>TKey</c>
+  /// ~polish Słownik typów urządzeń jako <c>TKey</c> i ich reprezentacja typu string
   /// </summary>
   public Dictionary<string, Type>? Types
   {
@@ -60,7 +62,8 @@ public partial class MainWindow : INotifyPropertyChanged
   }
 
   /// <summary>
-  /// Describes what devices exist in the database and are therefore going to be displayed on the side panel
+  /// ~english Describes what devices exist in the database and are therefore going to be displayed on the side panel
+  /// ~polish Określa, jakie typy urządzeń istnieją w bazie danych. Te będą wyświetlone na bocznym panelu
   /// </summary>
   public ObservableCollection<Device>? Devices
   {
@@ -69,7 +72,8 @@ public partial class MainWindow : INotifyPropertyChanged
   }
 
   /// <summary>
-  /// Describes what devices are currently open
+  /// ~english Describes what devices are currently open
+  /// ~polish Określa, jakie urządzenia są obecnie otwarte
   /// </summary>
   public ObservableCollection<TabItem>? OpenDevices
   {
@@ -82,7 +86,8 @@ public partial class MainWindow : INotifyPropertyChanged
   }
 
   /// <summary>
-  /// Describes a currently selected DeviceControl
+  /// ~english Describes a currently selected DeviceControl
+  /// ~polish Określa obecnie otwarte urządzenie
   /// </summary>
   public TabItem? SelectedDeviceControl
   {
@@ -95,21 +100,27 @@ public partial class MainWindow : INotifyPropertyChanged
   }
 
   /// <summary>
-  /// Describes a Device and a TabItem associated with it
+  /// ~english Describes a Device and a TabItem associated with it
+  /// ~polish Określa urządzenie <see cref="Device"/> i <see cref="TabItem"/> powiązany z nim
   /// </summary>
   private Dictionary<Device, TabItem> DeviceControls { get; } = new();
 
   /// <summary>
-  /// Describes Type of UserControl associated with a Type of device
+  /// ~english Describes Type of UserControl associated with a Type of device
+  /// ~polish Określa typ UserControl powiązany z typem urządzenia
   /// </summary>
   public Dictionary<Type, Type>? DeviceAssociatedControls { get; init; }
   
-  public bool IsDeviceOpen
+  /// <summary>
+  /// ~english Indicates whether any device is currently open
+  /// ~polish Określa, czy jakiekolwiek urządzenie jest obecnie otwarte
+  /// </summary>
+  public bool DeviceOpen
   {
-    get => _isDeviceOpen;
+    get => _deviceOpen;
     set
     {
-      _isDeviceOpen = value;
+      _deviceOpen = value;
       OnPropertyChanged();
     }
   }
@@ -158,7 +169,7 @@ public partial class MainWindow : INotifyPropertyChanged
       // the latest
       if (OpenDevices.Count == 0)
       {
-        IsDeviceOpen = false;
+        DeviceOpen = false;
         return;
       }
       SelectedDeviceControl = OpenDevices[^1];
@@ -178,7 +189,7 @@ public partial class MainWindow : INotifyPropertyChanged
     
     OpenDevices ??= new ObservableCollection<TabItem>();
     OpenDevices.Add(item);
-    IsDeviceOpen = true;
+    DeviceOpen = true;
     SelectedDeviceControl = item;
   }
 
@@ -205,7 +216,7 @@ public partial class MainWindow : INotifyPropertyChanged
     OpenDevices!.Remove(DeviceControls[args.Device]);
     if (OpenDevices!.Count == 0)
     {
-      IsDeviceOpen = false;
+      DeviceOpen = false;
     }
   }
 

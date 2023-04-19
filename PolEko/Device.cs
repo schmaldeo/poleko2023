@@ -19,7 +19,8 @@ public abstract class Device
   #region Fields
   
   /// <summary>
-  ///   Optional friendly name for a device
+  /// ~english Optional friendly name for a device
+  /// ~polish Opcjonalna przyjazna nazwa urządzenia
   /// </summary>
   private string? _id;
 
@@ -27,7 +28,8 @@ public abstract class Device
   private ushort _port;
 
   /// <summary>
-  ///   Lazily initiated cache of the result of <see cref="ToString"/> method
+  /// ~english Lazily initiated cache of the result of <see cref="ToString"/> method
+  /// ~polish Inicjalizowany z opóźnieniem wynik metody <see cref="ToString"/>
   /// </summary>
   private string? _toString;
   
@@ -49,7 +51,8 @@ public abstract class Device
   #region Properties
   
   /// <summary>
-  /// Interval (in seconds) in which data will be fetched
+  /// ~english Interval (in seconds) in which data will be fetched
+  /// ~polish Interwał (w sekundach), w którym dane będą pobierane
   /// </summary>
   public virtual int RefreshRate => 1;
 
@@ -87,18 +90,22 @@ public abstract class Device
   }
 
   /// <summary>
-  /// Device's model, used in <see cref="ToString"/> if <see cref="Id"/> is null
+  /// ~english Device's model, used in <see cref="ToString"/> if <see cref="Id"/> is null
+  /// ~polish Model urządzenia, używany w metodzie <see cref="ToString"/> jeśli <see cref="Id"/> jest null
   /// </summary>
   public abstract string Model { get; }
   
   /// <summary>
-  /// Rough description of the device
+  /// ~english Rough description of the device
+  /// ~polish Zgrubny opis urządzenia
   /// </summary>
   public abstract string Description { get; }
   
   /// <summary>
-  /// Init-only Uri which is used in data fetching. By default it initialises to http://ipAddress:port/, but it can
+  /// ~english Init-only <see cref="Uri"/> which is used in data fetching. By default it initialises to http://ipAddress:port/, but it can
   /// be overriden in derived type's constructor
+  /// ~polish <see cref="Uri"/> tylko do odczytu, które będzie używane przy pobieraniu danych z urządzenia.
+  /// Domyślnie jest inicjalizowany w formacie http://ipAddress:port/, ale może być przesłonięty w konstruktorze klasy pochodnej 
   /// </summary>
   protected Uri DeviceUri { get; init; }
   
@@ -107,9 +114,13 @@ public abstract class Device
   #region Overrides
   
   /// <summary>
-  ///   Custom <see cref="ToString"/> implementation
+  /// ~english Custom <see cref="ToString"/> implementation
+  /// ~polish Niestandardowa implementacja metody <see cref="ToString"/>
   /// </summary>
-  /// <returns>String with device's ID/type (if no ID), IP address and port</returns>
+  /// <returns>
+  /// ~english String with device's ID/type (if no ID), IP address and port
+  /// ~polish Ciąg znaków z identyfikatorem/typem urządzenia (jeśli brak ID), adresem IP i portem
+  /// </returns>
   public override string ToString()
   {
     return _toString ??= $"{Id ?? Model}@{IpAddress}:{Port}";
@@ -150,7 +161,8 @@ public abstract class Device<TMeasurement, TControl> : Device, INotifyPropertyCh
   private TMeasurement? _lastMeasurement;
   
   /// <summary>
-  /// Last <typeparamref name="TMeasurement"/> in which <c>Error</c> and <c>NetworkError</c> properties are <c>false</c>
+  /// ~english Last <typeparamref name="TMeasurement"/> in which <c>Error</c> and <c>NetworkError</c> properties are <c>false</c>
+  /// ~polish Ostatni pomiar <typeparam name="TMeasurement"/>, w którym właściwości <c>Error</c> i <c>NetworkError</c> przyjmują wartości <c>false</c>
   /// </summary>
   private TMeasurement? _lastValidMeasurement;
   
@@ -168,7 +180,8 @@ public abstract class Device<TMeasurement, TControl> : Device, INotifyPropertyCh
   #region Properties
   
   /// <summary>
-  /// Last <typeparamref name="TMeasurement"/> in which <c>Error</c> and <c>NetworkError</c> properties are <c>false</c>
+  /// ~english Last <typeparamref name="TMeasurement"/> in which <c>Error</c> and <c>NetworkError</c> properties are <c>false</c>
+  /// ~polish Ostatni pomiar <typeparam name="TMeasurement"/>, w którym właściwości <c>Error</c> i <c>NetworkError</c> przyjmują wartości <c>false</c>
   /// </summary>
   public TMeasurement? LastValidMeasurement
   {
@@ -191,12 +204,14 @@ public abstract class Device<TMeasurement, TControl> : Device, INotifyPropertyCh
   }
 
   /// <summary>
-  /// <see cref="Buffer{T}"/> initialised with a <c>size</c> of 60
+  /// ~english <see cref="Buffer{T}"/> initialised with a <c>size</c> of 60
+  /// ~polish Bufor <see cref="Buffer{T}"/> inicjalizowany z rozmiarem równym 60
   /// </summary>
   public Buffer<TMeasurement> MeasurementBuffer { get; } = new(60);
   
   /// <summary>
-  /// <see cref="DateTime"/> when last <see cref="TMeasurement"/> was fetched
+  /// ~english <see cref="DateTime"/> when last <see cref="TMeasurement"/> was fetched
+  /// ~polish Moment w czasie <see cref="DateTime"/>, kiedy ostatni pomiar <see cref="TMeasurement"/> został pobrany
   /// </summary>
   public DateTime TimeOfLastMeasurement { get; protected set; }
   
@@ -211,13 +226,25 @@ public abstract class Device<TMeasurement, TControl> : Device, INotifyPropertyCh
   #region Methods
   
   /// <summary>
-  /// Specifies how device's response is mapped to a <see cref="TMeasurement"/> object.
+  /// ~english Specifies how device's response is mapped to a <see cref="TMeasurement"/> object.
   /// If the properties and nesting of <see cref="TMeasurement"/> are the same as JSON response of a device,
   /// you shouldn't override this.
+  /// ~polish Określa, w jaki sposób odpowiedź urządzenia jest mapowana na obiekt <see cref="TMeasurement"/>.
+  /// Jeśli właściwości i zagnieżdżanie <see cref="TMeasurement"/> są takie same jak odpowiedź JSON urządzenia,
+  /// nie powinno się tego przesłaniać.
   /// </summary>
-  /// <param name="client"><see cref="HttpClient"/> used for the request</param>
-  /// <returns><see cref="TMeasurement"/> object</returns>
-  /// <exception cref="HttpRequestException">Thrown if query returns no data</exception>
+  /// <param name="client">
+  /// ~english <see cref="HttpClient"/> used for the request
+  /// ~polish Klient HTTP <see cref="HttpClient"/>, który będzie użyty do zapytania
+  /// </param>
+  /// <returns>
+  /// ~english <see cref="TMeasurement"/> object
+  /// ~polish Objekt typu <see cref="TMeasurement"/>
+  /// </returns>
+  /// <exception cref="HttpRequestException">
+  /// ~english Thrown if query returns no data
+  /// ~polish Jeśli zapytanie nie zwróci żadnych danych
+  /// </exception>
   protected virtual async Task<TMeasurement> GetMeasurementFromDeviceAsync(HttpClient client)
   {
     var data = await client.GetFromJsonAsync<TMeasurement>(DeviceUri);
@@ -225,10 +252,17 @@ public abstract class Device<TMeasurement, TControl> : Device, INotifyPropertyCh
   }
 
   /// <summary>
-  /// Handles setting all the <see cref="TMeasurement"/>-related properties.
+  /// ~english Handles setting all the <see cref="TMeasurement"/>-related properties.
+  /// ~polish Obsługuje ustawianie wszystkich właściwości związanych z typem <see cref="TMeasurement"/>
   /// </summary>
-  /// <param name="client"><see cref="HttpClient"/> used to request data from the <see cref="Device{TMeasurement,TControl}"/></param>
-  /// <returns><see cref="TMeasurement"/> object</returns>
+  /// <param name="client">
+  /// ~english <see cref="HttpClient"/> used for the request
+  /// ~polish Klient HTTP <see cref="HttpClient"/>, który będzie użyty do zapytania
+  /// </param>
+  /// <returns>
+  /// ~english <see cref="TMeasurement"/> object
+  /// ~polish Objekt typu <see cref="TMeasurement"/>
+  /// </returns>
   public async Task<TMeasurement> GetMeasurementAsync(HttpClient client)
   {
     try
@@ -254,7 +288,8 @@ public abstract class Device<TMeasurement, TControl> : Device, INotifyPropertyCh
   }
 
   /// <summary>
-  /// Inserts current iteration of <see cref="Buffer"/> into the database
+  /// ~english Inserts current iteration of the <see cref="Buffer{T}"/> into the database
+  /// ~polish Wstawia aktualną iterację bufora <see cref="Buffer{T}"/> do bazy danych
   /// </summary>
   public async Task InsertMeasurementsAsync()
   {
@@ -281,7 +316,8 @@ public abstract class Device<TMeasurement, TControl> : Device, INotifyPropertyCh
 }
 
 /// <summary>
-///   Device that logs temperature
+/// ~english Device that logs temperature
+/// ~polish Urządzenie mierzące temperaturę
 /// </summary>
 // ReSharper disable once ClassNeverInstantiated.Global
 [DeviceModel("POL-EKO Smart Pro")]

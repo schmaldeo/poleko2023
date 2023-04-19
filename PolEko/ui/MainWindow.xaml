@@ -63,7 +63,7 @@
           <Setter Property="Content"
                   Value="{StaticResource WaitingBlock}" />
           <Style.Triggers>
-            <DataTrigger Binding="{Binding IsDeviceOpen}"
+            <DataTrigger Binding="{Binding DeviceOpen}"
                          Value="True">
               <Setter Property="Content"
                       Value="{DynamicResource DeviceControls}" />

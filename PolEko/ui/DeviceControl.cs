@@ -49,6 +49,7 @@ public class DeviceControl<TDevice, TMeasurement, TOwner> : DeviceControl, IDevi
   // assigned from the Device DependencyProperty that's of type Device itself
   protected dynamic _device = null!;
 
+  // _httpClient defined as field so that there's no ownership issues
   protected HttpClient _httpClient = null!;
   private IEnumerable<TMeasurement> _measurements = new List<TMeasurement>();
   private Status _status;

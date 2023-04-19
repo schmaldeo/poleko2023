@@ -14,8 +14,25 @@ namespace PolEko;
 
 public partial class App
 {
+  /// <summary>
+  /// ~english Types derived from <see cref="Device{TMeasurement,TControl}"/> being <c>TKey</c> and the <see cref="DeviceControl{TDevice,TMeasurement,TOwner}"/>
+  /// associated with it being <c>TValue</c>
+  /// ~polish Typy dziedziczące z klasy <see cref="Device{TMeasurement,TControl}"/> i odpowiadające im <see cref="DeviceControl{TDevice,TMeasurement,TOwner}"/>
+  /// odpowiednio jako <c>TKey</c> i <c>TValue</c>
+  /// </summary>
   private readonly Dictionary<Type, Type> _deviceAssociatedControls = new();
+  
+  /// <summary>
+  /// ~english <see cref="Dictionary{TKey,TValue}"/> of <see cref="Type"/>s of <see cref="Device{TMeasurement,TControl}"/> and the
+  /// <c>Name</c> property of that Type as <c>TKey</c>
+  /// ~polish Słownik typów urządzeń jako <c>TKey</c> i ich reprezentacja typu string
+  /// </summary>
   private readonly Dictionary<string, Type> _registeredDeviceTypes = new();
+  
+  /// <summary>
+  /// ~english List of <see cref="Type"/>s derived from <see cref="Measurement"/> that are associated with at least one device
+  /// ~polish Lista typów dziedziczących z klasy <see cref="Measurement"/>, które są powiązane z co najmniej jednym urządzeniem
+  /// </summary>
   private readonly List<Type> _registeredMeasurementTypes = new();
 
   private async void App_Startup(object sender, StartupEventArgs e)
@@ -53,10 +70,17 @@ public partial class App
   }
 
   /// <summary>
-  /// Finds derived types (ignoring abstract classes)
+  /// ~english Finds derived types (ignoring abstract classes)
+  /// ~polish Znajduje powiązane typy (ignorując klasy z modyfikatorem abstract)
   /// </summary>
-  /// <param name="type"><see cref="Type"/> whose derived types to look for</param>
-  /// <returns>A <see cref="List{T}"/> of types derived from <paramref name="type"/> parameter</returns>
+  /// <param name="type">
+  /// ~english <see cref="Type"/> whose derived types to look for
+  /// ~polish Typy, które chcemy znaleźć, które dziedziczą z tego parametru
+  /// </param>
+  /// <returns>
+  /// ~english A <see cref="List{T}"/> of types derived from <paramref name="type"/> parameter
+  /// ~polish Lista typów, które dziedziczą z parametru <paramref name="type"/>
+  /// </returns>
   private static List<Type> FindDerivedTypes(Type type)
   {
     return Assembly.GetAssembly(type)?
@@ -69,7 +93,8 @@ public partial class App
   }
 
   /// <summary>
-  /// Sets correct MergedDictionary based on current culture
+  /// ~english Sets correct MergedDictionary based on current culture
+  /// ~polish Ustawia słownik języków bazując na obecnej kulturze
   /// </summary>
   private void SetLanguageDictionary()
   {
@@ -87,7 +112,8 @@ public partial class App
 }
 
 /// <summary>
-/// IValueConverter inverting booleans
+/// ~english IValueConverter inverting booleans
+/// ~polish IValueConverter odwracający typ logiczny
 /// </summary>
 [ValueConversion(typeof(bool), typeof(bool))]
 public class BooleanInversionConverter : IValueConverter

@@ -34,6 +34,11 @@ public partial class IpPrompt
   
   #region Properties
 
+  /// <summary>
+  /// ~english <see cref="Dictionary{TKey,TValue}"/> of <see cref="Type"/>s of <see cref="Device{TMeasurement,TControl}"/> and the
+  /// <c>Name</c> property of that Type as <c>TKey</c>
+  /// ~polish Słownik typów urządzeń jako <c>TKey</c> i ich reprezentacja typu string
+  /// </summary>
   public Dictionary<string, Type>? Types
   {
     get => (Dictionary<string, Type>)GetValue(TypesProperty);
@@ -51,8 +56,8 @@ public partial class IpPrompt
   #region Event handlers
 
   /// <summary>
-  ///   Method that tries to parse the IP address entered in the prompt and either return it to the caller through the
-  ///   callback or show a message box saying the IP is invalid
+  /// ~english Tries to parse entered parameters and raises the <see cref="DeviceAdded"/> or shows a <see cref="MessageBox"/>
+  /// ~polish Sprawdza, czy wpisane parametry są poprawne i albo zgłasza zdarzenie <see cref="DeviceAdded"/>, albo pokazuje <see cref="MessageBox"/>
   /// </summary>
   /// <param name="sender"></param>
   /// <param name="e"></param>
