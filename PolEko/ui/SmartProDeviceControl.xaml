@@ -168,7 +168,7 @@
                            DisplayDefaultValueOnEmptyText="True" Margin="5 0" />
       <Button Grid.Row="2" Grid.Column="0" Click="CsvExport_Click" Content="{StaticResource ExportToCsv}"
               HorizontalAlignment="Right" Margin="5 0" />
-      <Button Grid.Row="2" Grid.Column="1" Click="Button_Click" Content="{StaticResource Fetch}"
+      <Button Grid.Row="2" Grid.Column="1" Click="FetchHistoryButton_Click" Content="{StaticResource Fetch}"
               IsEnabled="{Binding DataStatus, Converter={StaticResource FetchingStatusToBoolConverter}}"
               HorizontalAlignment="Left" Margin="5 0" />
 

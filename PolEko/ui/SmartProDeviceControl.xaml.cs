@@ -50,7 +50,7 @@ public partial class SmartProDeviceControl
   
   #region Event handlers
 
-  private async void Button_Click(object sender, RoutedEventArgs e)
+  private async void FetchHistoryButton_Click(object sender, RoutedEventArgs e)
   {
     if (StartingDatePicker.Value is null || EndingDatePicker.Value is null)
     {
