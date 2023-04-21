@@ -9,7 +9,7 @@
         Background="{ui:ThemeResource ApplicationBackgroundBrush}"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"
-        Title="Poleko">
+        Title="Konkurs POL-EKO">
   <Window.Resources>
     <TabControl x:Key="DeviceControls" ItemsSource="{Binding OpenDevices}"
                 SelectedItem="{Binding SelectedDeviceControl}" />
