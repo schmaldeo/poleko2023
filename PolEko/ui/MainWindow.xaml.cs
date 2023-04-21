@@ -154,28 +154,37 @@ public partial class MainWindow : INotifyPropertyChanged
     var httpClient = _httpClient ??= new HttpClient();
 
     var t = incomingDevice.GetType();
-    var instance =
-      (IDeviceControl<Device>)Activator.CreateInstance(DeviceAssociatedControls![t], incomingDevice, httpClient)!;
-    instance.DeviceRemoved += RemoveDevice;
-    instance.DeviceClosed += delegate(object? _, DeviceRemovedEventArgs args)
+    try
     {
-      // Find TabItem with Content property of control which wants to close
-      var control = OpenDevices!.Where(x => x == DeviceControls[args.Device]).Select(x => x).FirstOrDefault();
-      if (control is null) return;
-      OpenDevices!.Remove(control);
-      DeviceControls.Remove(args.Device);
-      
-      // If the closed device was the only one open, show the waiting screen, otherwise open the window which was opened
-      // the latest
-      if (OpenDevices.Count == 0)
+      var instance =
+        (IDeviceControl<Device>)Activator.CreateInstance(DeviceAssociatedControls![t], incomingDevice, httpClient)!;
+      instance.DeviceRemoved += RemoveDevice;
+      instance.DeviceClosed += delegate(object? _, DeviceRemovedEventArgs args)
       {
-        DeviceOpen = false;
-        return;
-      }
-      SelectedDeviceControl = OpenDevices[^1];
-    };
-    Closing += async delegate { await instance.DisposeAsync(); };
-    _deviceInfo = instance;
+        // Find TabItem with Content property of control which wants to close
+        var control = OpenDevices!.Where(x => x == DeviceControls[args.Device]).Select(x => x).FirstOrDefault();
+        if (control is null) return;
+        OpenDevices!.Remove(control);
+        DeviceControls.Remove(args.Device);
+
+        // If the closed device was the only one open, show the waiting screen, otherwise open the window which was opened
+        // the latest
+        if (OpenDevices.Count == 0)
+        {
+          DeviceOpen = false;
+          return;
+        }
+
+        SelectedDeviceControl = OpenDevices[^1];
+      };
+      Closing += async delegate { await instance.DisposeAsync(); };
+      _deviceInfo = instance;
+    }
+    catch (MissingMethodException)
+    {
+      var type = t.BaseType!.GetGenericArguments()[1];
+      throw new MissingMethodException($"{type} must implement a ({t}, HttpClient) constructor");
+    }
 
 
     var formattedHeader = $"{incomingDevice.IpAddress}:{incomingDevice.Port}";
