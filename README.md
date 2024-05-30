@@ -22,5 +22,5 @@ the app yourself.
 
 ## Screenshots
 
-[[https://i.imgur.com/FFOB8Qg.png|alt=deviceview]]
-[[https://i.imgur.com/CoxZOlR.png|alt=anotherdeviceview]]
+<img src="https://i.imgur.com/FFOB8Qg.png" alt="device view" />
+<img src="https://i.imgur.com/CoxZOlR.png" alt="another device view" />
