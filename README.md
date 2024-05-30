@@ -34,6 +34,6 @@ To add a device in the monitoring app, just press the `+` icon in the `Devices` 
 
 ## Screenshots
 
+<img src="https://i.imgur.com/jxxh3jv.png" alt="add device view" />
 <img src="https://i.imgur.com/FFOB8Qg.png" alt="device view" />
 <img src="https://i.imgur.com/CoxZOlR.png" alt="another device view" />
-<img src="https://i.imgur.com/jxxh3jv.png" alt="add device view" />
